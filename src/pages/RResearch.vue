@@ -97,28 +97,18 @@ export default {
     ResourceList,
     AddResearch
   },
-  // name: 'PageName',
+  name: 'LessonResearch',
+  fiery: true,
   data () {
     return {
       seriesid: this.$route.params.seriesid,
       id: this.$route.params.lessonid,
-      lesson: {},
+      lesson: this.$fiery(this.$firebase.ref('lesson', this.$route.params.lessonid, '', this.$route.params.seriesid)),
       editTitle: false,
       editMainIdea: false,
       searchTerms: '',
       searchItems: [],
       loading: false
-    }
-  },
-  firebase () {
-    return {
-      lesson: {
-        source: this.$firebase.ref('lesson', this.$route.params.lessonid, this.$route.params.seriesid),
-        asObject: true,
-        readyCallback: function (val) {
-          console.log('ran!', val)
-        }
-      }
     }
   },
   watch: {

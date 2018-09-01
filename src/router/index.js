@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
 
 import routes from './routes'
 
@@ -39,7 +40,8 @@ Router.beforeEach((to, from, next) => {
         // console.log(user)
         // Check if REAL page
         if (to.matched.some(record => record.meta.requiresREAL)) {
-          firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid).get().then((userDoc) => {
+          firebase.firestore().collection('user').doc(firebase.auth().currentUser.uid).get().then((userDoc) => {
+            console.log('is user real?', userDoc.data())
             if (userDoc.data().realUser) {
               next()
             } else {

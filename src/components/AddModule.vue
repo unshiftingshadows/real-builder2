@@ -1,18 +1,12 @@
 <template>
   <div class="col-12 relative-position" style="height: 30px; margin-bottom: 20px;">
     <q-btn round :color="color" icon="fas fa-plus" class="absolute-center" @click.native="showAdd" />
-    <add-media :type="type" ref="addMedia" :add-new="addNewMedia" />
     <!-- TODO: Add a new component here like add-media but that uses the NQ database -->
   </div>
 </template>
 
 <script>
-import AddMedia from 'components/AddMedia.vue'
-
 export default {
-  components: {
-    AddMedia
-  },
   // name: 'ComponentName',
   props: [ 'nextModOrder', 'sectionid', 'close', 'edit', 'contentType', 'dark' ],
   data () {
@@ -94,69 +88,6 @@ export default {
             this.addModule('question')
           }
         })
-      }
-      if (this.contentType.charAt(0) !== 'r' && !this.$root.$children[0].user.nqUser) {
-        console.log('running', this.contentType.charAt(0))
-        if (this.$root.$children[0].user.prefs.mediaType.quote) {
-          actions.push({
-            label: 'Quote',
-            color: 'primary',
-            icon: 'fa-quote-left',
-            handler: () => {
-              console.log('quote!')
-              this.type = 'quote'
-              this.$refs.addMedia.show()
-            }
-          })
-        }
-        if (this.$root.$children[0].user.prefs.mediaType.image) {
-          actions.push({
-            label: 'Image',
-            color: 'primary',
-            icon: 'fa-image',
-            handler: () => {
-              console.log('image!')
-              this.type = 'image'
-              this.$refs.addMedia.show()
-            }
-          })
-        }
-        if (this.$root.$children[0].user.prefs.mediaType.illustration) {
-          actions.push({
-            label: 'Illustration',
-            color: 'primary',
-            icon: 'fa-paint-brush',
-            handler: () => {
-              console.log('illustration!')
-              this.type = 'illustration'
-              this.$refs.addMedia.show()
-            }
-          })
-        }
-        if (this.$root.$children[0].user.prefs.mediaType.lyric) {
-          actions.push({
-            label: 'Lyric',
-            color: 'primary',
-            icon: 'fa-music',
-            handler: () => {
-              console.log('lyric!')
-              this.type = 'lyric'
-              this.$refs.addMedia.show()
-            }
-          })
-        }
-        if (this.$root.$children[0].user.prefs.mediaType.video) {
-          actions.push({
-            label: 'Video',
-            color: 'primary',
-            icon: 'fa-play',
-            handler: () => {
-              console.log('video!')
-              this.type = 'video'
-              this.$refs.addMedia.show()
-            }
-          })
-        }
       }
       this.$q.actionSheet({
         title: 'Add Module',

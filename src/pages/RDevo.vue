@@ -9,7 +9,7 @@
       </div>
       <div class="col-12">
         <!-- <module-list type="rdevo" :id="id" /> -->
-        <content-editor :key="id" :id="id" type="rdevo" />
+        <content-editor :key="id" :id="id" type="devo" />
       </div>
     </div>
     <q-modal v-model="editTitle" ref="editTitleModal" content-classes="edit-title-modal">
@@ -80,36 +80,25 @@
 
 <script>
 import { Notify } from 'quasar'
-// import ModuleList from 'components/ModuleList.vue'
 import ContentEditor from 'components/ContentEditor.vue'
 import RenderModules from 'components/preview/RenderModules.vue'
 
 export default {
   components: {
-    // ModuleList,
     ContentEditor,
     RenderModules
   },
-  // name: 'PageName',
+  name: 'DevoPage',
+  fiery: true,
   data () {
     return {
       seriesid: this.$route.params.seriesid,
       lessonid: this.$route.params.lessonid,
       id: this.$route.params.devoid,
-      devo: {},
-      editTitle: false,
-      editMainIdea: false,
-      passageList: []
-    }
-  },
-  firebase () {
-    return {
-      devo: {
-        source: this.$firebase.devosRef(this.$route.params.seriesid, this.$route.params.lessonid).child(this.$route.params.devoid),
-        asObject: true,
-        readyCallback: function (val) {
+      devo: this.$fiery(this.$firebase.devosRef(this.$route.params.seriesid, this.$route.params.lessonid).doc(this.$route.params.devoid), {
+        onSuccess: (val) => {
           console.log('ran!', val)
-          this.devo.bibleRefs.split(',').forEach(ref => {
+          this.devo.bibleRefs.forEach(ref => {
             var readable = this.$bible.readable(ref)
             this.$database.bible(ref, 'esv', (res) => {
               this.passageList.push({
@@ -120,7 +109,10 @@ export default {
             })
           })
         }
-      }
+      }),
+      editTitle: false,
+      editMainIdea: false,
+      passageList: []
     }
   },
   methods: {
@@ -141,7 +133,7 @@ export default {
         title: this.devo.title,
         mainIdea: this.devo.mainIdea
       }
-      this.$firebase.devosRef(this.$route.params.seriesid, this.$route.params.lessonid).child(this.$route.params.devoid).update(obj).then(() => {
+      this.$firebase.devosRef(this.$route.params.seriesid, this.$route.params.lessonid).doc(this.$route.params.devoid).update(obj).then(() => {
         Notify.create({
           type: 'positive',
           message: 'Devo updated!',

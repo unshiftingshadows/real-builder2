@@ -4,7 +4,7 @@
       <div class="col-xs-12" style="height: 130px;">
       </div>
       <div class="col-12">
-        <content-editor :key="id" :id="id" type="rreview" />
+        <content-editor :key="id" :id="id" type="review" />
       </div>
     </div>
     <q-modal v-model="editTitle" ref="editTitleModal" content-classes="edit-title-modal">
@@ -84,25 +84,15 @@ export default {
   components: {
     ContentEditor
   },
-  // name: 'PageName',
+  name: 'LessonReview',
+  fiery: true,
   data () {
     return {
       seriesid: this.$route.params.seriesid,
       id: this.$route.params.lessonid,
-      lesson: {},
+      lesson: this.$fiery(this.$firebase.ref('lesson', this.$route.params.lessonid, '', this.$route.params.seriesid)),
       editTitle: false,
       editMainIdea: false
-    }
-  },
-  firebase () {
-    return {
-      lesson: {
-        source: this.$firebase.ref('lesson', this.$route.params.lessonid, this.$route.params.seriesid),
-        asObject: true,
-        readyCallback: function (val) {
-          console.log('ran!', val)
-        }
-      }
     }
   },
   mounted () {

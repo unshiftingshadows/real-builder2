@@ -7,7 +7,7 @@
         <q-input v-model="series.mainIdea" float-label="Main Idea" type="textarea" :max-height="150" :min-rows="3" @blur="update()" />
       </div>
       <div class="col-12">
-        <!-- <lesson-list :id="id" /> -->
+        <lesson-list :id="id" />
       </div>
     </div>
     <q-modal v-model="editTitle" ref="editTitleModal" content-classes="edit-title-modal">
@@ -65,23 +65,13 @@ export default {
     LessonList
   },
   name: 'PageSeries',
+  fiery: true,
   data () {
     return {
       id: this.$route.params.seriesid,
-      series: {},
+      series: this.$fiery(this.$firebase.ref('series', '', this.$route.params.seriesid)),
       editTitle: false,
       showMainIdea: false
-    }
-  },
-  firebase () {
-    return {
-      series: {
-        source: this.$firebase.ref('series', '', this.$route.params.seriesid),
-        asObject: true,
-        readyCallback: function (val) {
-          console.log('ran!', val)
-        }
-      }
     }
   },
   mounted () {
@@ -100,11 +90,13 @@ export default {
         mainIdea: this.series.mainIdea
       }
       this.$firebase.ref('series', '', this.id).update(obj).then(() => {
-        // console.log(res)
-        Notify.create({
-          type: 'positive',
-          message: 'Series updated!',
-          position: 'bottom-left'
+        this.$database.update('series', this.id, obj, () => {
+          // console.log(res)
+          Notify.create({
+            type: 'positive',
+            message: 'Series updated!',
+            position: 'bottom-left'
+          })
         })
       })
     },

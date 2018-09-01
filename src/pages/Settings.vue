@@ -6,7 +6,7 @@
       </div>
       <div class="col-12">
         <q-select
-          v-model="$root.$children[0].user.theme"
+          v-model="$root.$children[0].user.prefs.theme"
           float-label="Theme"
           :options="themeOptions"
           @input="themeChange"
@@ -311,7 +311,7 @@ export default {
     themeChange (val) {
       console.log('change...', val)
       this.$firebase.user().update({
-        theme: this.$root.$children[0].user.theme
+        theme: this.$root.$children[0].user.prefs.theme
       })
     },
     prefChange (val) {

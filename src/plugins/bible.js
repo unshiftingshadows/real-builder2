@@ -2,7 +2,8 @@ const BCVParser = require('bible-passage-reference-parser/js/en_bcv_parser').bcv
 // const BCV = new BCVParser()
 
 import axios from 'axios'
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
 
 axios.defaults.baseURL = 'https://database.unshiftingshadows.com/builder'
 axios.defaults.headers.post['Content-Type'] = 'application/json'

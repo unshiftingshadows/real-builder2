@@ -5,89 +5,42 @@
 </template>
 
 <script>
-var defaultDevos = {
-  '1': {
-    editing: false,
-    title: '',
-    mainIdea: '',
-    bibleRefs: '',
-    notes: ''
-  },
-  '2': {
-    editing: false,
-    title: '',
-    mainIdea: '',
-    bibleRefs: '',
-    notes: ''
-  },
-  '3': {
-    editing: false,
-    title: '',
-    mainIdea: '',
-    bibleRefs: '',
-    notes: ''
-  },
-  '4': {
-    editing: false,
-    title: '',
-    mainIdea: '',
-    bibleRefs: '',
-    notes: ''
-  },
-  '5': {
-    editing: false,
-    title: '',
-    mainIdea: '',
-    bibleRefs: '',
-    notes: ''
-  },
-  '6': {
-    editing: false,
-    title: '',
-    mainIdea: '',
-    bibleRefs: '',
-    notes: ''
-  },
-  '7': {
-    editing: false,
-    title: '',
-    mainIdea: '',
-    bibleRefs: '',
-    notes: ''
-  }
+var defaultDevo = {
+  editing: false,
+  title: '',
+  mainIdea: '',
+  bibleRefs: [],
+  notes: ''
 }
 
-var defaultContent = {
-  structure: {
-    before: {
-      hook: {
-        title: '',
-        wordcount: 0,
-        time: 0,
-        editing: false,
-        show: true
-      }
-    },
-    after: {
-      application: {
-        title: '',
-        today: '',
-        thisweek: '',
-        thought: '',
-        wordcount: 0,
-        time: 0,
-        editing: false,
-        show: true
-      },
-      prayer: {
-        text: '',
-        wordcount: 0,
-        time: 0,
-        editing: false,
-        show: true
-      }
-    }
-  }
+var defaultHook = {
+  pos: 'before',
+  title: '',
+  wordcount: 0,
+  time: 0,
+  editing: false,
+  show: true
+}
+
+var defaultApplication = {
+  pos: 'after',
+  title: '',
+  today: '',
+  thisweek: '',
+  thought: '',
+  wordcount: 0,
+  time: 0,
+  editing: false,
+  show: true
+}
+
+var defaultPrayer = {
+  pos: 'after',
+  text: '',
+  wordcount: 0,
+  time: 0,
+  editing: false,
+  show: true
 }
 
 var guideTypes = ['lecture', 'discussion', 'questions', 'answers', 'expositional']
@@ -105,24 +58,33 @@ export default {
     addModule () {
       console.log('add module')
       this.close()
-      var newRef = this.$firebase.lessonsRef(this.$parent.id).push({
+      this.$firebase.lessonsRef(this.$parent.id).add({
         editing: this.$firebase.auth.currentUser.uid,
         order: this.nextLessonOrder,
         title: '',
         mainIdea: '',
-        bibleRefs: '',
+        bibleRefs: [],
         notes: '',
         prayer: '',
         application: ''
+      }).then((newRef) => {
+        console.log('newRef', newRef.id)
+        for (var x = 1; x <= 7; x++) {
+          this.$firebase.devosRef(this.$parent.id, newRef.id).doc(x.toString()).set(defaultDevo)
+          this.$firebase.devoContentRef(this.$parent.id, newRef.id, x.toString()).collection('structure').doc('hook').set(defaultHook)
+          this.$firebase.devoContentRef(this.$parent.id, newRef.id, x.toString()).collection('structure').doc('application').set(defaultApplication)
+          this.$firebase.devoContentRef(this.$parent.id, newRef.id, x.toString()).collection('structure').doc('prayer').set(defaultPrayer)
+        }
+        guideTypes.forEach((type) => {
+          this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('hook').set(defaultHook)
+          this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('application').set(defaultApplication)
+          this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('prayer').set(defaultPrayer)
+        })
+        this.$firebase.reviewRef(this.$parent.id, newRef.id).collection('structure').doc('hook').set(defaultHook)
+        this.$firebase.reviewRef(this.$parent.id, newRef.id).collection('structure').doc('application').set(defaultApplication)
+        this.$firebase.reviewRef(this.$parent.id, newRef.id).collection('structure').doc('prayer').set(defaultPrayer)
+        this.edit(newRef.id)
       })
-      this.$firebase.devosRef(this.$parent.id, newRef.key).set(defaultDevos)
-      for (var x = 1; x <= 7; x++) {
-        this.$firebase.devoContentRef(this.$parent.id, newRef.key, x).set(defaultContent)
-      }
-      guideTypes.forEach((type) => {
-        this.$firebase.guides(this.$parent.id, newRef.key, type).set(defaultContent)
-      })
-      this.edit(newRef.key)
     }
   }
 }

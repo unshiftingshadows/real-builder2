@@ -80,30 +80,20 @@ export default {
     ModLyric,
     ModIllustration
   },
-  // name: 'ComponentName',
+  name: 'ModuleSection',
   props: ['id', 'data', 'edit', 'remove', 'disabled', 'contentType', 'contentid'],
+  fiery: true,
   data () {
     return {
       drag: false,
       editTitle: false,
       newTitle: '',
-      open: true
-    }
-  },
-  firebase () {
-    return {
-      'modules': {
-        source: this.$firebase.sectionModules(this.contentType, this.contentid, this.id, this.$route.params.seriesid, this.$route.params.lessonid).orderByChild('order'),
-        readyCallback: function (val) {
-          console.log('section modules loaded')
-          this.modules.forEach((mod) => {
-            if (mod.editing === this.$firebase.auth.currentUser.uid) {
-              console.log('closed previously open module', mod['.key'])
-              this.closeModule(mod['.key'])
-            }
-          })
-        }
-      }
+      open: true,
+      modules: this.$fiery(this.$firebase.sectionModules(this.contentType, this.contentid, this.id, this.$route.params.seriesid, this.$route.params.lessonid), {
+        key: '.key',
+        exclude: ['.key'],
+        query: (modules) => modules.orderBy('order')
+      })
     }
   },
   computed: {
@@ -154,8 +144,8 @@ export default {
         updatedMods[item['.key']].order = index + val.newIndex + 1
         delete updatedMods[item['.key']]['.key']
       })
-      this.$firebaseRefs.modules.update(updatedMods)
-      this.$firebaseRefs.modules.push(newItem)
+      // this.$firebaseRefs.modules.update(updatedMods)
+      // this.$firebaseRefs.modules.push(newItem)
     },
     onRemove (val) {
       console.log('module removed', this.id, val)
@@ -167,7 +157,7 @@ export default {
           delete updatedMods[item['.key']]['.key']
         }
       })
-      this.$firebaseRefs.modules.set(updatedMods)
+      // this.$firebaseRefs.modules.set(updatedMods)
     },
     onChange (val) {
       if (val.moved) {
@@ -177,7 +167,7 @@ export default {
           updatedMods[item['.key']].order = index
           delete updatedMods[item['.key']]['.key']
         })
-        this.$firebaseRefs.modules.set(updatedMods)
+        // this.$firebaseRefs.modules.set(updatedMods)
       }
     },
     reorder () {

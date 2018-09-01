@@ -12,7 +12,7 @@
           @click="leftDrawer = !leftDrawer"
         />
         <q-toolbar-title>
-          <img src="statics/logo.png" style="max-height: 40px" />
+          <img src="statics/curriculum-logo_white.png" style="max-height: 40px" />
         </q-toolbar-title>
         <q-btn
           flat

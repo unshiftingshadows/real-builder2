@@ -92,6 +92,7 @@ var initUser = {
 
 export default {
   name: 'App',
+  fiery: true,
   data () {
     return {
       user: initUser,
@@ -117,7 +118,7 @@ export default {
     'user': function (val) {
       console.log('user changed!', val, this.$firebase.auth.currentUser)
     },
-    'user.theme': function (val) {
+    'user.prefs.theme': function (val) {
       if (val === undefined) return
       switch (val) {
         case 'dark':
@@ -147,7 +148,8 @@ export default {
     '$route': function (val) {
       if (this.$firebase.user()) {
         this.$firebase.user().update({
-          'stats.lastPagePath': val.path
+          'stats.lastPage.host': 'builder',
+          'stats.lastPage.path': val.path
         })
       }
     }
@@ -164,9 +166,10 @@ export default {
           this.user.theme = 'light'
         } else {
           console.log('currentuser', user)
-          this.$binding('user', this.$firebase.user()).then((userSnap) => {
-            console.log('logged user', userSnap)
-          })
+          // this.$binding('user', this.$firebase.user()).then((userSnap) => {
+          //   console.log('logged user', userSnap)
+          // })
+          this.user = this.$fiery(this.$firebase.user())
         }
       })
     },

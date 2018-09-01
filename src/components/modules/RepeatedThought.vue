@@ -5,7 +5,7 @@
         Repeated Thought
       </q-card-title>
       <q-card-main>
-        <p>{{ mainIdea['.value'] }}</p>
+        <p>{{ lesson.mainIdea }}</p>
       </q-card-main>
     </div>
   </q-card>
@@ -15,19 +15,10 @@
 export default {
   name: 'mod-repeated-thought',
   props: [ 'seriesid', 'lessonid' ],
+  fiery: true,
   data () {
     return {
-      mainIdea: {
-        '.value': ''
-      }
-    }
-  },
-  firebase () {
-    return {
-      mainIdea: {
-        source: this.$firebase.lessonsRef(this.seriesid).child(this.lessonid).child('mainIdea'),
-        asObject: true
-      }
+      lesson: this.$fiery(this.$firebase.lessonsRef(this.seriesid).doc(this.lessonid))
     }
   }
 }

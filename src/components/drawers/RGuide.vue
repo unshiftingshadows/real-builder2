@@ -26,7 +26,7 @@ export default {
         asObject: true
       },
       lesson: {
-        source: this.$firebase.lessonsRef(this.$route.params.seriesid).child(this.$route.params.lessonid),
+        source: this.$firebase.lessonsRef(this.$route.params.seriesid).doc(this.$route.params.lessonid),
         asObject: true,
         readyCallback: function (val) {
           if (val.val().bibleRefs !== undefined && val.val().bibleRefs !== '') {

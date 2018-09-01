@@ -84,27 +84,28 @@ export default {
   components: {
     DevoList
   },
-  // name: 'PageName',
+  name: 'LessonDevos',
+  fiery: true,
   data () {
     return {
       seriesid: this.$route.params.seriesid,
       id: this.$route.params.lessonid,
-      lesson: {},
+      lesson: this.$fiery(this.$firebase.lessonsRef(this.$route.params.seriesid).doc(this.$route.params.lessonid)),
       editTitle: false,
       editMainIdea: false
     }
   },
-  firebase () {
-    return {
-      lesson: {
-        source: this.$firebase.ref('lesson', this.$route.params.lessonid, this.$route.params.seriesid),
-        asObject: true,
-        readyCallback: function (val) {
-          console.log('ran!', val)
-        }
-      }
-    }
-  },
+  // firebase () {
+  //   return {
+  //     lesson: {
+  //       source: this.$firebase.ref('lesson', this.$route.params.lessonid, this.$route.params.seriesid),
+  //       asObject: true,
+  //       readyCallback: function (val) {
+  //         console.log('ran!', val)
+  //       }
+  //     }
+  //   }
+  // },
   mounted () {
     this.init()
   },

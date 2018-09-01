@@ -1,7 +1,10 @@
-import firebase from 'firebase'
-require('firebase/firestore')
-import VueFire from 'vuefire'
-import VueFirestore from 'vue-firestore'
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/database'
+import 'firebase/firestore'
+// import VueFire from 'vuefire'
+// import VueFirestore from 'vue-firestore'
+import FieryVue from 'fiery-vue'
 
 const fbapp = firebase.initializeApp({
   apiKey: 'AIzaSyCAsGVxjcBRsSNlQsymRnzWQAAYqphmmVU',
@@ -21,47 +24,68 @@ firestore.settings(settings)
 function dbref (type, selection, id, seriesid, lessonid) {
   console.log('run dbref')
   if (type === 'devo') {
-    return devoContent(seriesid, lessonid, id).child(selection)
+    return devo(seriesid, lessonid, id).collection(selection)
   } else if (type === 'guide') {
-    return guides(seriesid, lessonid, id).child(selection)
+    return guide(seriesid, lessonid, id).collection(selection)
   } else if (type === 'review') {
-    return review(seriesid, lessonid).child(selection)
+    return review(seriesid, lessonid).collection(selection)
   } else if (type === 'series') {
-    return fbapp.database().ref('builder/series/' + id)
+    return firestore.collection('curriculumEdit').doc(id)
   } else if (type === 'lesson') {
-    return fbapp.database().ref('builder/lessons/' + id + '/' + selection)
+    return lesson(seriesid, selection)
   } else {
     console.log('incorrect ref type?')
   }
 }
 
 function lessons (seriesid) {
-  return fbapp.database().ref('builder/lessons/' + seriesid)
+  // return fbapp.database().ref('builder/lessons/' + seriesid)
+  return firestore.collection('curriculumEdit').doc(seriesid).collection('lessons')
+}
+
+function lesson (seriesid, lessonid) {
+  return lessons(seriesid).doc(lessonid)
 }
 
 function devos (seriesid, lessonid) {
-  return fbapp.database().ref('builder/devos/' + seriesid + '/' + lessonid)
+  // return fbapp.database().ref('builder/devos/' + seriesid + '/' + lessonid)
+  return lessons(seriesid).doc(lessonid).collection('devos')
 }
 
-function devoContent (seriesid, lessonid, devoid) {
-  return fbapp.database().ref('builder/devoContent/' + seriesid + '/' + lessonid + '/' + devoid)
+function devo (seriesid, lessonid, devoid) {
+  // return fbapp.database().ref('builder/devoContent/' + seriesid + '/' + lessonid + '/' + devoid)
+  return devos(seriesid, lessonid).doc(devoid)
 }
 
-function guides (seriesid, lessonid, guideType) {
-  return fbapp.database().ref('builder/guides/' + seriesid + '/' + lessonid + '/' + guideType)
+function guide (seriesid, lessonid, guideType) {
+  // return fbapp.database().ref('builder/guides/' + seriesid + '/' + lessonid + '/' + guideType)
+  return lesson(seriesid, lessonid).collection('guides').doc(guideType)
 }
 
 function review (seriesid, lessonid) {
-  return fbapp.database().ref('builder/review/' + seriesid + '/' + lessonid)
+  // return fbapp.database().ref('builder/review/' + seriesid + '/' + lessonid)
+  return lesson(seriesid, lessonid).collection('review').doc('review')
+}
+
+function section (type, id, sectionid, seriesid, lessonid) {
+  if (type === 'devo') {
+    return devo(seriesid, lessonid, id).collection('sections').doc(sectionid)
+  } else if (type === 'guide') {
+    return guide(seriesid, lessonid, id).collection('sections').doc(sectionid)
+  } else if (type === 'review') {
+    return review(seriesid, lessonid).collection('sections').doc(sectionid)
+  } else {
+    console.log('incorrect section type?')
+  }
 }
 
 function sectionModules (type, id, sectionid, seriesid, lessonid) {
   if (type === 'devo') {
-    return devoContent(seriesid, lessonid, id).child('sectionModules').child(sectionid)
+    return devo(seriesid, lessonid, id).collection('sections').doc(sectionid).collection('modules')
   } else if (type === 'guide') {
-    return guides(seriesid, lessonid, id).child('sectionModules').child(sectionid)
+    return guide(seriesid, lessonid, id).collection('sections').doc(sectionid).collection('modules')
   } else if (type === 'review') {
-    return review(seriesid, lessonid).child('sectionModules').child(sectionid)
+    return review(seriesid, lessonid).collection('sections').doc(sectionid).collection('modules')
   } else {
     console.log('incorrect section type?')
   }
@@ -70,10 +94,10 @@ function sectionModules (type, id, sectionid, seriesid, lessonid) {
 function user (uid) {
   if (uid) {
     console.log('valid uid', uid)
-    return fbapp.firestore().collection('users').doc(uid)
+    return fbapp.firestore().collection('user').doc(uid)
   } else {
     if (fbapp.auth().currentUser) {
-      return fbapp.firestore().collection('users').doc(fbapp.auth().currentUser.uid)
+      return fbapp.firestore().collection('user').doc(fbapp.auth().currentUser.uid)
     } else {
       return false
     }
@@ -82,8 +106,9 @@ function user (uid) {
 
 // leave the export, even if you don't use it
 export default ({ app, router, Vue }) => {
-  Vue.use(VueFire)
-  Vue.use(VueFirestore)
+  // Vue.use(VueFire)
+  // Vue.use(VueFirestore)
+  Vue.use(FieryVue)
   Vue.prototype.$firebase = {
     emailCred: firebase.auth.EmailAuthProvider.credential,
     auth: fbapp.auth(),
@@ -94,9 +119,10 @@ export default ({ app, router, Vue }) => {
     // imagesRef: fbapp.storage().ref('images'),
     lessonsRef: lessons,
     devosRef: devos,
-    devoContentRef: devoContent,
-    guides: guides,
-    review: review,
+    devoContentRef: devo,
+    guideRef: guide,
+    reviewRef: review,
+    sectionRef: section,
     sectionModules: sectionModules
   }
 }

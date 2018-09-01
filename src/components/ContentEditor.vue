@@ -93,30 +93,31 @@ export default {
     ModRepeatedThought,
     ModuleSection
   },
-  // name: 'ComponentName',
+  name: 'ContentEditor',
   props: ['type', 'id'],
+  fiery: true,
   data () {
     return {
+      initRun: true,
       drag: false,
       editingid: '',
       editingSection: undefined,
       sectionChoice: '',
       tempModule: false,
-      structure: {
-        before: {
-          hook: {
-            show: false
-          }
-        },
-        after: {
-          application: {
-            show: false
-          },
-          prayer: {
-            show: false
-          }
-        }
-      }
+      structure: this.$fiery(this.$firebase.ref(this.type, 'structure', this.id, this.$route.params.seriesid, this.$route.params.lessonid), {
+        map: true
+      }),
+      sections: this.$fiery(this.$firebase.ref(this.type, 'sections', this.id, this.$route.params.seriesid, this.$route.params.lessonid), {
+        key: '.key',
+        exclude: ['.key'],
+        query: (sections) => sections.orderBy('order')
+      }),
+      modules: this.$fiery(this.$firebase.ref(this.type, 'modules', this.id, this.$route.params.seriesid, this.$route.params.lessonid), {
+        key: '.key',
+        exclude: ['.key'],
+        query: (modules) => modules.orderBy('order')
+      }),
+      versions: this.$fiery(this.$firebase.ref(this.type, 'versions', this.id, this.$route.params.seriesid, this.$route.params.lessonid))
     }
   },
   watch: {
@@ -154,46 +155,8 @@ export default {
       return this.sections.length
     }
   },
-  firebase () {
-    return {
-      structure: {
-        source: this.$firebase.ref(this.type, 'structure', this.id, this.$route.params.seriesid, this.$route.params.lessonid),
-        asObject: true,
-        readyCallback: function (val) {
-          console.log('structure loaded')
-          this.$emit('modules-init', {
-            before: {
-              hook: this.structure.before.hook.show
-            },
-            after: {
-              application: this.structure.after.application.show,
-              prayer: this.structure.after.prayer.show
-            }
-          })
-        }
-      },
-      sections: {
-        source: this.$firebase.ref(this.type, 'sections', this.id, this.$route.params.seriesid, this.$route.params.lessonid).orderByChild('order'),
-        readyCallback: function (val) {
-          console.log('sections loaded')
-        }
-      },
-      modules: {
-        source: this.$firebase.ref(this.type, 'modules', this.id, this.$route.params.seriesid, this.$route.params.lessonid).orderByChild('order'),
-        readyCallback: function (val) {
-          console.log('modules loaded')
-        }
-      },
-      versions: {
-        source: this.$firebase.ref(this.type, 'versions', this.id, this.$route.params.seriesid, this.$route.params.lessonid),
-        readyCallback: function (val) {
-          console.log('versions loaded')
-        }
-      }
-    }
-  },
   mounted () {
-    this.$root.$children[0].user.$on('add-module', (data, sectionid) => {
+    this.$root.$children[0].$on('add-module', (data, sectionid) => {
       console.log('section', sectionid)
       this.tempModule = {
         data: data,
@@ -220,160 +183,169 @@ export default {
     },
     editModule (moduleid, sectionid) {
       console.log('edit module', moduleid, sectionid)
-      if (this.editingid !== moduleid && this.editingid !== '') {
-        console.log('close module before edit')
-        this.closeModule(this.editingid, this.editingSection)
-      }
-      this.editingid = moduleid
-      this.editingSection = sectionid
-      if (sectionid) {
-        if (sectionid === 'hook') {
-          this.$firebaseRefs.structure.child('before').child('hook').update({
-            editing: this.$firebase.auth.currentUser.uid
-          })
-        } else {
-          this.$firebaseRefs.sections.child(sectionid).update({
-            editing: this.$firebase.auth.currentUser.uid
-          })
-        }
-        this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).child(moduleid).update({
-          editing: this.$firebase.auth.currentUser.uid
-        })
-      } else if (moduleid === 'application' || moduleid === 'prayer') {
-        this.$firebaseRefs.structure.child('after').child(moduleid).update({
-          editing: this.$firebase.auth.currentUser.uid
-        })
-      } else {
-        this.$firebaseRefs.modules.child(moduleid).update({
-          editing: this.$firebase.auth.currentUser.uid
-        })
-      }
+      // if (this.editingid !== moduleid && this.editingid !== '') {
+      //   console.log('close module before edit')
+      //   this.closeModule(this.editingid, this.editingSection)
+      // }
+      // this.editingid = moduleid
+      // this.editingSection = sectionid
+      // if (sectionid) {
+      //   if (sectionid === 'hook') {
+      //     this.$firebaseRefs.structure.child('before').child('hook').update({
+      //       editing: this.$firebase.auth.currentUser.uid
+      //     })
+      //   } else {
+      //     this.$firebaseRefs.sections.child(sectionid).update({
+      //       editing: this.$firebase.auth.currentUser.uid
+      //     })
+      //   }
+      //   this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).child(moduleid).update({
+      //     editing: this.$firebase.auth.currentUser.uid
+      //   })
+      // } else if (moduleid === 'application' || moduleid === 'prayer') {
+      //   this.$firebaseRefs.structure.child('after').child(moduleid).update({
+      //     editing: this.$firebase.auth.currentUser.uid
+      //   })
+      // } else {
+      //   this.$firebaseRefs.modules.child(moduleid).update({
+      //     editing: this.$firebase.auth.currentUser.uid
+      //   })
+      // }
     },
     autoSaveModule (moduleid, sectionid, text) {
       console.log('autosave module', moduleid, sectionid, text)
-      if (sectionid) {
-        this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).child(moduleid).update({
-          text: text
-        })
-      } else if (moduleid === 'application' || moduleid === 'prayer') {
-        this.$firebaseRefs.structure.child('after').child(moduleid).update({
-          text: text
-        })
-      } else {
-        this.$firebaseRefs.modules.child(moduleid).update({
-          text: text
-        })
-      }
+      // if (sectionid) {
+      //   this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).child(moduleid).update({
+      //     text: text
+      //   })
+      // } else if (moduleid === 'application' || moduleid === 'prayer') {
+      //   this.$firebaseRefs.structure.child('after').child(moduleid).update({
+      //     text: text
+      //   })
+      // } else {
+      //   this.$firebaseRefs.modules.child(moduleid).update({
+      //     text: text
+      //   })
+      // }
     },
     saveModule (moduleid, sectionid, data) {
       console.log('save module', moduleid, sectionid, data)
-      var saveData = {...data}
-      saveData.editing = false
-      delete saveData['.key']
-      if (saveData.type === 'text' || saveData.type === 'bible') {
-        saveData.wordcount = this.getWordCount(saveData.text)
-        saveData.time = this.getEstTime(saveData.wordcount)
-      }
-      console.log('save data', saveData)
-      if (sectionid) {
-        this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).child(moduleid).update(saveData)
-      } else if (moduleid === 'application' || moduleid === 'prayer') {
-        this.$firebaseRefs.structure.child('after').child(moduleid).update(saveData)
-      } else {
-        this.$firebaseRefs.modules.child(moduleid).update(saveData)
-      }
-      this.editingid = ''
+      // var saveData = {...data}
+      // saveData.editing = false
+      // delete saveData['.key']
+      // if (saveData.type === 'text' || saveData.type === 'bible') {
+      //   saveData.wordcount = this.getWordCount(saveData.text)
+      //   saveData.time = this.getEstTime(saveData.wordcount)
+      // }
+      // console.log('save data', saveData)
+      // if (sectionid) {
+      //   this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).child(moduleid).update(saveData)
+      // } else if (moduleid === 'application' || moduleid === 'prayer') {
+      //   this.$firebaseRefs.structure.child('after').child(moduleid).update(saveData)
+      // } else {
+      //   this.$firebaseRefs.modules.child(moduleid).update(saveData)
+      // }
+      // this.editingid = ''
     },
     closeModule (moduleid, sectionid) {
       console.log('closing', moduleid, sectionid)
       console.log('current', this.editingid, this.editingSection)
-      if (moduleid !== undefined && typeof moduleid === 'string') {
-        if (sectionid !== undefined) {
-          this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).child(moduleid).update({
-            editing: false
-          })
-        } else if (moduleid === 'application' || moduleid === 'prayer') {
-          this.$firebaseRefs.structure.child('after').child(moduleid).update({
-            editing: false
-          })
-        } else {
-          this.$firebaseRefs.modules.child(moduleid).update({
-            editing: false
-          })
-        }
-      } else if (this.editingid !== '') {
-        if (this.editingSection !== undefined) {
-          this.$firebase.sectionModules(this.type, this.id, this.editingSection, this.$route.params.seriesid, this.$route.params.lessonid).child(this.editingid).update({
-            editing: false
-          }).then(() => {
-            this.editingid = ''
-            this.editingSection = undefined
-          })
-        } else if (this.editingid === 'application' || this.editingid === 'prayer') {
-          this.$firebaseRefs.structure.child('after').child(this.editingid).update({
-            editing: false
-          }).then(() => {
-            this.editingid = ''
-            this.editingSection = undefined
-          })
-        } else {
-          this.$firebaseRefs.modules.child(this.editingid).update({
-            editing: false
-          }).then(() => {
-            this.editingid = ''
-            this.editingSection = undefined
-          })
-        }
-      } else {
-        console.log('no current module to close')
-      }
+      // if (moduleid !== undefined && typeof moduleid === 'string') {
+      //   if (sectionid !== undefined) {
+      //     this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).child(moduleid).update({
+      //       editing: false
+      //     })
+      //   } else if (moduleid === 'application' || moduleid === 'prayer') {
+      //     this.$firebaseRefs.structure.child('after').child(moduleid).update({
+      //       editing: false
+      //     })
+      //   } else {
+      //     this.$firebaseRefs.modules.child(moduleid).update({
+      //       editing: false
+      //     })
+      //   }
+      // } else if (this.editingid !== '') {
+      //   if (this.editingSection !== undefined) {
+      //     this.$firebase.sectionModules(this.type, this.id, this.editingSection, this.$route.params.seriesid, this.$route.params.lessonid).child(this.editingid).update({
+      //       editing: false
+      //     }).then(() => {
+      //       this.editingid = ''
+      //       this.editingSection = undefined
+      //     })
+      //   } else if (this.editingid === 'application' || this.editingid === 'prayer') {
+      //     this.$firebaseRefs.structure.child('after').child(this.editingid).update({
+      //       editing: false
+      //     }).then(() => {
+      //       this.editingid = ''
+      //       this.editingSection = undefined
+      //     })
+      //   } else {
+      //     this.$firebaseRefs.modules.child(this.editingid).update({
+      //       editing: false
+      //     }).then(() => {
+      //       this.editingid = ''
+      //       this.editingSection = undefined
+      //     })
+      //   }
+      // } else {
+      //   console.log('no current module to close')
+      // }
     },
     removeModule (moduleid, sectionid) {
       console.log('remove module', moduleid, sectionid)
-      if (sectionid) {
-        this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).child(moduleid).remove()
-      } else if (moduleid === 'application' || moduleid === 'prayer') {
-        this.$firebaseRefs.structure.child('after').child(moduleid).remove()
-      } else {
-        this.$firebaseRefs.modules.child(moduleid).remove()
-      }
-      this.editingid = ''
+      // if (sectionid) {
+      //   this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).child(moduleid).remove()
+      // } else if (moduleid === 'application' || moduleid === 'prayer') {
+      //   this.$firebaseRefs.structure.child('after').child(moduleid).remove()
+      // } else {
+      //   this.$firebaseRefs.modules.child(moduleid).remove()
+      // }
+      // this.editingid = ''
     },
     addModule (sectionid) {
-      this.tempModule.data.editing = this.$firebase.auth.currentUser.uid
-      if (sectionid) {
-        this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).push(this.tempModule.data).then((newMod) => {
-          this.tempModule = false
-          this.editingid = newMod.key
-          this.editingSection = sectionid
-        })
-      } else {
-        this.tempModule.data.order = this.nextModOrder
-        this.$firebaseRefs.modules.push(this.tempModule.data).then((newMod) => {
-          this.tempModule = false
-          this.editingid = newMod.key
-          this.editingSection = undefined
-        })
-      }
+      console.log('adding module', sectionid, this.tempModule.data)
+      // this.tempModule.data.editing = this.$firebase.auth.currentUser.uid
+      // if (sectionid) {
+      //   this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).push(this.tempModule.data).then((newMod) => {
+      //     this.tempModule = false
+      //     this.editingid = newMod.key
+      //     this.editingSection = sectionid
+      //   })
+      // } else {
+      //   this.tempModule.data.order = this.nextModOrder
+      //   this.$firebaseRefs.modules.push(this.tempModule.data).then((newMod) => {
+      //     this.tempModule = false
+      //     this.editingid = newMod.key
+      //     this.editingSection = undefined
+      //   })
+      // }
     },
     cancelModule () {
       this.tempModule = false
     },
     addSection (title) {
+      console.log('adding section', title)
       var obj = {
         title: title,
         static: false,
         order: this.nextSectionOrder,
         editing: false
       }
-      this.$firebaseRefs.sections.push(obj)
+      this.$fires.sections.add(obj)
     },
     editSection (sectionid, updates) {
-      this.$firebaseRefs.sections.child(sectionid).update(updates)
+      console.log('editing section', sectionid, updates, this.sections)
+      // this.$firebaseRefs.sections.child(sectionid).update(updates)
+      for (var update in updates) {
+        this.getSectionById(sectionid)[update] = updates[update]
+      }
+      this.$fiery.update(this.getSectionById(sectionid))
     },
     removeSection (sectionid) {
-      this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).remove()
-      this.$firebaseRefs.sections.child(sectionid).remove()
+      console.log('remove section', sectionid)
+      // this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).remove()
+      // this.$firebaseRefs.sections.child(sectionid).remove()
+      this.$fiery.remove(this.getSectionById(sectionid))
     },
     getModuleById (moduleid, sectionid) {
       if (sectionid) {
@@ -387,6 +359,11 @@ export default {
           return element['.key'] === moduleid
         })
       }
+    },
+    getSectionById (sectionid) {
+      return this.sections.find((element) => {
+        return element['.key'] === sectionid
+      })
     },
     getWordCount (string) {
       return string.split(' ').length
@@ -403,49 +380,50 @@ export default {
           updatedMods[item['.key']].order = index
           delete updatedMods[item['.key']]['.key']
         })
-        this.$firebaseRefs.sections.set(updatedMods)
+        // this.$firebaseRefs.sections.set(updatedMods)
       }
     },
     onAddMod (val) {
       console.log('module added', this.id, val)
-      var newItem = {...this.modules[val.newIndex]}
-      newItem.order = val.newIndex
-      delete newItem['.key']
-      console.log('new item', newItem)
-      this.modules.splice(val.newIndex, 1)
-      console.log('new item', newItem)
-      var updatedMods = {}
-      this.modules.slice(val.newIndex).forEach((item, index) => {
-        console.log('add cycle item')
-        updatedMods[item['.key']] = {...item}
-        updatedMods[item['.key']].order = index + val.newIndex + 1
-        delete updatedMods[item['.key']]['.key']
-      })
-      this.$firebaseRefs.modules.update(updatedMods)
-      this.$firebaseRefs.modules.push(newItem)
+      // var newItem = {...this.modules[val.newIndex]}
+      // newItem.order = val.newIndex
+      // delete newItem['.key']
+      // console.log('new item', newItem)
+      // this.modules.splice(val.newIndex, 1)
+      // console.log('new item', newItem)
+      // var updatedMods = {}
+      // this.modules.slice(val.newIndex).forEach((item, index) => {
+      //   console.log('add cycle item')
+      //   updatedMods[item['.key']] = {...item}
+      //   updatedMods[item['.key']].order = index + val.newIndex + 1
+      //   delete updatedMods[item['.key']]['.key']
+      // })
+      // this.$firebaseRefs.modules.update(updatedMods)
+      // this.$firebaseRefs.modules.push(newItem)
     },
     onRemoveMod (val) {
       console.log('module removed', this.id, val)
-      var updatedMods = {}
-      this.modules.forEach((item, index) => {
-        if (index !== val.oldIndex) {
-          updatedMods[item['.key']] = {...item}
-          updatedMods[item['.key']].order = index
-          delete updatedMods[item['.key']]['.key']
-        }
-      })
-      this.$firebaseRefs.modules.set(updatedMods)
+      // var updatedMods = {}
+      // this.modules.forEach((item, index) => {
+      //   if (index !== val.oldIndex) {
+      //     updatedMods[item['.key']] = {...item}
+      //     updatedMods[item['.key']].order = index
+      //     delete updatedMods[item['.key']]['.key']
+      //   }
+      // })
+      // this.$firebaseRefs.modules.set(updatedMods)
     },
     onChangeMod (val) {
-      if (val.moved) {
-        var updatedMods = {}
-        this.modules.forEach((item, index) => {
-          updatedMods[item['.key']] = {...item}
-          updatedMods[item['.key']].order = index
-          delete updatedMods[item['.key']]['.key']
-        })
-        this.$firebaseRefs.modules.set(updatedMods)
-      }
+      console.log('module changed', this.id, val)
+      // if (val.moved) {
+      //   var updatedMods = {}
+      //   this.modules.forEach((item, index) => {
+      //     updatedMods[item['.key']] = {...item}
+      //     updatedMods[item['.key']].order = index
+      //     delete updatedMods[item['.key']]['.key']
+      //   })
+      //   this.$firebaseRefs.modules.set(updatedMods)
+      // }
     }
   }
 }

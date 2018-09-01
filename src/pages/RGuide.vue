@@ -11,7 +11,7 @@
         />
       </div>
       <div class="col-12" v-if="guideType !== ''">
-        <content-editor :key="guideType" :id="guideType" type="rguide" />
+        <content-editor :key="guideType" :id="guideType" type="guide" />
       </div>
     </div>
     <q-modal v-model="editTitle" ref="editTitleModal" content-classes="edit-title-modal">
@@ -91,12 +91,13 @@ export default {
   components: {
     ContentEditor
   },
-  // name: 'PageName',
+  name: 'LessonGuide',
+  fiery: true,
   data () {
     return {
       seriesid: this.$route.params.seriesid,
       id: this.$route.params.lessonid,
-      lesson: {},
+      lesson: this.$fiery(this.$firebase.ref('lesson', this.$route.params.lessonid, '', this.$route.params.seriesid)),
       editTitle: false,
       editMainIdea: false,
       guideType: '',
@@ -122,17 +123,6 @@ export default {
           value: 'expositional'
         }
       ]
-    }
-  },
-  firebase () {
-    return {
-      lesson: {
-        source: this.$firebase.ref('lesson', this.$route.params.lessonid, this.$route.params.seriesid),
-        asObject: true,
-        readyCallback: function (val) {
-          console.log('ran!', val)
-        }
-      }
     }
   },
   mounted () {

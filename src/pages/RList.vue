@@ -37,11 +37,12 @@ export default {
   methods: {
     init (type) {
       this.loading = true
-      this.$database.list('r' + type, (data) => {
+      this.$database.list(type, (data) => {
         console.log('data', data, this)
         this.items = data
         this.loading = false
       })
+      console.log(this._firebaseSources, this._firebaseListeners)
     },
     openItem (id) {
       console.log(id)

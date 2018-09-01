@@ -14,7 +14,7 @@ export default {
   firebase () {
     return {
       lesson: {
-        source: this.$firebase.lessonsRef(this.$route.params.seriesid).child(this.$route.params.lessonid),
+        source: this.$firebase.lessonsRef(this.$route.params.seriesid).doc(this.$route.params.lessonid),
         asObject: true,
         readyCallback: function (val) {
           console.log('ran!', val)

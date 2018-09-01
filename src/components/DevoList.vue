@@ -14,7 +14,7 @@ export default {
     ModDevo
   },
   props: ['id', 'seriesid'],
-  // name: 'ComponentName',
+  name: 'DevoList',
   firebase () {
     return {
       devos: {
@@ -31,9 +31,26 @@ export default {
       }
     }
   },
+  fiery: true,
   data () {
     return {
-      devos: [],
+      initRun: true,
+      devos: this.$fiery(this.$firebase.devosRef(this.seriesid, this.id), {
+        key: ['.key'],
+        exclude: ['.key'],
+        onSuccess: (val) => {
+          console.log('callback called')
+          if (this.initRun) {
+            var check = this.devos.find((element) => {
+              return element.editing === this.$firebase.auth.currentUser.uid
+            })
+            if (check) {
+              this.closeEdit(check['.key'])
+            }
+            this.initRun = false
+          }
+        }
+      }),
       editingId: ''
     }
   },
@@ -58,7 +75,7 @@ export default {
     startEdit (id) {
       console.log('edit', id)
       // Turn on editing for id
-      this.$firebase.devosRef(this.seriesid, this.id).child(id).update({
+      this.$firebase.devosRef(this.seriesid, this.id).doc(id).update({
         editing: this.$firebase.auth.currentUser.uid
       })
     },
@@ -71,11 +88,11 @@ export default {
           delete updatedDevo['.key']
           console.log('updated', updatedDevo)
           // Save changes
-          this.$firebase.devosRef(this.seriesid, this.id).child(id).set(updatedDevo)
+          this.$firebase.devosRef(this.seriesid, this.id).doc(id).set(updatedDevo)
           this.save = false
         } else {
           // Close without saving changes
-          this.$firebase.devosRef(this.seriesid, this.id).child(id).update({ editing: false })
+          this.$firebase.devosRef(this.seriesid, this.id).doc(id).update({ editing: false })
         }
       } else {
       }

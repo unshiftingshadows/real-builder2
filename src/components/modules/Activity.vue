@@ -59,7 +59,7 @@ export default {
   methods: {
     autoSave () {
       console.log('auto save text')
-      this.$firebase.ref(this.$parent.$parent.type, 'modules', this.$parent.$parent.id).child(this.id).update({
+      this.$firebase.ref(this.$parent.$parent.type, 'modules', this.$parent.$parent.id).doc(this.id).update({
         text: this.data.text
       })
     }

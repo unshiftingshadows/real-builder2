@@ -29,7 +29,7 @@ module.exports = function (ctx) {
       // gzip: true,
       // analyze: true,
       // extractCSS: false,
-      distDir: '../dist/message/' + ctx.modeName + '-' + ctx.themeName,
+      distDir: '../dist/builder/' + ctx.modeName + '-' + ctx.themeName,
       extendWebpack (cfg) {
         cfg.module.rules.push({
           enforce: 'pre',

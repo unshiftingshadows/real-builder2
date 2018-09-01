@@ -23,37 +23,54 @@ export default {
     ModLesson
   },
   props: ['id'],
-  // name: 'ComponentName',
-  firebase () {
+  name: 'LessonList',
+  fiery: true,
+  data () {
     return {
-      lessons: {
-        source: this.$firebase.lessonsRef(this.id).orderByChild('order'),
-        readyCallback: function (val) {
+      initRun: true,
+      editingId: '',
+      save: false,
+      drag: false,
+      lessons: this.$fiery(this.$firebase.lessonsRef(this.id).orderBy('order'), {
+        key: '.key',
+        exclude: ['.key'],
+        onSuccess: (val) => {
           console.log('callback called')
-          var check = this.lessons.find((element) => {
-            return element.editing === this.$firebase.auth.currentUser.uid
-          })
-          if (check) {
-            this.closeEdit(check['.key'])
+          if (this.initRun) {
+            var check = this.lessons.find((element) => {
+              return element.editing === this.$firebase.auth.currentUser.uid
+            })
+            if (check) {
+              this.closeEdit(check['.key'])
+            }
+            this.initRun = false
           }
         }
-      }
+      })
     }
   },
+  // firestore () {
+  //   return {
+  //     lessons: this.$firebase.lessonsRef(this.id).orderBy('order')
+  //   }
+  // },
   mounted () {
     // this.init()
+    // console.log('before bind', this.$firebase.lessonsRef(this.id))
+    // this.$binding('lessons', this.$firebase.lessonsRef(this.id).orderBy('order'))
+    //   .then((lessons) => {
+    //     console.log('callback called')
+    //     // var check = this.lessons.find((element) => {
+    //     //   return element.editing === this.$firebase.auth.currentUser.uid
+    //     // })
+    //     // if (check) {
+    //     //   this.closeEdit(check['.key'])
+    //     // }
+    //   })
   },
   beforeDestroy () {
     if (this.editingId !== '') {
       this.closeEdit(this.editingId)
-    }
-  },
-  data () {
-    return {
-      editingId: '',
-      save: false,
-      drag: false,
-      lessons: []
     }
   },
   watch: {
@@ -82,7 +99,7 @@ export default {
     startEdit (id) {
       console.log('edit', id)
       // Turn on editing for id
-      this.$firebase.lessonsRef(this.id).child(id).update({
+      this.$firebase.lessonsRef(this.id).doc(id).update({
         editing: this.$firebase.auth.currentUser.uid
       })
     },
@@ -95,11 +112,11 @@ export default {
           delete updatedLesson['.key']
           console.log('updated', updatedLesson)
           // Save changes
-          this.$firebase.lessonsRef(this.id).child(id).set(updatedLesson)
+          this.$firebase.lessonsRef(this.id).doc(id).set(updatedLesson)
           this.save = false
         } else {
           // Close without saving changes
-          this.$firebase.lessonsRef(this.id).child(id).update({ editing: false })
+          this.$firebase.lessonsRef(this.id).doc(id).update({ editing: false })
         }
       } else {
       }
@@ -116,13 +133,13 @@ export default {
       this.editingId = ''
     },
     lessonDelete (id) {
-      this.$firebase.lessonsRef(this.id).child(id).remove()
-      this.$firebase.devosRef(this.id, id).once('value').then((snap) => {
+      this.$firebase.lessonsRef(this.id).doc(id).delete()
+      this.$firebase.devosRef(this.id, id).get().then((snap) => {
         // NOTE: This will delete all subsequent devos -- any progress will be lost
         snap.forEach((devoSnap) => {
-          this.$firebase.devoContentRef(this.id, id, devoSnap.key).remove()
+          this.$firebase.devoContentRef(this.id, id, devoSnap.key).delete()
         })
-        this.$firebase.devosRef(this.id, id).remove()
+        this.$firebase.devosRef(this.id, id).delete()
         this.reorder()
       })
     },
@@ -137,16 +154,13 @@ export default {
       })
     },
     reorder () {
-      var allLessons = {}
       // Needs to update the 'order' prop of all lessons
       this.lessons.forEach((lesson, index) => {
         var updatedLesson = {...lesson}
         updatedLesson.order = index
         delete updatedLesson['.key']
-        allLessons[lesson['.key']] = updatedLesson
+        this.$fiery.update(updatedLesson, ['order'])
       })
-      console.log(allLessons)
-      this.$firebase.lessonsRef(this.id).update(allLessons)
     },
     onDrag (val) {
       this.drag = false
