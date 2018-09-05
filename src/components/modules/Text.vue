@@ -29,7 +29,7 @@
             <q-input v-model="data.title" float-label="Title" autofocus />
           </div>
           <div class="col-12">
-            <editor :text.sync="data.text" :auto-save="textSave" />
+            <text-editor :text.sync="data.text" :auto-save="textSave" />
           </div>
           <div class="col-12">
             <q-btn color="primary" @click.native="save(id, data)">Save</q-btn>
@@ -42,11 +42,11 @@
 </template>
 
 <script>
-import Editor from 'components/Editor.vue'
+import TextEditor from 'components/TextEditor.vue'
 
 export default {
   components: {
-    Editor
+    TextEditor
   },
   name: 'mod-text',
   props: [ 'id', 'data', 'edit', 'save', 'autosave', 'close', 'remove' ],
@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     textSave (text) {
-      this.autosave(this.id, text)
+      this.autosave(this.id, text, this.data.title)
     }
   }
 }

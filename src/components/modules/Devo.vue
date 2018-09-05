@@ -61,7 +61,7 @@ export default {
   watch: {
     'data': function (val) {
       if (val.bibleRefs !== undefined && val.bibleRefs !== '') {
-        this.readableRefs = val.bibleRefs.split(',').map(e => { return this.$bible.readable(e) })
+        this.readableRefs = val.bibleRefs.map(e => { return this.$bible.readable(e) })
       }
     }
   },
@@ -71,11 +71,11 @@ export default {
   methods: {
     init () {
       if (this.data.bibleRefs !== undefined && this.data.bibleRefs !== '') {
-        this.readableRefs = this.data.bibleRefs.split(',').map(e => { return this.$bible.readable(e) })
+        this.readableRefs = this.data.bibleRefs.map(e => { return this.$bible.readable(e) })
       }
     },
     addRef (newRef) {
-      this.data.bibleRefs = newRef.map(e => { return this.$bible.parse(e) }).join(',')
+      this.data.bibleRefs = newRef.map(e => { return this.$bible.parse(e) })
       this.readableRefs = newRef.map(e => { return this.$bible.readable(e) })
     }
   }

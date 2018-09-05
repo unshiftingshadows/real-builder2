@@ -45,11 +45,11 @@
 </template>
 
 <script>
-import Editor from 'components/Editor.vue'
+import TextEditor from 'components/TextEditor.vue'
 
 export default {
   components: {
-    Editor
+    TextEditor
   },
   name: 'mod-illustration',
   props: [ 'id', 'data', 'edit', 'save', 'remove', 'close' ],

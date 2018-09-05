@@ -17,7 +17,7 @@ export default {
   components: {
     VueEditor
   },
-  // name: 'ComponentName',
+  name: 'TextEditor',
   props: [ 'text', 'autoSave' ],
   data () {
     return {

@@ -1,6 +1,23 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.39 - 2018-09-04
+### Changed
+- name of Editor module to TextEditor to make more sense
+- all lists now use a separate array of ids to determine order (ie. lessonOrder, sectionOrder, moduleOrder)
+- all firestore references now use fiery-vue
+- cleaned up a lot in ContentEditor component
+
+### Fixed
+- $emit and $on functions that were pointed at the wrong place
+
+### Removed
+- personalization options for Bible translation and speaking speed
+- all settings references to Message
+
+### Issues
+- on all lists, on the first drag and drop, if it is being brought from a lower position to a higher postiion, it jumps to the top of the list after release -- still have no idea how to fix this issue, it only happens on the first time you drag and drop something
+
 ## 0.0.38 - 2018-08-31
 SPLIT!!
 The beginning of the split between Builder and Message

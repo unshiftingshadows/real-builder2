@@ -51,24 +51,11 @@
 </template>
 
 <script>
-import Editor from 'components/Editor.vue'
-
 export default {
-  components: {
-    Editor
-  },
   name: 'mod-application',
   props: [ 'id', 'data', 'edit', 'save', 'close', 'remove' ],
   data () {
     return {}
-  },
-  methods: {
-    autoSave () {
-      console.log('auto save text')
-      this.$firebase.ref(this.$parent.$parent.type, 'modules', this.$parent.$parent.id).doc(this.id).update({
-        text: this.data.text
-      })
-    }
   }
 }
 </script>

@@ -10,7 +10,8 @@ var defaultDevo = {
   title: '',
   mainIdea: '',
   bibleRefs: [],
-  notes: ''
+  notes: '',
+  sectionOrder: []
 }
 
 var defaultHook = {
@@ -19,7 +20,8 @@ var defaultHook = {
   wordcount: 0,
   time: 0,
   editing: false,
-  show: true
+  show: true,
+  moduleOrder: []
 }
 
 var defaultApplication = {
@@ -47,7 +49,7 @@ var guideTypes = ['lecture', 'discussion', 'questions', 'answers', 'expositional
 
 export default {
   // name: 'ComponentName',
-  props: [ 'nextLessonOrder', 'close', 'edit' ],
+  props: [ 'close', 'edit', 'add' ],
   data () {
     return {
       showAddMedia: false,
@@ -60,7 +62,6 @@ export default {
       this.close()
       this.$firebase.lessonsRef(this.$parent.id).add({
         editing: this.$firebase.auth.currentUser.uid,
-        order: this.nextLessonOrder,
         title: '',
         mainIdea: '',
         bibleRefs: [],
@@ -69,6 +70,7 @@ export default {
         application: ''
       }).then((newRef) => {
         console.log('newRef', newRef.id)
+        this.add(newRef.id)
         for (var x = 1; x <= 7; x++) {
           this.$firebase.devosRef(this.$parent.id, newRef.id).doc(x.toString()).set(defaultDevo)
           this.$firebase.devoContentRef(this.$parent.id, newRef.id, x.toString()).collection('structure').doc('hook').set(defaultHook)
@@ -76,9 +78,15 @@ export default {
           this.$firebase.devoContentRef(this.$parent.id, newRef.id, x.toString()).collection('structure').doc('prayer').set(defaultPrayer)
         }
         guideTypes.forEach((type) => {
+          this.$firebase.guideRef(this.$parent.id, newRef.id, type).set({
+            sectionOrder: []
+          })
           this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('hook').set(defaultHook)
           this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('application').set(defaultApplication)
           this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('prayer').set(defaultPrayer)
+        })
+        this.$firebase.reviewRef(this.$parent.id, newRef.id).set({
+          sectionOrder: []
         })
         this.$firebase.reviewRef(this.$parent.id, newRef.id).collection('structure').doc('hook').set(defaultHook)
         this.$firebase.reviewRef(this.$parent.id, newRef.id).collection('structure').doc('application').set(defaultApplication)

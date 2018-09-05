@@ -9,7 +9,7 @@
           v-model="$root.$children[0].user.prefs.theme"
           float-label="Theme"
           :options="themeOptions"
-          @input="themeChange"
+          @input="prefChange"
         />
       </div>
       <div class="col-12" v-if="$root.$children[0].user.name">
@@ -43,47 +43,6 @@
           <q-card-title>REAL Curriculum Author</q-card-title>
           <q-card-main>
             <p>You are a REAL Curriculum author.</p>
-          </q-card-main>
-        </q-card>
-      </div>
-      <div class="col-12" v-if="$root.$children[0].user.prefs">
-        <q-card>
-          <q-card-title>Other Settings</q-card-title>
-          <q-card-main>
-            <q-select
-              v-model="$root.$children[0].user.prefs.bibleTranslation"
-              float-label="Default Translation"
-              :options="translationOptions"
-              @input="prefChange"
-            />
-            <div class="row" v-if="!$root.$children[0].user.nqUser">
-              <div class="col-xs-12 col-md-6">
-                <h6>Sermon Structure</h6>
-                <q-checkbox v-model="$root.$children[0].user.prefs.osermonStructure.hook" label="Hook" @input="prefChange" /><br/>
-                <q-checkbox v-model="$root.$children[0].user.prefs.osermonStructure.application" label="Application" @input="prefChange" /><br/>
-                <q-checkbox v-model="$root.$children[0].user.prefs.osermonStructure.prayer" label="Prayer" @input="prefChange" />
-              </div>
-              <div class="col-xs-12 col-md-6">
-                <h6>Lesson Structure</h6>
-                <q-checkbox v-model="$root.$children[0].user.prefs.olessonStructure.hook" label="Hook" @input="prefChange" /><br/>
-                <q-checkbox v-model="$root.$children[0].user.prefs.olessonStructure.application" label="Application" @input="prefChange" /><br/>
-                <q-checkbox v-model="$root.$children[0].user.prefs.olessonStructure.prayer" label="Prayer" @input="prefChange" />
-              </div>
-              <div class="col-xs-12 col-md-6">
-                <h6>Content Types</h6>
-                <q-checkbox v-model="$root.$children[0].user.prefs.contentType.sermon" label="Sermons" @input="prefChange" /><br/>
-                <q-checkbox v-model="$root.$children[0].user.prefs.contentType.lesson" label="Lessons" @input="prefChange" /><br/>
-                <q-checkbox v-model="$root.$children[0].user.prefs.contentType.scratch" label="Scratch Pads" @input="prefChange" />
-              </div>
-              <div class="col-xs-12 col-md-6">
-                <h6>Media Types</h6>
-                <q-checkbox v-model="$root.$children[0].user.prefs.mediaType.quote" label="Quotes" @input="prefChange" /><br/>
-                <q-checkbox v-model="$root.$children[0].user.prefs.mediaType.image" label="Images" @input="prefChange" /><br/>
-                <q-checkbox v-model="$root.$children[0].user.prefs.mediaType.illustration" label="Illustrations" @input="prefChange" /><br/>
-                <q-checkbox v-model="$root.$children[0].user.prefs.mediaType.lyric" label="Lyrics" @input="prefChange" /><br/>
-                <q-checkbox v-model="$root.$children[0].user.prefs.mediaType.video" label="Videos" @input="prefChange" />
-              </div>
-            </div>
           </q-card-main>
         </q-card>
       </div>
@@ -163,7 +122,8 @@ import { Notify } from 'quasar'
 import { required, email, sameAs, minLength } from 'vuelidate/lib/validators'
 
 export default {
-  // name: 'PageName',
+  name: 'PageSettings',
+  fiery: true,
   data () {
     return {
       name: {
@@ -302,22 +262,27 @@ export default {
         this.editUser = false
         this.authenticate = true
       }
-      this.$firebase.user().update({
-        name: this.$root.$children[0].user.name
-      }).then(() => {
+      this.$fiery.update(this.$root.$children[0].user, ['name']).then(() => {
         this.editUser = false
       })
+      // this.$firebase.user().update({
+      //   name: this.$root.$children[0].user.name
+      // }).then(() => {
+      //   this.editUser = false
+      // })
     },
     themeChange (val) {
       console.log('change...', val)
-      this.$firebase.user().update({
-        theme: this.$root.$children[0].user.prefs.theme
-      })
+      this.$fiery.update(this.$root.$children[0].user, ['prefs'])
+      // this.$firebase.user().update({
+      //   theme: this.$root.$children[0].user.prefs.theme
+      // })
     },
     prefChange (val) {
-      this.$firebase.user().update({
-        prefs: this.$root.$children[0].user.prefs
-      })
+      this.$fiery.update(this.$root.$children[0].user, ['prefs'])
+      // this.$firebase.user().update({
+      //   prefs: this.$root.$children[0].user.prefs
+      // })
     }
   }
 }

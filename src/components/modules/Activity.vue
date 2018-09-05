@@ -32,7 +32,7 @@
             <q-input type="number" v-model="data.time" float-label="Estimated Time (in minutes)" />
           </div>
           <div class="col-12">
-            <editor :text.sync="data.text" :save="autoSave" />
+            <text-editor :text.sync="data.text" :save="textSave" />
           </div>
           <div class="col-12">
             <q-btn color="primary" @click.native="save(id, data)">Save</q-btn>
@@ -45,23 +45,20 @@
 </template>
 
 <script>
-import Editor from 'components/Editor.vue'
+import TextEditor from 'components/TextEditor.vue'
 
 export default {
   components: {
-    Editor
+    TextEditor
   },
   name: 'mod-activity',
-  props: [ 'id', 'data', 'edit', 'save', 'close', 'remove' ],
+  props: [ 'id', 'data', 'edit', 'save', 'close', 'remove', 'autosave' ],
   data () {
     return {}
   },
   methods: {
-    autoSave () {
-      console.log('auto save text')
-      this.$firebase.ref(this.$parent.$parent.type, 'modules', this.$parent.$parent.id).doc(this.id).update({
-        text: this.data.text
-      })
+    textSave (text) {
+      this.autosave(this.id, text, this.data.title)
     }
   }
 }

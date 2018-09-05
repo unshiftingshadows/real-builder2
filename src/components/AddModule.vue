@@ -53,7 +53,7 @@ export default {
         {
           label: 'Text',
           color: 'primary',
-          icon: 'fa-align-left',
+          icon: 'fas fa-align-left',
           handler: () => {
             console.log('text!')
             this.addModule('text')
@@ -62,7 +62,7 @@ export default {
         {
           label: 'Bible',
           color: 'primary',
-          icon: 'fa-book',
+          icon: 'fas fa-book',
           handler: () => {
             console.log('bible!')
             this.addModule('bible')
@@ -73,7 +73,7 @@ export default {
         actions.push({
           label: 'Activity',
           color: 'primary',
-          icon: 'fa-trophy',
+          icon: 'fas fa-trophy',
           handler: () => {
             console.log('activity!')
             this.addModule('activity')
@@ -82,7 +82,7 @@ export default {
         actions.push({
           label: 'Question',
           color: 'primary',
-          icon: 'fa-question',
+          icon: 'fas fa-question',
           handler: () => {
             console.log('question!')
             this.addModule('question')
@@ -105,7 +105,7 @@ export default {
           type: type,
           editing: false,
           slide: false,
-          order: this.nextModOrder,
+          // order: this.nextModOrder,
           time: 0,
           wordcount: 0
         }
@@ -120,14 +120,14 @@ export default {
         if (type === 'bible') {
           obj.text = ''
           obj.bibleRef = ''
-          obj.translation = this.$root.$children[0].user.prefs.bibleTranslation
+          obj.translation = 'esv'
         }
         // if (this.omediaTypes.includes(type) || this.nqmediaTypes.includes(type)) {
         //   this.edit('')
         // } else {
         //   this.edit(newRef.key, this.sectionid)
         // }
-        this.$root.$children[0].user.$emit('add-module', obj, this.sectionid)
+        this.$root.$emit('add-module', obj, this.sectionid)
       } else {
         console.error('Invalid new module type')
       }

@@ -7,7 +7,7 @@
         <q-input v-model="series.mainIdea" float-label="Main Idea" type="textarea" :max-height="150" :min-rows="3" @blur="update()" />
       </div>
       <div class="col-12">
-        <lesson-list :id="id" />
+        <lesson-list :id="id" :series="series" />
       </div>
     </div>
     <q-modal v-model="editTitle" ref="editTitleModal" content-classes="edit-title-modal">

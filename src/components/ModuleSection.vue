@@ -16,10 +16,10 @@
         {{ id === 'hook' ? 'Hook' : data.title }}
       </h5>
     </q-card-title>
-    <div class="row gutter-sm" style="padding-left: 10px; padding-right: 10px;" v-if="open">
-      <div class="col-12">
-        <draggable style="min-height: 20px;" :list="modules" @start="drag=true" @change="onChange" @add="onAdd" @remove="onRemove" ref="secModuleDrag" :options="{ group: { name: 'modules', pull: 'clone' }, ghostClass: 'sortable-ghost', handle: '.drag-handle', disabled: disabled || ($q.platform.is.mobile && !$q.platform.is.ipad) }">
-          <component v-for="mod in modules" :key="mod['.key']" v-bind:is="'mod-' + mod.type" :id="mod['.key']" :data="mod" :edit="editModule" :save="saveModule" :autosave="autoSaveModule" :close="closeModule" :remove="removeModule" class="module-card" v-bind:class="{ 'active-card': mod.editing === $firebase.auth.currentUser.uid }" />
+    <div class="row gutter-sm" style="padding-left: 10px; padding-right: 10px;" v-if="open && data.moduleOrder">
+      <div class="col-12" v-if="modules && data.moduleOrder">
+        <draggable style="min-height: 20px;" :list="data.moduleOrder" @change="changeMod" ref="secModuleDrag" :options="{ group: { name: 'modules', pull: true, put: true }, ghostClass: 'sortable-ghost', handle: '.drag-handle', disabled: disabled || ($q.platform.is.mobile && !$q.platform.is.ipad) }">
+          <component v-if="data.moduleOrder.length > 0 && Object.keys(modules).length > 0" v-for="modIndex in data.moduleOrder" :key="modIndex" v-bind:is="'mod-' + modules[modIndex].type" :id="modIndex" :data="modules[modIndex]" :edit="editModule" :save="saveModule" :autosave="autoSaveModule" :close="closeModule" :remove="removeModule" class="module-card" v-bind:class="{ 'active-card': modules[modIndex].editing === $firebase.auth.currentUser.uid }" />
         </draggable>
       </div>
       <div class="col-12" style="padding-top: 0;">
@@ -61,7 +61,6 @@ import ModQuestion from 'components/modules/Question.vue'
 import ModVideo from 'components/modules/Video.vue'
 import ModImage from 'components/modules/Image.vue'
 import ModComposition from 'components/modules/Composition.vue'
-import ModLyric from 'components/modules/Lyric.vue'
 import ModIllustration from 'components/modules/Illustration.vue'
 
 export default {
@@ -77,29 +76,23 @@ export default {
     ModVideo,
     ModImage,
     ModComposition,
-    ModLyric,
     ModIllustration
   },
   name: 'ModuleSection',
-  props: ['id', 'data', 'edit', 'remove', 'disabled', 'contentType', 'contentid'],
+  props: ['id', 'data', 'modules', 'edit', 'remove', 'disabled', 'contentType', 'contentid', 'onChange'],
   fiery: true,
   data () {
     return {
       drag: false,
       editTitle: false,
       newTitle: '',
-      open: true,
-      modules: this.$fiery(this.$firebase.sectionModules(this.contentType, this.contentid, this.id, this.$route.params.seriesid, this.$route.params.lessonid), {
-        key: '.key',
-        exclude: ['.key'],
-        query: (modules) => modules.orderBy('order')
-      })
+      open: true
     }
   },
   computed: {
     nextModOrder: function () {
-      if (this.modules) {
-        return this.modules.length
+      if (this.data.modules) {
+        return this.data.modules.length
       } else {
         return 0
       }
@@ -129,49 +122,14 @@ export default {
     removeModule (moduleid) {
       this.$emit('remove', moduleid, this.id)
     },
-    onAdd (val) {
-      console.log('module added', this.id, val)
-      var newItem = {...this.modules[val.newIndex]}
-      newItem.order = val.newIndex
-      delete newItem['.key']
-      console.log('new item', newItem)
-      this.modules.splice(val.newIndex, 1)
-      console.log('new item', newItem)
-      var updatedMods = {}
-      this.modules.slice(val.newIndex).forEach((item, index) => {
-        console.log('add cycle item')
-        updatedMods[item['.key']] = {...item}
-        updatedMods[item['.key']].order = index + val.newIndex + 1
-        delete updatedMods[item['.key']]['.key']
-      })
-      // this.$firebaseRefs.modules.update(updatedMods)
-      // this.$firebaseRefs.modules.push(newItem)
+    changeMod (val) {
+      this.onChange(val, this.id)
     },
-    onRemove (val) {
-      console.log('module removed', this.id, val)
-      var updatedMods = {}
-      this.modules.forEach((item, index) => {
-        if (index !== val.oldIndex) {
-          updatedMods[item['.key']] = {...item}
-          updatedMods[item['.key']].order = index
-          delete updatedMods[item['.key']]['.key']
-        }
-      })
-      // this.$firebaseRefs.modules.set(updatedMods)
-    },
-    onChange (val) {
-      if (val.moved) {
-        var updatedMods = {}
-        this.modules.forEach((item, index) => {
-          updatedMods[item['.key']] = {...item}
-          updatedMods[item['.key']].order = index
-          delete updatedMods[item['.key']]['.key']
-        })
-        // this.$firebaseRefs.modules.set(updatedMods)
-      }
-    },
+    // addMod (val) {
+    //   this.onAdd(val, this.id)
+    // },
     reorder () {
-      console.log('module list', this.modules)
+      console.log('module list', this.data.modules)
     }
   }
 }

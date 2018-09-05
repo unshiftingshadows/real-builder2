@@ -1,5 +1,5 @@
 <template>
-  <q-card>
+  <q-card v-if="data">
     <div v-show="!data.editing || data.editing !== $firebase.auth.currentUser.uid">
       <div class="round-borders bg-primary drag-handle" v-if="!$q.platform.is.mobile || $q.platform.is.ipad">
         <q-icon name="fas fa-arrows-alt" size="1rem" />
@@ -17,7 +17,7 @@
             </q-list>
           </q-popover>
         </q-btn>
-        <span style="font-style: bold; font-size: 2rem; vertical-align: middle;">{{ data.order+1 }}.&nbsp;&nbsp;</span>
+        <span style="font-style: bold; font-size: 2rem; vertical-align: middle;">{{ num + 1 }}.&nbsp;&nbsp;</span>
         {{ data.title }}
       </q-card-title>
       <q-card-main>
@@ -60,7 +60,7 @@
 <script>
 export default {
   name: 'mod-lesson',
-  props: [ 'id', 'data', 'edit', 'save', 'close', 'remove' ],
+  props: [ 'id', 'data', 'edit', 'save', 'close', 'remove', 'num' ],
   data () {
     return {
       readableRefs: []
@@ -69,7 +69,7 @@ export default {
   watch: {
     'data': function (val) {
       if (val.bibleRefs !== undefined && val.bibleRefs !== '') {
-        this.readableRefs = val.bibleRefs.split(',').map(e => { return this.$bible.readable(e) })
+        this.readableRefs = val.bibleRefs.map(e => { return this.$bible.readable(e) })
       }
     }
   },
@@ -78,12 +78,12 @@ export default {
   },
   methods: {
     init () {
-      if (this.data.bibleRefs !== undefined && this.data.bibleRefs !== '') {
-        this.readableRefs = this.data.bibleRefs.split(',').map(e => { return this.$bible.readable(e) })
+      if (this.data && this.data.bibleRefs !== undefined && this.data.bibleRefs !== '') {
+        this.readableRefs = this.data.bibleRefs.map(e => { return this.$bible.readable(e) })
       }
     },
     addRef (newRef) {
-      this.data.bibleRefs = newRef.map(e => { return this.$bible.parse(e) }).join(',')
+      this.data.bibleRefs = newRef.map(e => { return this.$bible.parse(e) })
       this.readableRefs = newRef.map(e => { return this.$bible.readable(e) })
     }
   }

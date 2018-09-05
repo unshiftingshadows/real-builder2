@@ -62,7 +62,7 @@
           <q-tooltip anchor="center left" self="center right" :disable="$q.platform.is.mobile">Series</q-tooltip>
         </q-item>
         <q-item-separator />
-        <q-item to="/real/settings">
+        <q-item to="/settings">
           <q-item-side icon="fas fa-cog" />
           <q-item-main label="Settings" class="on-right" />
           <q-tooltip anchor="center left" self="center right" :disable="$q.platform.is.mobile">Settings</q-tooltip>

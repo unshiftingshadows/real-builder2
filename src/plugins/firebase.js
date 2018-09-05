@@ -23,19 +23,26 @@ firestore.settings(settings)
 
 function dbref (type, selection, id, seriesid, lessonid) {
   console.log('run dbref')
+  var ref = null
   if (type === 'devo') {
-    return devo(seriesid, lessonid, id).collection(selection)
+    ref = devo(seriesid, lessonid, id)
   } else if (type === 'guide') {
-    return guide(seriesid, lessonid, id).collection(selection)
+    ref = guide(seriesid, lessonid, id)
   } else if (type === 'review') {
-    return review(seriesid, lessonid).collection(selection)
+    ref = review(seriesid, lessonid)
   } else if (type === 'series') {
-    return firestore.collection('curriculumEdit').doc(id)
+    ref = firestore.collection('curriculumEdit').doc(id)
   } else if (type === 'lesson') {
-    return lesson(seriesid, selection)
+    ref = lesson(seriesid, selection)
   } else {
     console.log('incorrect ref type?')
   }
+
+  if (selection !== '') {
+    ref = ref.collection(selection)
+  }
+
+  return ref
 }
 
 function lessons (seriesid) {
