@@ -1,6 +1,14 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.41 - 2018-09-06
+### Changed
+- devos can now be rearranged
+- running dev server uses different backend
+
+### Fixed
+- light theme main idea tab colors
+
 ## 0.0.40 - 2018-09-05
 ### Changed
 - several page and component names to remove the 'R'
