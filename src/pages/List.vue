@@ -12,7 +12,7 @@
         </q-card-main>
       </q-card>
     </div>
-    <add-content :type="'r' + type" ref="addContent" />
+    <add-content :type="type" ref="addContent" />
   </q-page>
 </template>
 
@@ -23,12 +23,13 @@ export default {
   components: {
     AddContent
   },
-  // name: 'PageName',
+  name: 'PageList',
+  fiery: true,
   data () {
     return {
       type: this.$route.params.type,
       items: [],
-      loading: false
+      loading: true
     }
   },
   mounted () {
@@ -36,13 +37,20 @@ export default {
   },
   methods: {
     init (type) {
-      this.loading = true
-      this.$database.list(type, (data) => {
-        console.log('data', data, this)
-        this.items = data
-        this.loading = false
+      // this.loading = true
+      // this.$database.list(type, (data) => {
+      //   console.log('data', data, this)
+      //   this.items = data
+      //   this.loading = false
+      // })
+      // console.log(this._firebaseSources, this._firebaseListeners)
+      this.items = this.$fiery(this.$firebase.seriesRef(), {
+        key: '_id',
+        exclude: ['_id'],
+        onSuccess: () => {
+          this.loading = false
+        }
       })
-      console.log(this._firebaseSources, this._firebaseListeners)
     },
     openItem (id) {
       console.log(id)

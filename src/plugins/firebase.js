@@ -45,6 +45,10 @@ function dbref (type, selection, id, seriesid, lessonid) {
   return ref
 }
 
+function series () {
+  return firestore.collection('curriculumEdit')
+}
+
 function lessons (seriesid) {
   // return fbapp.database().ref('builder/lessons/' + seriesid)
   return firestore.collection('curriculumEdit').doc(seriesid).collection('lessons')
@@ -117,6 +121,7 @@ export default ({ app, router, Vue }) => {
   // Vue.use(VueFirestore)
   Vue.use(FieryVue)
   Vue.prototype.$firebase = {
+    app: fbapp,
     emailCred: firebase.auth.EmailAuthProvider.credential,
     auth: fbapp.auth(),
     db: fbapp.database(),
@@ -124,6 +129,7 @@ export default ({ app, router, Vue }) => {
     ref: dbref,
     user: user,
     // imagesRef: fbapp.storage().ref('images'),
+    seriesRef: series,
     lessonsRef: lessons,
     devosRef: devos,
     devoContentRef: devo,

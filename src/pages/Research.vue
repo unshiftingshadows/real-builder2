@@ -4,14 +4,16 @@
       <div class="col-xs-12" style="height: 130px;">
       </div>
       <div class="col-12">
-        <q-btn-toggle
-          v-model="guideType"
-          toggle-color="primary"
-          :options="guideOptions"
-        />
+        <q-input type="text" v-model="searchTerms" float-label="Search for resources" clearable @keyup.enter="search" />
       </div>
-      <div class="col-12" v-if="guideType !== ''">
-        <content-editor :key="guideType" :id="guideType" type="guide" />
+      <div class="col-12">
+        <q-spinner size="4rem" color="primary" class="absolute-center" v-if="loading" />
+      </div>
+      <div class="col-12" v-if="searchTerms !== '' && searchItems.length > 0">
+        <n-q-list v-if="searchTerms !== ''" :items="searchItems" :add-module="addResource" add-button />
+      </div>
+      <div class="col-12" v-show="searchTerms === ''">
+        <resource-list :id="id" type="rlesson" />
       </div>
     </div>
     <q-modal v-model="editTitle" ref="editTitleModal" content-classes="edit-title-modal">
@@ -57,7 +59,7 @@
     <q-page-sticky position="top">
       <q-toolbar color="secondary" style="z-index: 10;">
         <q-toolbar-title>
-          {{ lesson.title }} <span class="q-headline-text text-weight-light">| Guides</span>
+          {{ lesson.title }} <span class="q-headline-text text-weight-light">| Research</span>
         </q-toolbar-title>
         <q-btn icon="fas fa-ellipsis-v" color="primary" class="float-right">
           <q-popover anchor="bottom right" self="top right">
@@ -65,7 +67,7 @@
               <q-item v-close-overlay @click.native="editTitle = true">Rename...</q-item>
               <q-item v-close-overlay @click.native="editMainIdea = true">Main Idea</q-item>
               <q-item link v-close-overlay @click.native="$router.push({ name: 'lesson', params: { seriesid: $route.params.seriesid, lessonid: id } })">Devos</q-item>
-              <q-item link v-close-overlay @click.native="$router.push({ name: 'research', params: { seriesid: $route.params.seriesid, lessonid: id } })">Research</q-item>
+              <q-item link v-close-overlay @click.native="$router.push({ name: 'guide', params: { seriesid: $route.params.seriesid, lessonid: id } })">Guides</q-item>
               <q-item link v-close-overlay @click.native="$router.push({ name: 'review', params: { seriesid: $route.params.seriesid, lessonid: id } })">Review</q-item>
               <!-- <q-item-separator /> -->
               <!-- <q-item v-close-overlay>Archive</q-item> -->
@@ -85,13 +87,17 @@
 
 <script>
 import { Notify } from 'quasar'
-import ContentEditor from 'components/ContentEditor.vue'
+import NQList from 'components/NQList.vue'
+import ResourceList from 'components/ResourceList.vue'
+import AddResearch from 'components/AddResearch.vue'
 
 export default {
   components: {
-    ContentEditor
+    NQList,
+    ResourceList,
+    AddResearch
   },
-  name: 'LessonGuide',
+  name: 'LessonResearch',
   fiery: true,
   data () {
     return {
@@ -100,54 +106,55 @@ export default {
       lesson: this.$fiery(this.$firebase.ref('lesson', this.$route.params.lessonid, '', this.$route.params.seriesid)),
       editTitle: false,
       editMainIdea: false,
-      guideType: '',
-      guideOptions: [
-        {
-          label: 'Lecture',
-          value: 'lecture'
-        },
-        {
-          label: 'Discussion',
-          value: 'discussion'
-        },
-        {
-          label: 'Questions',
-          value: 'questions'
-        },
-        {
-          label: 'Answers',
-          value: 'answers'
-        },
-        {
-          label: 'Expositional',
-          value: 'expositional'
-        }
-      ]
+      searchTerms: '',
+      searchItems: [],
+      loading: false
     }
   },
-  mounted () {
-    this.init()
+  watch: {
+    'searchTerms': function (value) {
+      if (value === '') this.searchItems = []
+    }
   },
   methods: {
-    init () {
-      // this.$database.view('series', this.id, (res) => {
-      //   this.series = res
-      // })
-    },
     update () {
       this.editTitle = false
       this.editMainIdea = false
-      var obj = {
-        title: this.lesson.title,
-        mainIdea: this.lesson.mainIdea
-      }
-      this.$firebase.ref('lesson', this.$route.params.lessonid, this.$route.params.seriesid).update(obj).then(() => {
+      // var obj = {
+      //   title: this.lesson.title,
+      //   mainIdea: this.lesson.mainIdea
+      // }
+      this.$fiery.update(this.lesson, ['title', 'mainIdea']).then(() => {
         Notify.create({
           type: 'positive',
           message: 'Lesson updated!',
           position: 'bottom-left'
         })
       })
+      // this.$firebase.ref('lesson', this.$route.params.lessonid, this.$route.params.seriesid).update(obj).then(() => {
+      //   Notify.create({
+      //     type: 'positive',
+      //     message: 'Lesson updated!',
+      //     position: 'bottom-left'
+      //   })
+      // })
+    },
+    search () {
+      if (this.searchTerms !== '') {
+        this.searchItems = []
+        this.loading = true
+        this.$database.search('nqmedia', this.searchTerms, {}, (res) => {
+          this.searchItems = res
+          this.loading = false
+        })
+      }
+    },
+    addResource (id, type) {
+      this.$database.resources('lesson', this.id, 'add', { id: id, type: type }, (res) => {
+        console.log('research', res)
+      })
+    },
+    addResearch () {
     }
   }
 }
@@ -178,26 +185,6 @@ export default {
   .main-idea-tab {
     width: 50%;
   }
-}
-
-.edit-title-modal {
-  padding: 30px;
-  width: 100%;
-}
-
-@media screen and (min-width: 1200px) {
-  .edit-title-modal {
-    min-width: 500px;
-    width: 500px;
-  }
-}
-
-.q-btn-group {
-  width: 100%;
-}
-
-.q-btn-group button {
-  width: 20%;
 }
 
 </style>

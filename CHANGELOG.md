@@ -1,6 +1,21 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.40 - 2018-09-05
+### Changed
+- several page and component names to remove the 'R'
+- updated all npm packages
+- color scheme to match new design
+- List uses firebase rather than database - circumvented database permanently
+- logo to use aws hosted image
+- login persistency is now set to LOCAL
+
+### Fixed
+- left drawer auto opening on mobile
+
+### Removed
+- some extra unused page files
+
 ## 0.0.39 - 2018-09-04
 ### Changed
 - name of Editor module to TextEditor to make more sense

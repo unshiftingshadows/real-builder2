@@ -10,9 +10,10 @@
           dense
           icon="menu"
           @click="leftDrawer = !leftDrawer"
+          v-if="$q.platform.is.mobile"
         />
         <q-toolbar-title>
-          <img src="statics/curriculum-logo_white.png" style="max-height: 40px" />
+          <img src="https://s3.amazonaws.com/realchurch-promo/logos/logo_builder_app%401x.png" style="max-height: 40px" />
         </q-toolbar-title>
         <q-btn
           flat
@@ -116,7 +117,7 @@ export default {
   name: 'LayoutReal',
   data () {
     return {
-      leftDrawer: true,
+      leftDrawer: !this.$q.platform.is.mobile,
       rightDrawer: rightPages.includes(this.$route.name) && this.$q.platform.is.desktop,
       showRightDrawer: rightPages.includes(this.$route.name),
       pageType: this.$route.name
@@ -126,7 +127,7 @@ export default {
     '$route.name': function (val) {
       console.log('page change')
       this.pageType = val
-      this.leftDrawer = true
+      this.leftDrawer = !this.$q.platform.is.mobile
       this.rightDrawer = rightPages.includes(this.$route.name) && this.$q.platform.is.desktop
       this.showRightDrawer = rightPages.includes(this.$route.name)
     }

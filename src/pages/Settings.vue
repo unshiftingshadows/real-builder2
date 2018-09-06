@@ -15,7 +15,7 @@
       <div class="col-12" v-if="$root.$children[0].user.name">
         <q-card>
           <q-card-title>
-            <q-btn color="secondary" class="float-right" style="margin-left: 10px;" @click.native="authenticate = true">Password</q-btn>
+            <q-btn color="tertiary" class="float-right" style="margin-left: 10px;" @click.native="authenticate = true">Password</q-btn>
             <q-btn color="primary" class="float-right" @click.native="openEditUser">Edit</q-btn>
             User Info
           </q-card-title>

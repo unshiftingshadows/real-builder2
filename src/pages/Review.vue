@@ -107,17 +107,24 @@ export default {
     update () {
       this.editTitle = false
       this.editMainIdea = false
-      var obj = {
-        title: this.lesson.title,
-        mainIdea: this.lesson.mainIdea
-      }
-      this.$firebase.ref('lesson', this.$route.params.lessonid, this.$route.params.seriesid).update(obj).then(() => {
+      // var obj = {
+      //   title: this.lesson.title,
+      //   mainIdea: this.lesson.mainIdea
+      // }
+      this.$fiery.update(this.lesson, ['title', 'mainIdea']).then(() => {
         Notify.create({
           type: 'positive',
           message: 'Lesson updated!',
           position: 'bottom-left'
         })
       })
+      // this.$firebase.ref('lesson', this.$route.params.lessonid, this.$route.params.seriesid).update(obj).then(() => {
+      //   Notify.create({
+      //     type: 'positive',
+      //     message: 'Lesson updated!',
+      //     position: 'bottom-left'
+      //   })
+      // })
     }
   }
 }

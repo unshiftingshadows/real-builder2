@@ -106,12 +106,15 @@ export default {
         Notify.create('Please review fields again.')
         return
       }
-      this.$firebase.auth.signInWithEmailAndPassword(this.form.email, this.form.pswd)
-        .then((user) => {
-          this.$router.replace('/')
-        })
-        .catch((err) => {
-          Notify.create(err.message)
+      this.$firebase.auth.setPersistence(this.$firebase.app.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+          this.$firebase.auth.signInWithEmailAndPassword(this.form.email, this.form.pswd)
+            .then((user) => {
+              this.$router.replace('/')
+            })
+            .catch((err) => {
+              Notify.create(err.message)
+            })
         })
     },
     forgot () {
