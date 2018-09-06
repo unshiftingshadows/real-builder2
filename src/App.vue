@@ -123,9 +123,9 @@ export default {
       switch (val) {
         case 'dark':
           document.documentElement.style.setProperty('--background-color', '#333333')
-          document.documentElement.style.setProperty('--card-color', '#444444')
+          document.documentElement.style.setProperty('--card-color', '#454545')
           document.documentElement.style.setProperty('--color', '#ffffff')
-          document.documentElement.style.setProperty('--drawer-background', '#444444')
+          document.documentElement.style.setProperty('--drawer-background', '#454545')
           document.documentElement.style.setProperty('--drawer-icons', '#ffffff')
           break
         case 'light':
@@ -133,7 +133,7 @@ export default {
           document.documentElement.style.setProperty('--card-color', '#dddddd')
           document.documentElement.style.setProperty('--color', '#333333')
           document.documentElement.style.setProperty('--drawer-background', '#dddddd')
-          document.documentElement.style.setProperty('--drawer-icons', '#444444')
+          document.documentElement.style.setProperty('--drawer-icons', '#454545')
           break
         default:
           console.error('invalid theme')
@@ -228,8 +228,13 @@ export default {
 }
 
 /* Always white text */
-.bg-primary .q-input-area, .bg-primary .q-input-target {
+.bg-primary .q-input-area, .bg-primary .q-input-target, .main-idea-tab {
   color: #ffffff;
+}
+
+/* Always dark background */
+.main-idea-tab {
+  background-color: #777;
 }
 
 /* Style all cards */

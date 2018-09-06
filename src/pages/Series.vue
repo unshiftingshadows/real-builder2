@@ -48,7 +48,7 @@
           </q-popover>
         </q-btn>
       </q-toolbar>
-      <div class="bg-faded main-idea-tab float-right" v-bind:class="{ 'main-idea-show': showMainIdea }">
+      <div class="main-idea-tab float-right" v-bind:class="{ 'main-idea-show': showMainIdea }">
         {{ series.mainIdea }}
       </div>
     </q-page-sticky>
