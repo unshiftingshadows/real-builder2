@@ -1,48 +1,35 @@
 <template>
   <div class="row gutter-sm">
     <div class="col-12">
-      <mod-devo v-for="devo in devos" :key="devo['.key']" :id="devo['.key']" :data="devo" :edit="devoEdit" :save="devoSave" :close="devoClose" class="devo-card" />
+      <draggable :list="lesson.devoOrder" @end="onDrag" ref="draggable" :options="{ ghostClass: 'sortable-ghost', handle: '.drag-handle', disabled: editingId !== '' }">
+        <mod-devo v-for="(devoid, devoIndex) in lesson.devoOrder" :key="devoid" :id="devoid" :num="devoIndex" :data="devos[devoid]" :edit="devoEdit" :save="devoSave" :close="devoClose" class="devo-card" />
+      </draggable>
     </div>
   </div>
 </template>
 
 <script>
+import Draggable from 'vuedraggable'
 import ModDevo from 'components/modules/Devo.vue'
 
 export default {
   components: {
+    Draggable,
     ModDevo
   },
-  props: ['id', 'seriesid'],
+  props: ['id', 'seriesid', 'lesson'],
   name: 'DevoList',
-  firebase () {
-    return {
-      devos: {
-        source: this.$firebase.devosRef(this.seriesid, this.id).orderByChild('order'),
-        readyCallback: function (val) {
-          console.log('callback called')
-          var check = this.devos.find((element) => {
-            return element.editing === this.$firebase.auth.currentUser.uid
-          })
-          if (check) {
-            this.closeEdit(check['.key'])
-          }
-        }
-      }
-    }
-  },
   fiery: true,
   data () {
     return {
       initRun: true,
       devos: this.$fiery(this.$firebase.devosRef(this.seriesid, this.id), {
-        key: ['.key'],
-        exclude: ['.key'],
+        map: true,
         onSuccess: (val) => {
           console.log('callback called')
           if (this.initRun) {
-            var check = this.devos.find((element) => {
-              return element.editing === this.$firebase.auth.currentUser.uid
+            var check = Object.keys(this.devos).find((element) => {
+              return this.devos[element].editing === this.$firebase.auth.currentUser.uid
             })
             if (check) {
               this.closeEdit(check['.key'])
@@ -83,7 +70,7 @@ export default {
       console.log('close', id)
       if (id) {
         if (this.save) {
-          var updatedDevo = {...this.getDevoById(id)}
+          var updatedDevo = {...this.devos[id]}
           updatedDevo.editing = false
           delete updatedDevo['.key']
           console.log('updated', updatedDevo)
@@ -108,10 +95,11 @@ export default {
     devoClose () {
       this.editingId = ''
     },
-    getDevoById (id) {
-      return this.devos.find((element) => {
-        return element['.key'] === id
-      })
+    onDrag (val) {
+      this.drag = false
+      console.log('dragged', val)
+      // this.reorder()
+      this.$fiery.update(this.lesson, ['devoOrder'])
     }
   }
 }
@@ -121,6 +109,21 @@ export default {
 
 .devo-card {
   margin-bottom: 20px;
+}
+
+.drag-handle {
+  float: left;
+  height: 60px;
+  margin-right: -5px;
+  padding-top: 20px;
+  padding-left: 4px;
+  padding-right: 4px;
+  opacity: 0.5;
+  cursor: move;
+}
+
+.drag-handle:hover {
+  opacity: .7;
 }
 
 </style>

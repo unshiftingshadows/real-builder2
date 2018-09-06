@@ -1,6 +1,9 @@
 <template>
-  <q-card>
+  <q-card v-if="data">
     <div v-show="!data.editing || data.editing !== $firebase.auth.currentUser.uid">
+      <div class="round-borders bg-primary drag-handle" v-if="!$q.platform.is.mobile || $q.platform.is.ipad">
+        <q-icon name="fas fa-arrows-alt" size="1rem" />
+      </div>
       <q-card-title>
         <q-btn v-show="!data.editing" class="float-right cursor-pointer" icon="fas fa-ellipsis-v" color="primary" size="sm">
           <q-popover anchor="bottom right" self="top right">
@@ -10,7 +13,7 @@
             </q-list>
           </q-popover>
         </q-btn>
-        <span style="font-style: bold; font-size: 1.5rem; vertical-align: middle;">Day {{ id }}:&nbsp;&nbsp;</span>
+        <span style="font-style: bold; font-size: 1.5rem; vertical-align: middle;">Day {{ num + 1 }}:&nbsp;&nbsp;</span>
         {{ data.title }}
       </q-card-title>
       <q-card-main>
@@ -52,7 +55,7 @@
 <script>
 export default {
   name: 'mod-devo',
-  props: [ 'id', 'data', 'edit', 'save', 'close' ],
+  props: [ 'id', 'data', 'num', 'edit', 'save', 'close' ],
   data () {
     return {
       readableRefs: []
@@ -60,7 +63,7 @@ export default {
   },
   watch: {
     'data': function (val) {
-      if (val.bibleRefs !== undefined && val.bibleRefs !== '') {
+      if (val && val.bibleRefs !== undefined && val.bibleRefs !== '') {
         this.readableRefs = val.bibleRefs.map(e => { return this.$bible.readable(e) })
       }
     }
@@ -70,7 +73,7 @@ export default {
   },
   methods: {
     init () {
-      if (this.data.bibleRefs !== undefined && this.data.bibleRefs !== '') {
+      if (this.data && this.data.bibleRefs !== undefined && this.data.bibleRefs !== '') {
         this.readableRefs = this.data.bibleRefs.map(e => { return this.$bible.readable(e) })
       }
     },

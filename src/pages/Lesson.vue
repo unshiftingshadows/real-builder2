@@ -4,7 +4,7 @@
       <div class="col-xs-12" style="height: 130px;">
       </div>
       <div class="col-12">
-        <devo-list :id="id" :seriesid="seriesid" />
+        <devo-list :id="id" :seriesid="seriesid" :lesson="lesson" />
       </div>
     </div>
     <q-modal v-model="editTitle" ref="editTitleModal" content-classes="edit-title-modal">

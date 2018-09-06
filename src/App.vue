@@ -156,7 +156,6 @@ export default {
   },
   methods: {
     init () {
-      console.log(window.fcWidget)
       this.newPassword = ''
       this.newPasswordCheck = ''
       this.$firebase.auth.onAuthStateChanged((user) => {

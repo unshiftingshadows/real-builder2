@@ -2,7 +2,7 @@
   <div class="row gutter-sm">
     <!-- This is where lesson lessons will be populated -->
     <div class="col-12">
-      <draggable :list="series.lessonOrder" @start="drag=true" @end="onDrag" ref="draggable" :options="{ disabled: editingId !== '' }">
+      <draggable :list="series.lessonOrder" @end="onDrag" ref="draggable" :options="{ ghostClass: 'sortable-ghost', handle: '.drag-handle', disabled: editingId !== '' }">
           <mod-lesson v-for="(lessonid, lessonIndex) in series.lessonOrder" :key="lessonid" :id="lessonid" :num="lessonIndex" :data="lessons[lessonid]" :edit="lessonEdit" :save="lessonSave" :close="lessonClose" :remove="lessonDelete" class="lesson-card" />
       </draggable>
     </div>
@@ -148,20 +148,20 @@ export default {
         return element.order === order
       })
     },
-    reorder () {
-      // Needs to update the 'order' prop of all lessons
-      // this.lessons.forEach((lesson, index) => {
-      //   var updatedLesson = {...lesson}
-      //   updatedLesson.order = index
-      //   delete updatedLesson['.key']
-      //   this.$fiery.update(updatedLesson, ['order'])
-      // })
-      this.$fiery.update(this.series, ['lessonOrder'])
-    },
+    // reorder () {
+    //   // Needs to update the 'order' prop of all lessons
+    //   // this.lessons.forEach((lesson, index) => {
+    //   //   var updatedLesson = {...lesson}
+    //   //   updatedLesson.order = index
+    //   //   delete updatedLesson['.key']
+    //   //   this.$fiery.update(updatedLesson, ['order'])
+    //   // })
+    // },
     onDrag (val) {
       this.drag = false
       console.log('dragged', val)
-      this.reorder()
+      // this.reorder()
+      this.$fiery.update(this.series, ['lessonOrder'])
     }
   }
 }
