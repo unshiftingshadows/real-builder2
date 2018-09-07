@@ -12,7 +12,6 @@ export default {
   data () {
     return {
       moduleTypes: ['activity', 'bible', 'question', 'text'],
-      omediaTypes: ['quote', 'image', 'illustration', 'lyric', 'video'],
       nqmediaTypes: ['book', 'movie', 'video', 'image', 'article', 'composition', 'document', 'discourse', 'note', 'quote', 'illustration', 'outline', 'idea'],
       showAddMedia: false,
       type: '',
@@ -100,7 +99,7 @@ export default {
       console.log('add module')
       this.close()
       // var newRef = this.$firebase.ref(this.$parent.type, 'modules', this.$parent.id).push()
-      if (this.moduleTypes.includes(type) || this.omediaTypes.includes(type) || this.nqmediaTypes.includes(type)) {
+      if (this.moduleTypes.includes(type) || this.nqmediaTypes.includes(type)) {
         var obj = {
           type: type,
           editing: false,
