@@ -1,6 +1,6 @@
 <template>
   <q-card v-if="data">
-    <div v-show="!data.editing || data.editing !== $firebase.auth.currentUser.uid">
+    <div v-if="!data.editing || data.editing !== $firebase.auth.currentUser.uid">
       <div class="round-borders bg-primary drag-handle" v-if="!$q.platform.is.mobile || $q.platform.is.ipad">
         <q-icon name="fas fa-arrows-alt" size="1rem" />
       </div>
@@ -69,6 +69,7 @@ export default {
     }
   },
   mounted () {
+    console.log('mounted')
     this.init()
   },
   methods: {

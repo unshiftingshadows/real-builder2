@@ -1,6 +1,12 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.42 - 2018-09-06
+### Fixed
+- first drag and drop on LessonList, DevoList, and ContentEditor should now work properly
+- first drag and drop on LessonList and DevoList after using the back should now work properly
+- AddSection modal resets input after submitting
+
 ## 0.0.41 - 2018-09-06
 ### Changed
 - devos can now be rearranged

@@ -2,7 +2,7 @@
   <div class="row gutter-sm">
     <!-- This is where lesson lessons will be populated -->
     <div class="col-12">
-      <draggable :list="series.lessonOrder" @end="onDrag" ref="draggable" :options="{ ghostClass: 'sortable-ghost', handle: '.drag-handle', disabled: editingId !== '' }">
+      <draggable :list="series.lessonOrder" @end="onDrag" v-if="loaded" ref="draggable" :options="{ ghostClass: 'sortable-ghost', handle: '.drag-handle', disabled: editingId !== '' }">
           <mod-lesson v-for="(lessonid, lessonIndex) in series.lessonOrder" :key="lessonid" :id="lessonid" :num="lessonIndex" :data="lessons[lessonid]" :edit="lessonEdit" :save="lessonSave" :close="lessonClose" :remove="lessonDelete" class="lesson-card" />
       </draggable>
     </div>
@@ -27,45 +27,12 @@ export default {
   fiery: true,
   data () {
     return {
+      loaded: false,
       initRun: true,
       editingId: '',
       save: false,
-      drag: false,
-      lessons: this.$fiery(this.$firebase.lessonsRef(this.id), {
-        map: true,
-        onSuccess: (val) => {
-          console.log('callback called')
-          if (this.initRun) {
-            var check = Object.keys(this.lessons).find((element) => {
-              return this.lessons[element].editing === this.$firebase.auth.currentUser.uid
-            })
-            if (check) {
-              this.closeEdit(check)
-            }
-            this.initRun = false
-          }
-        }
-      })
+      lessons: {}
     }
-  },
-  // firestore () {
-  //   return {
-  //     lessons: this.$firebase.lessonsRef(this.id).orderBy('order')
-  //   }
-  // },
-  mounted () {
-    // this.init()
-    // console.log('before bind', this.$firebase.lessonsRef(this.id))
-    // this.$binding('lessons', this.$firebase.lessonsRef(this.id).orderBy('order'))
-    //   .then((lessons) => {
-    //     console.log('callback called')
-    //     // var check = this.lessons.find((element) => {
-    //     //   return element.editing === this.$firebase.auth.currentUser.uid
-    //     // })
-    //     // if (check) {
-    //     //   this.closeEdit(check['.key'])
-    //     // }
-    //   })
   },
   beforeDestroy () {
     if (this.editingId !== '') {
@@ -87,8 +54,27 @@ export default {
       }
     }
   },
+  mounted () {
+    this.init()
+  },
   methods: {
     init () {
+      this.lessons = this.$fiery(this.$firebase.lessonsRef(this.id), {
+        map: true,
+        onSuccess: (val) => {
+          this.loaded = true
+          console.log('callback called')
+          if (this.initRun) {
+            var check = Object.keys(this.lessons).find((element) => {
+              return this.lessons[element].editing === this.$firebase.auth.currentUser.uid
+            })
+            if (check) {
+              this.closeEdit(check)
+            }
+            this.initRun = false
+          }
+        }
+      })
     },
     startEdit (id) {
       console.log('edit', id)
@@ -158,7 +144,7 @@ export default {
     //   // })
     // },
     onDrag (val) {
-      this.drag = false
+      // this.drag = false
       console.log('dragged', val)
       // this.reorder()
       this.$fiery.update(this.series, ['lessonOrder'])

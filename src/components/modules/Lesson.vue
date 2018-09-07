@@ -1,5 +1,5 @@
 <template>
-  <q-card v-if="data">
+  <q-card>
     <div v-show="!data.editing || data.editing !== $firebase.auth.currentUser.uid">
       <div class="round-borders bg-primary drag-handle" v-if="!$q.platform.is.mobile || $q.platform.is.ipad">
         <q-icon name="fas fa-arrows-alt" size="1rem" />

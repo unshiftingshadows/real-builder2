@@ -1,7 +1,7 @@
 <template>
   <div class="row gutter-sm">
     <div class="col-12">
-      <draggable :list="lesson.devoOrder" @end="onDrag" ref="draggable" :options="{ ghostClass: 'sortable-ghost', handle: '.drag-handle', disabled: editingId !== '' }">
+      <draggable :list="lesson.devoOrder" @end="onDrag" v-if="loaded" ref="draggable" :options="{ ghostClass: 'sortable-ghost', handle: '.drag-handle', disabled: editingId !== '' }">
         <mod-devo v-for="(devoid, devoIndex) in lesson.devoOrder" :key="devoid" :id="devoid" :num="devoIndex" :data="devos[devoid]" :edit="devoEdit" :save="devoSave" :close="devoClose" class="devo-card" />
       </draggable>
     </div>
@@ -22,22 +22,9 @@ export default {
   fiery: true,
   data () {
     return {
+      loaded: false,
       initRun: true,
-      devos: this.$fiery(this.$firebase.devosRef(this.seriesid, this.id), {
-        map: true,
-        onSuccess: (val) => {
-          console.log('callback called')
-          if (this.initRun) {
-            var check = Object.keys(this.devos).find((element) => {
-              return this.devos[element].editing === this.$firebase.auth.currentUser.uid
-            })
-            if (check) {
-              this.closeEdit(check['.key'])
-            }
-            this.initRun = false
-          }
-        }
-      }),
+      devos: {},
       editingId: ''
     }
   },
@@ -54,10 +41,33 @@ export default {
         console.log(this.$refs)
         this.startEdit(newid)
       }
+    },
+    'lesson.devoOrder': function (newVal, oldVal) {
+      console.log('order changed!', newVal, oldVal)
     }
+  },
+  mounted () {
+    this.init()
   },
   methods: {
     init () {
+      console.log('devolist mounted')
+      this.devos = this.$fiery(this.$firebase.devosRef(this.seriesid, this.id), {
+        map: true,
+        onSuccess: (val) => {
+          this.loaded = true
+          console.log('callback called')
+          if (this.initRun) {
+            var check = Object.keys(this.devos).find((element) => {
+              return this.devos[element].editing === this.$firebase.auth.currentUser.uid
+            })
+            if (check) {
+              this.closeEdit(check['.key'])
+            }
+            this.initRun = false
+          }
+        }
+      })
     },
     startEdit (id) {
       console.log('edit', id)
@@ -96,10 +106,11 @@ export default {
       this.editingId = ''
     },
     onDrag (val) {
-      this.drag = false
+      // this.drag = false
       console.log('dragged', val)
       // this.reorder()
       this.$fiery.update(this.lesson, ['devoOrder'])
+      // return false
     }
   }
 }

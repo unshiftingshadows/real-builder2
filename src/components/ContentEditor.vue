@@ -7,17 +7,17 @@
       </div>
       <!-- Sections -->
       <div class="col-12" v-if="document && document.sectionOrder && document.sectionOrder.length > 0 && Object.keys(sections).length > 0">
-        <draggable :list="document.sectionOrder" @start="drag=true" @change="onSectionDrag" ref="sectionDrag" :options="{ group: 'sections', disabled: $q.platform.is.mobile }">
+        <draggable :list="document.sectionOrder" @start="drag=true" @change="onSectionDrag" v-if="loaded" ref="sectionDrag" :options="{ group: 'sections', disabled: $q.platform.is.mobile }">
           <module-section v-for="orderIndex in document.sectionOrder" :key="orderIndex" :id="orderIndex" :data="sections[orderIndex]" :modules="modules" :onChange="onChangeMod" :content-type="type" :contentid="id" :edit="editSection" :remove="removeSection" @edit="editModule" @save="saveModule" @autosave="autoSaveModule" @close="closeModule" @remove="removeModule" class="section-card" />
         </draggable>
       </div>
       <add-section :add-section="addSection" :close="closeModule" />
       <!-- Modules -->
-      <div class="col-12" v-if="modules.length > 0">
+      <!-- <div class="col-12" v-if="modules.length > 0">
         <draggable :list="modules" @start="drag=true" ref="indModuleDrag" :options="{ group: { name: 'modules', pull: 'clone' }, handle: '.drag-handle', disabled: editingid !== '' || ($q.platform.is.mobile && !$q.platform.is.ipad) }">
           <component v-for="mod in modules" :key="mod['.key']" v-bind:is="'mod-' + mod.type" :id="mod['.key']" :data="mod" class="module-card" :edit="editModule" :save="saveModule" :autosave="autoSaveModule" :close="closeModule" :remove="removeModule" v-bind:class="{ 'active-card': mod.editing === $firebase.auth.currentUser.uid }" />
         </draggable>
-      </div>
+      </div> -->
       <!-- After -->
       <div class="col-12">
         <mod-repeated-thought v-if="type === 'guide'" :seriesid="$route.params.seriesid" :lessonid="$route.params.lessonid" :edit="editModule" :save="saveModule" :autosave="autoSaveModule" :close="closeModule" :remove="removeModule" class="module-card" />
@@ -96,6 +96,7 @@ export default {
   fiery: true,
   data () {
     return {
+      loaded: false,
       initRun: true,
       drag: false,
       editingid: '',
@@ -112,7 +113,10 @@ export default {
         map: true
       }),
       modules: this.$fiery(this.$firebase.ref(this.type, 'modules', this.id, this.$route.params.seriesid, this.$route.params.lessonid), {
-        map: true
+        map: true,
+        onSuccess: () => {
+          this.loaded = true
+        }
       }),
       versions: this.$fiery(this.$firebase.ref(this.type, 'versions', this.id, this.$route.params.seriesid, this.$route.params.lessonid))
     }
