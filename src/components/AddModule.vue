@@ -68,7 +68,7 @@ export default {
           }
         }
       ]
-      if (this.contentType === 'olesson' || this.contentType === 'devo' || this.contentType === 'guide') {
+      if (this.contentType === 'devo' || this.contentType === 'guide') {
         actions.push({
           label: 'Activity',
           color: 'primary',
