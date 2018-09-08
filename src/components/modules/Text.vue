@@ -8,8 +8,8 @@
         <q-btn v-show="!data.editing" class="float-right cursor-pointer" icon="fas fa-ellipsis-v" color="primary" size="sm">
           <q-popover anchor="bottom right" self="top right">
             <q-list>
-              <q-item link v-close-overlay @click.native="edit(id)">Edit</q-item>
-              <q-item link @click.native="remove(id)">Delete</q-item>
+              <q-item link v-close-overlay @click.native="modMethods.edit(id)">Edit</q-item>
+              <q-item link @click.native="modMethods.remove(id)">Delete</q-item>
             </q-list>
           </q-popover>
         </q-btn>
@@ -26,14 +26,14 @@
         <div class="row gutter-sm">
           <div class="col-12">
             <q-btn class="float-right cursor-pointer" icon="fas fa-times" size="sm" @click.native="close" />
-            <q-input v-model="data.title" float-label="Title" autofocus />
+            <q-input v-model="data.title" float-label="Title" autofocus @keydown.tab.prevent="focusEditor" />
           </div>
           <div class="col-12">
-            <text-editor :text.sync="data.text" :auto-save="textSave" />
+            <text-editor ref="editor" :text.sync="data.text" :auto-save="textSave" :save-close="saveClose" />
           </div>
           <div class="col-12">
-            <q-btn color="primary" @click.native="save(id, data)">Save</q-btn>
-            <q-btn outline color="negative" @click.native="remove(id)">Delete</q-btn>
+            <q-btn color="primary" @click.native="modMethods.save(id, data)">Save</q-btn>
+            <q-btn outline color="negative" @click.native="modMethods.remove(id)">Delete</q-btn>
           </div>
         </div>
       </q-card-main>
@@ -49,13 +49,21 @@ export default {
     TextEditor
   },
   name: 'mod-text',
-  props: [ 'id', 'data', 'edit', 'save', 'autosave', 'close', 'remove' ],
+  props: [ 'id', 'data', 'modMethods', 'modOptions' ],
   data () {
     return {}
   },
   methods: {
     textSave (text) {
-      this.autosave(this.id, text, this.data.title)
+      this.modMethods.autosave(this.id, text, this.data.title)
+    },
+    focusEditor () {
+      console.log('focus editor')
+      this.$refs.editor.focus()
+    },
+    saveClose () {
+      console.log('save close')
+      this.modMethods.save(this.id, this.data)
     }
   }
 }

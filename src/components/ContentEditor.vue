@@ -56,7 +56,6 @@
 import Draggable from 'vuedraggable'
 import AddModule from 'components/AddModule.vue'
 import AddSection from 'components/AddSection.vue'
-import ModSection from 'components/modules/Section.vue'
 import ModQuote from 'components/modules/Quote.vue'
 import ModText from 'components/modules/Text.vue'
 import ModBible from 'components/modules/Bible.vue'
@@ -76,7 +75,6 @@ export default {
     Draggable,
     AddModule,
     AddSection,
-    ModSection,
     ModQuote,
     ModText,
     ModBible,
@@ -159,7 +157,6 @@ export default {
   },
   methods: {
     init () {
-      console.log('contentEditor mounted', this, this.$fires)
     },
     editModule (moduleid, sectionid) {
       console.log('edit module', moduleid, sectionid)
@@ -360,7 +357,11 @@ export default {
       this.$fiery.remove(this.sections[sectionid])
     },
     getWordCount (string) {
-      return string.split(' ').length
+      if (string !== undefined) {
+        return string.split(' ').length
+      } else {
+        return 0
+      }
     },
     getEstTime (wordcount) {
       return Math.ceil(wordcount / 120)
