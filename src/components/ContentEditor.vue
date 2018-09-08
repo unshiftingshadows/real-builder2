@@ -56,15 +56,15 @@
 import Draggable from 'vuedraggable'
 import AddModule from 'components/AddModule.vue'
 import AddSection from 'components/AddSection.vue'
-import ModQuote from 'components/modules/Quote.vue'
-import ModText from 'components/modules/Text.vue'
-import ModBible from 'components/modules/Bible.vue'
-import ModActivity from 'components/modules/Activity.vue'
-import ModQuestion from 'components/modules/Question.vue'
-import ModVideo from 'components/modules/Video.vue'
-import ModImage from 'components/modules/Image.vue'
-import ModComposition from 'components/modules/Composition.vue'
-import ModIllustration from 'components/modules/Illustration.vue'
+// import ModQuote from 'components/modules/Quote.vue'
+// import ModText from 'components/modules/Text.vue'
+// import ModBible from 'components/modules/Bible.vue'
+// import ModActivity from 'components/modules/Activity.vue'
+// import ModQuestion from 'components/modules/Question.vue'
+// import ModVideo from 'components/modules/Video.vue'
+// import ModImage from 'components/modules/Image.vue'
+// import ModComposition from 'components/modules/Composition.vue'
+// import ModIllustration from 'components/modules/Illustration.vue'
 import ModApplication from 'components/modules/Application.vue'
 import ModPrayer from 'components/modules/Prayer.vue'
 import ModRepeatedThought from 'components/modules/RepeatedThought.vue'
@@ -75,15 +75,15 @@ export default {
     Draggable,
     AddModule,
     AddSection,
-    ModQuote,
-    ModText,
-    ModBible,
-    ModActivity,
-    ModQuestion,
-    ModVideo,
-    ModImage,
-    ModComposition,
-    ModIllustration,
+    // ModQuote,
+    // ModText,
+    // ModBible,
+    // ModActivity,
+    // ModQuestion,
+    // ModVideo,
+    // ModImage,
+    // ModComposition,
+    // ModIllustration,
     ModApplication,
     ModPrayer,
     ModRepeatedThought,
