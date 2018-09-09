@@ -1,7 +1,10 @@
 <template>
   <div class="row gutter-sm">
-    <div class="col-12">
-      <draggable :list="lesson.devoOrder" @end="onDrag" v-if="loaded" ref="draggable" :options="{ ghostClass: 'sortable-ghost', handle: '.drag-handle', disabled: editingId !== '' }">
+    <div v-if="loading">
+      <q-spinner color="primary" class="absolute-center" size="3rem" />
+    </div>
+    <div v-if="!loading" class="col-12">
+      <draggable :list="lesson.devoOrder" @end="onDrag" ref="draggable" :options="{ ghostClass: 'sortable-ghost', handle: '.drag-handle', disabled: editingId !== '' }">
         <mod-devo v-for="(devoid, devoIndex) in lesson.devoOrder" :key="devoid" :id="devoid" :num="devoIndex" :data="devos[devoid]" :edit="devoEdit" :save="devoSave" :close="devoClose" class="devo-card" />
       </draggable>
     </div>
@@ -22,7 +25,7 @@ export default {
   fiery: true,
   data () {
     return {
-      loaded: false,
+      loading: true,
       initRun: true,
       devos: {},
       editingId: ''
@@ -55,7 +58,7 @@ export default {
       this.devos = this.$fiery(this.$firebase.devosRef(this.seriesid, this.id), {
         map: true,
         onSuccess: (val) => {
-          this.loaded = true
+          this.loading = false
           console.log('callback called')
           if (this.initRun) {
             var check = Object.keys(this.devos).find((element) => {

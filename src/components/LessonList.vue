@@ -1,8 +1,11 @@
 <template>
   <div class="row gutter-sm">
+    <div v-if="loading">
+      <q-spinner color="primary" class="absolute-center" size="3rem" />
+    </div>
     <!-- This is where lesson lessons will be populated -->
-    <div class="col-12">
-      <draggable :list="series.lessonOrder" @end="onDrag" v-if="loaded" ref="draggable" :options="{ ghostClass: 'sortable-ghost', handle: '.drag-handle', disabled: editingId !== '' }">
+    <div v-if="!loading" class="col-12">
+      <draggable :list="series.lessonOrder" @end="onDrag" ref="draggable" :options="{ ghostClass: 'sortable-ghost', handle: '.drag-handle', disabled: editingId !== '' }">
           <mod-lesson v-for="(lessonid, lessonIndex) in series.lessonOrder" :key="lessonid" :id="lessonid" :num="lessonIndex" :data="lessons[lessonid]" :edit="lessonEdit" :save="lessonSave" :close="lessonClose" :remove="lessonDelete" class="lesson-card" />
       </draggable>
     </div>
@@ -27,7 +30,7 @@ export default {
   fiery: true,
   data () {
     return {
-      loaded: false,
+      loading: true,
       initRun: true,
       editingId: '',
       save: false,
@@ -62,7 +65,7 @@ export default {
       this.lessons = this.$fiery(this.$firebase.lessonsRef(this.id), {
         map: true,
         onSuccess: (val) => {
-          this.loaded = true
+          this.loading = false
           console.log('callback called')
           if (this.initRun) {
             var check = Object.keys(this.lessons).find((element) => {

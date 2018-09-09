@@ -1,13 +1,16 @@
 <template>
   <div>
-    <div class="row gutter-sm">
+    <div v-if="loading">
+      <q-spinner color="primary" class="absolute-center" size="3rem" />
+    </div>
+    <div v-if="!loading" class="row gutter-sm">
       <!-- Before -->
       <div class="col-12" v-if="structure.hook && structure.hook.show">
         <module-section id="hook" :data="structure.hook" :modules="modules" :onChange="onChangeMod" :content-type="type" :contentid="id" @edit="editModule" @save="saveModule" @autosave="autoSaveModule" @close="closeModule" @remove="removeModule" class="section-card" />
       </div>
       <!-- Sections -->
       <div class="col-12" v-if="document && document.sectionOrder && document.sectionOrder.length > 0 && Object.keys(sections).length > 0">
-        <draggable :list="document.sectionOrder" @start="drag=true" @change="onSectionDrag" v-if="loaded" ref="sectionDrag" :options="{ group: 'sections', disabled: $q.platform.is.mobile }">
+        <draggable :list="document.sectionOrder" @start="drag=true" @change="onSectionDrag" ref="sectionDrag" :options="{ group: 'sections', disabled: $q.platform.is.mobile }">
           <module-section v-for="orderIndex in document.sectionOrder" :key="orderIndex" :id="orderIndex" :data="sections[orderIndex]" :modules="modules" :onChange="onChangeMod" :content-type="type" :contentid="id" :edit="editSection" :remove="removeSection" @edit="editModule" @save="saveModule" @autosave="autoSaveModule" @close="closeModule" @remove="removeModule" class="section-card" />
         </draggable>
       </div>
@@ -94,7 +97,7 @@ export default {
   fiery: true,
   data () {
     return {
-      loaded: false,
+      loading: true,
       initRun: true,
       drag: false,
       editingid: '',
@@ -113,7 +116,7 @@ export default {
       modules: this.$fiery(this.$firebase.ref(this.type, 'modules', this.id, this.$route.params.seriesid, this.$route.params.lessonid), {
         map: true,
         onSuccess: () => {
-          this.loaded = true
+          this.loading = false
         }
       }),
       versions: this.$fiery(this.$firebase.ref(this.type, 'versions', this.id, this.$route.params.seriesid, this.$route.params.lessonid))
