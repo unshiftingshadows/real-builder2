@@ -27,13 +27,10 @@
         <div class="row gutter-sm">
           <div class="col-12">
             <q-btn link class="float-right cursor-pointer" icon="fas fa-times" size="sm" @click.native="close" />
-            <q-input v-model="data.title" float-label="Title" />
+            <q-input v-model="data.title" float-label="Title" @keydown.enter.prevent="enterPressed" autofocus />
           </div>
           <div class="col-12">
-            <q-input v-model="data.mainIdea" float-label="Main Idea" type="textarea" :max-height="150" :min-rows="3" />
-          </div>
-          <div class="col-12">
-            <q-input v-model="data.notes" float-label="Notes" type="textarea" :max-height="150" :min-rows="3" />
+            <q-input v-model="data.mainIdea" float-label="Main Idea" type="textarea" :max-height="150" :min-rows="3" @keydown.enter.prevent="enterPressed" />
           </div>
           <div class="col-12">
             <q-chips-input
@@ -41,7 +38,11 @@
               v-model="readableRefs"
               float-label="Bible References"
               @input="addRef"
+              @keydown.enter.prevent="enterPressed"
             />
+          </div>
+          <div class="col-12">
+            <q-input v-model="data.notes" float-label="Notes" type="textarea" :max-height="150" :min-rows="3" @keydown.enter.prevent="enterPressed" />
           </div>
           <div class="col-12">
             <q-btn color="primary" @click.native="save(id, data)">Save</q-btn>
@@ -81,6 +82,15 @@ export default {
     addRef (newRef) {
       this.data.bibleRefs = newRef.map(e => { return this.$bible.parse(e) })
       this.readableRefs = newRef.map(e => { return this.$bible.readable(e) })
+    },
+    enterPressed (e) {
+      if (e.shiftKey && e.metaKey) {
+        // TODO: Save close and open next
+        console.log('save, close, and open next')
+      } else if (e.metaKey) {
+        console.log('just save and close')
+        this.save()
+      }
     }
   }
 }
