@@ -1,7 +1,7 @@
 <template>
   <div>
     <vue-editor
-      ref="editor"
+      ref="vueeditor"
       :editorToolbar="toolbar"
       :editorOptions="options"
       :value="text"
@@ -52,14 +52,13 @@ export default {
     }
   },
   mounted () {
-    console.log('editor', this.$refs.editor)
-    this.$refs.editor.quill.on('selection-change', (range, oldRange, source) => {
+    this.$refs.vueeditor.quill.on('selection-change', (range, oldRange, source) => {
       if (range === null && oldRange !== null) {
         this.editCount = 0
         this.save()
       }
     })
-    this.$refs.editor.quill.on('text-change', (delta, oldDelta, source) => {
+    this.$refs.vueeditor.quill.on('text-change', (delta, oldDelta, source) => {
       if (this.editCount >= 100) {
         this.editCount = 0
         this.save()
@@ -80,7 +79,7 @@ export default {
       })
     },
     focus () {
-      this.$refs.editor.quill.focus()
+      this.$refs.vueeditor.quill.setSelection(this.$refs.vueeditor.quill.getLength(), 0)
     }
   }
 }

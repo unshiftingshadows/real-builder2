@@ -18,7 +18,7 @@
         <!-- Time Notice -->
         <span class="float-right" style="font-size: .8rem; vertical-align: top; line-height: 1rem;">{{ data.time }} minutes&nbsp;&nbsp;&nbsp;</span>
         <!-- Mod Icon -->
-        <q-icon name="fas fa-align-left" color="primary" size="2rem" />&nbsp;&nbsp;&nbsp;
+        <q-icon :name="typeInfo[data.type].icon" color="primary" size="2rem" />&nbsp;&nbsp;&nbsp;
         {{ data.title }}
       </q-card-title>
       <q-card-main>
@@ -33,11 +33,11 @@
           <div class="col-12">
             <q-btn class="float-right cursor-pointer" icon="fas fa-times" size="sm" @click.native="modMethods.close" :disabled="loading" />
             <q-input
-              v-model="data[inputField[data.type].ref]"
-              :float-label="inputField[data.type].label"
+              v-model="data[typeInfo[data.type].ref]"
+              :float-label="typeInfo[data.type].label"
               autofocus
-              @keydown.tab.prevent="data.type === 'text' || data.type === 'activity' ? focusEditor : null"
-              @keydown.enter.prevent="data.type === 'bible' ? preSave() : null" />
+              @keydown="keydown"
+            />
           </div>
           <!-- Time Estimation -->
           <div class="col-12" v-if="data.type === 'activity' || data.type === 'question'">
@@ -85,26 +85,26 @@ export default {
     return {
       loading: false,
       types: [ 'text', 'bible', 'activity', 'question' ],
-      inputField: {
+      typeInfo: {
         text: {
           label: 'Title',
-          value: () => { return this.data.title },
-          ref: 'title'
+          ref: 'title',
+          icon: 'fas fa-align-left'
         },
         activity: {
           label: 'Title',
-          value: () => { return this.data.title },
-          ref: 'title'
+          ref: 'title',
+          icon: 'fas fa-trophy'
         },
         question: {
           label: 'Question',
-          value: () => { return this.data.text },
-          ref: 'text'
+          ref: 'text',
+          icon: 'fas fa-question'
         },
         bible: {
           label: 'Bible Ref',
-          value: () => { return this.data.bibleRef },
-          ref: 'bibleRef'
+          ref: 'bibleRef',
+          icon: 'fas fa-book'
         }
       },
       translation: this.data.translation,
@@ -149,6 +149,26 @@ export default {
     }
   },
   methods: {
+    keydown (e) {
+      switch (e.keyCode) {
+        case 9:
+          if (this.data.type === 'text' || this.data.type === 'activity') {
+            this.focusEditor()
+            e.preventDefault()
+          }
+          break
+        case 13:
+          if (this.data.type === 'bible') {
+            this.preSave()
+            e.preventDefault()
+          } else if (e.metaKey) {
+            this.preSave()
+            e.preventDefault()
+          }
+          break
+        default:
+      }
+    },
     preSave () {
       if (this.data.type === 'bible') {
         this.loading = true
@@ -170,12 +190,10 @@ export default {
       this.modMethods.autosave(this.id, text, this.data.title)
     },
     focusEditor () {
-      console.log('focus editor')
       this.$refs.editor.focus()
     },
     saveClose () {
-      console.log('save close')
-      this.modMethods.save(this.id, this.data)
+      this.preSave(this.id, this.data)
     }
   }
 }
