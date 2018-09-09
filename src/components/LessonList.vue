@@ -106,10 +106,15 @@ export default {
     lessonEdit (id) {
       this.editingId = id
     },
-    lessonSave (id) {
+    lessonSave (id, nextLesson) {
       console.log('save')
       this.save = true
       this.editingId = ''
+      if (nextLesson && nextLesson < this.series.lessonOrder.length) {
+        this.lessonEdit(this.series.lessonOrder[nextLesson])
+      } else if (nextLesson && nextLesson === this.series.lessonOrder.length) {
+        // TODO: Add a new lesson -- need a cloud function for this
+      }
     },
     lessonClose () {
       this.editingId = ''

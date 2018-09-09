@@ -49,7 +49,7 @@
             <q-input v-model="data.notes" float-label="Notes" type="textarea" :max-height="150" :min-rows="3" @keydown.enter.prevent="enterPressed" />
           </div>
           <div class="col-12">
-            <q-btn color="primary" @click.native="save(id, data)">Save</q-btn>
+            <q-btn color="primary" @click.native="save(id, null)">Save</q-btn>
             <q-btn outline color="negative" @click.native="remove(id)">Delete</q-btn>
           </div>
         </div>
@@ -91,13 +91,16 @@ export default {
       if (e.shiftKey && e.metaKey) {
         // TODO: Save close and open next
         console.log('save, close, and open next')
+        this.save(this.id, this.num + 1)
       } else if (e.metaKey) {
         console.log('just save and close')
-        this.save()
+        this.save(this.id, null)
       }
     },
     clicked (e) {
-      this.edit(this.id)
+      if (e.srcElement.nodeName !== 'I' && e.srcElement.nodeName !== 'BUTTON') {
+        this.edit(this.id)
+      }
     }
   }
 }

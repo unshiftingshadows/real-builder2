@@ -100,10 +100,13 @@ export default {
     devoEdit (id) {
       this.editingId = id
     },
-    devoSave (id) {
+    devoSave (id, nextDevo) {
       console.log('save')
       this.save = true
       this.editingId = ''
+      if (nextDevo && nextDevo < this.lesson.devoOrder.length) {
+        this.devoEdit(this.lesson.devoOrder[nextDevo])
+      }
     },
     devoClose () {
       this.editingId = ''
