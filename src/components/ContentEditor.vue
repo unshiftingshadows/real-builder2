@@ -177,9 +177,6 @@ export default {
           this.sections[sectionid].editing = this.$firebase.auth.currentUser.uid
           this.$fiery.update(this.sections[sectionid], ['editing'])
         }
-        // this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).doc(moduleid).update({
-        //   editing: this.$firebase.auth.currentUser.uid
-        // })
         this.modules[moduleid].editing = this.$firebase.auth.currentUser.uid
         this.$fiery.update(this.modules[moduleid], ['editing'])
       } else if (moduleid === 'application' || moduleid === 'prayer') {
@@ -192,15 +189,6 @@ export default {
     },
     autoSaveModule (moduleid, sectionid, text, title) {
       console.log('autosave module', moduleid, sectionid, text, title)
-      // if (sectionid) {
-      //   var obj = {
-      //     text: text
-      //   }
-      //   if (title !== undefined) {
-      //     obj.title = title
-      //   }
-      //   this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).doc(moduleid).update(obj)
-      // } else
       if (moduleid === 'application' || moduleid === 'prayer') {
         this.structure[moduleid].text = text
         if (title !== undefined) {
@@ -217,19 +205,12 @@ export default {
     },
     saveModule (moduleid, sectionid, data) {
       console.log('save module', moduleid, sectionid, data)
-      // var saveData = {...data}
-      // saveData.editing = false
-      // delete saveData['.key']
-      // delete saveData['.uid']
       data.editing = false
       if (data.type === 'text' || data.type === 'bible') {
         data.wordcount = this.getWordCount(data.text)
         data.time = this.getEstTime(data.wordcount)
       }
       console.log('save data', data)
-      // if (sectionid) {
-      //   this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).doc(moduleid).update(saveData)
-      // } else
       if (moduleid === 'application' || moduleid === 'prayer') {
         this.$fiery.update(data)
       } else {
@@ -241,11 +222,6 @@ export default {
       console.log('closing', moduleid, sectionid)
       console.log('current', this.editingid, this.editingSection)
       if (moduleid !== undefined && typeof moduleid === 'string') {
-        // if (sectionid !== undefined) {
-        //   this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).doc(moduleid).update({
-        //     editing: false
-        //   })
-        // } else
         if (moduleid === 'application' || moduleid === 'prayer') {
           this.structure[moduleid].editing = false
           this.$fiery.update(this.structure[moduleid], ['editing'])
@@ -254,14 +230,6 @@ export default {
           this.$fiery.update(this.modules[moduleid], ['editing'])
         }
       } else if (this.editingid !== '') {
-        // if (this.editingSection !== undefined) {
-        //   this.$firebase.sectionModules(this.type, this.id, this.editingSection, this.$route.params.seriesid, this.$route.params.lessonid).doc(this.editingid).update({
-        //     editing: false
-        //   }).then(() => {
-        //     this.editingid = ''
-        //     this.editingSection = undefined
-        //   })
-        // } else
         if (this.editingid === 'application' || this.editingid === 'prayer') {
           this.structure[this.editingid].editing = false
           this.$fiery.update(this.structure[this.editingid], ['editing'])
@@ -279,15 +247,6 @@ export default {
     },
     removeModule (moduleid, sectionid) {
       console.log('remove module', moduleid, sectionid)
-      // if (sectionid) {
-      //   this.sections[sectionid].moduleOrder.splice(this.sections[sectionid].moduleOrder.indexOf(moduleid), 1)
-      //   this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).doc(moduleid).delete()
-      // } else
-      // if (moduleid === 'application' || moduleid === 'prayer') {
-      //   this.$fiery.remove(this.structure[moduleid])
-      // } else {
-      //   this.$fiery.remove(this.modules[moduleid])
-      // }
       if (sectionid !== '') {
         if (sectionid === 'hook') {
           this.structure.hook.moduleOrder.splice(this.structure.hook.moduleOrder.indexOf(moduleid), 1)
@@ -305,7 +264,6 @@ export default {
       this.tempModule.data.editing = this.$firebase.auth.currentUser.uid
       if (sectionid) {
         this.$fires.modules.add(this.tempModule.data).then((newMod) => {
-        // this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).add(this.tempModule.data).then((newMod) => {
           console.log('saved')
           this.tempModule = false
           this.editingid = newMod.id
@@ -320,12 +278,6 @@ export default {
         })
       } else {
         console.error('cannot add module to unknown section')
-        // this.tempModule.data.order = this.nextModOrder
-        // this.$fires.modules.add(this.tempModule.data).then((newMod) => {
-        //   this.tempModule = false
-        //   this.editingid = newMod.id
-        //   this.editingSection = undefined
-        // })
       }
     },
     cancelModule () {
@@ -352,7 +304,7 @@ export default {
       this.$fiery.update(this.sections[sectionid])
     },
     removeSection (sectionid) {
-      // NOTE: This does not remove all subcollections for some reason...modules still exist, even though structure is gone
+      // * NOTE: This does not remove all subcollections for some reason...modules still exist, even though structure is gone
       console.log('remove section', sectionid)
       // this.$fiery.remove(this.getSectionById(sectionid))
       this.document.sectionOrder.splice(this.document.sectionOrder.indexOf(sectionid), 1)
@@ -390,46 +342,6 @@ export default {
           console.log('saved')
         })
       }
-      // if (val.moved) {
-      //   console.log('module moved')
-      //   // if (val.moved.newIndex > val.moved.oldIndex) {
-      //   //   console.log('newIndex greater')
-      //   //   this.sections[sectionid].moduleOrder.splice(val.moved.newIndex + 1, 0, val.moved.element.module)
-      //   //   this.sections[sectionid].moduleOrder.splice(val.moved.oldIndex, 1)
-      //   // } else {
-      //   //   console.log('newIndex lesser')
-      //   //   this.sections[sectionid].moduleOrder.splice(val.moved.newIndex, 0, val.moved.element.module)
-      //   //   this.sections[sectionid].moduleOrder.splice(val.moved.oldIndex + 1, 1)
-      //   // }
-      //   // this.$fiery.update(this.sections[sectionid], ['moduleOrder']).then(() => {
-      //   //   console.log('saved')
-      //   // })
-      // } else if (val.added) {
-      //   console.log('module added')
-      //   // this.$fiery.ref(this.sections[sectionid], 'modules').doc(val.added.element.module)
-      //   // // this.$firebase.sectionModules(this.type, this.id, sectionid, this.$route.params.seriesid, this.$route.params.lessonid).doc(val.added.element.module)
-      //   //   .set(this.sections[val.added.element.section].modules[val.added.element.module])
-      //   //   .then(() => {
-      //   //     this.sections[sectionid].moduleOrder.splice(val.added.newIndex, 0, val.added.element.module)
-      //   //     this.$fiery.update(this.sections[sectionid], ['moduleOrder']).then(() => {
-      //   //       console.log('saved')
-      //   //     })
-      //   //   })
-      //   // this.$fiery.ref(this.sections[sectionid], 'modules').add(val.added.element.data)
-      //   //   .then((newRef) => {
-      //   //     this.sections[sectionid].moduleOrder.splice(val.added.newIndex, 0, newRef.id)
-      //   //     this.$fiery.update(this.sections[sectionid], ['moduleOrder']).then(() => {
-      //   //       console.log('saved')
-      //   //     })
-      //   //   })
-      // } else if (val.removed) {
-      //   console.log('module removed')
-      //   // this.sections[sectionid].moduleOrder.splice(val.removed.oldIndex, 1)
-      //   // this.$fiery.remove(this.sections[sectionid].modules[val.removed.element.module])
-      //   // this.$fiery.update(this.sections[sectionid], ['moduleOrder']).then(() => {
-      //   //   console.log('saved')
-      //   // })
-      // }
     }
   }
 }
