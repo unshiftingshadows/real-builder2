@@ -2,12 +2,12 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
 import 'firebase/firestore'
-// import VueFire from 'vuefire'
-// import VueFirestore from 'vue-firestore'
 import FieryVue from 'fiery-vue'
 
-console.log('env process', process.env)
-
+/**
+ * Settings for dev firebase instance
+ * @const {object}
+ */
 const devSettings = {
   apiKey: 'AIzaSyAjXGlux1zLL4QfEi4an2-KkIT4F6HxtMc',
   authDomain: 'real-dev-7b60c.firebaseapp.com',
@@ -17,6 +17,10 @@ const devSettings = {
   messagingSenderId: '945338183181'
 }
 
+/**
+ * Settings for production firebase instance
+ * @const {object}
+ */
 const prodSettings = {
   apiKey: 'AIzaSyCAsGVxjcBRsSNlQsymRnzWQAAYqphmmVU',
   authDomain: 'real-45953.firebaseapp.com',
@@ -26,14 +30,32 @@ const prodSettings = {
   messagingSenderId: '231971009763'
 }
 
+/**
+ * Main firebase instance
+ * @const {firebase.app.App}
+ */
 const fbapp = firebase.initializeApp(process.env.DEV ? devSettings : prodSettings)
 
+/**
+ * Main firestore instance
+ * @const {firebase.firestore.Firestore}
+ */
 const firestore = fbapp.firestore()
 const settings = {
   timestampsInSnapshots: true
 }
 firestore.settings(settings)
 
+/**
+ * This is a function to find a specific reference in firestore
+ * note: only lesson requires a selection
+ * @param {String} type [devo, guide, review, series, lesson]
+ * @param {String} selection
+ * @param {String} id
+ * @param {String} seriesid
+ * @param {String} lessonid
+ * @return {(firebase.firestore.DocumentReference | firebase.firestore.CollectionReference)}
+ */
 function dbref (type, selection, id, seriesid, lessonid) {
   console.log('run dbref')
   var ref = null
@@ -58,39 +80,89 @@ function dbref (type, selection, id, seriesid, lessonid) {
   return ref
 }
 
+/**
+ * Find and return the series collection
+ * @return {firebase.firestore.CollectionReference}
+ */
 function series () {
   return firestore.collection('curriculumEdit')
 }
 
+/**
+ * Find and return the lessons collection for a specific series
+ * @param {String} seriesid
+ * @return {firebase.firestore.CollectionReference}
+ */
 function lessons (seriesid) {
   // return fbapp.database().ref('builder/lessons/' + seriesid)
   return firestore.collection('curriculumEdit').doc(seriesid).collection('lessons')
 }
 
+/**
+ * Find and return a specific lesson reference
+ * @param {String} seriesid
+ * @param {String} lessonid
+ * @return {firebase.firestore.DocumentReference}
+ */
 function lesson (seriesid, lessonid) {
   return lessons(seriesid).doc(lessonid)
 }
 
+/**
+ * Find and return the devo collection for a lesson
+ * @param {string} seriesid
+ * @param {string} lessonid
+ * @return {firebase.firestore.CollectionReference}
+ */
 function devos (seriesid, lessonid) {
   // return fbapp.database().ref('builder/devos/' + seriesid + '/' + lessonid)
   return lessons(seriesid).doc(lessonid).collection('devos')
 }
 
+/**
+ * Find and return a specific devo document
+ * @param {string} seriesid
+ * @param {string} lessonid
+ * @param {string} devoid
+ * @return {firebase.firestore.DocumentReference}
+ */
 function devo (seriesid, lessonid, devoid) {
   // return fbapp.database().ref('builder/devoContent/' + seriesid + '/' + lessonid + '/' + devoid)
   return devos(seriesid, lessonid).doc(devoid)
 }
 
+/**
+ * Find and return a specific guide document
+ * @param {string} seriesid
+ * @param {string} lessonid
+ * @param {string} guideType [lecture, discussion, question, answer, exposition]
+ * @return {firebase.firestore.DocumentReference}
+ */
 function guide (seriesid, lessonid, guideType) {
   // return fbapp.database().ref('builder/guides/' + seriesid + '/' + lessonid + '/' + guideType)
   return lesson(seriesid, lessonid).collection('guides').doc(guideType)
 }
 
+/**
+ * Find and return a lesson's review document
+ * @param {string} seriesid
+ * @param {string} lessonid
+ * @return {firebase.firestore.DocumentReference}
+ */
 function review (seriesid, lessonid) {
-  // return fbapp.database().ref('builder/review/' + seriesid + '/' + lessonid)
   return lesson(seriesid, lessonid).collection('review').doc('review')
 }
 
+/**
+ * Find and return a specific section from a specific document
+ * -- document based on type
+ * @param {string} type [devo, guide, review]
+ * @param {string} id
+ * @param {string} sectionid
+ * @param {string} seriesid
+ * @param {string} lessonid
+ * @return {firebase.firestore.DocumentReference}
+ */
 function section (type, id, sectionid, seriesid, lessonid) {
   if (type === 'devo') {
     return devo(seriesid, lessonid, id).collection('sections').doc(sectionid)
@@ -99,10 +171,21 @@ function section (type, id, sectionid, seriesid, lessonid) {
   } else if (type === 'review') {
     return review(seriesid, lessonid).collection('sections').doc(sectionid)
   } else {
-    console.log('incorrect section type?')
+    console.error('incorrect section type')
+    return false
   }
 }
 
+/**
+ * Find and return all sections from a specific document
+ * -- document based on type
+ * @param {string} type [devo, guide, review]
+ * @param {string} id
+ * @param {string} sectionid
+ * @param {string} seriesid
+ * @param {string} lessonid
+ * @return {firebase.firestore.CollectionReference}
+ */
 function sectionModules (type, id, sectionid, seriesid, lessonid) {
   if (type === 'devo') {
     return devo(seriesid, lessonid, id).collection('sections').doc(sectionid).collection('modules')
@@ -111,10 +194,16 @@ function sectionModules (type, id, sectionid, seriesid, lessonid) {
   } else if (type === 'review') {
     return review(seriesid, lessonid).collection('sections').doc(sectionid).collection('modules')
   } else {
-    console.log('incorrect section type?')
+    console.error('incorrect section type?')
+    return false
   }
 }
 
+/**
+ * Return user data ref for current user or for any uid for admin purposes
+ * @param {string} uid User's id
+ * @return {firebase.firestore.DocumentReference}
+ */
 function user (uid) {
   if (uid) {
     console.log('valid uid', uid)
@@ -130,9 +219,8 @@ function user (uid) {
 
 // leave the export, even if you don't use it
 export default ({ app, router, Vue }) => {
-  // Vue.use(VueFire)
-  // Vue.use(VueFirestore)
   Vue.use(FieryVue)
+
   Vue.prototype.$firebase = {
     app: fbapp.firebase_,
     emailCred: firebase.auth.EmailAuthProvider.credential,
