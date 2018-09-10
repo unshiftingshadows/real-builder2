@@ -5,6 +5,13 @@ import 'firebase/auth'
 axios.defaults.baseURL = 'https://database.unshiftingshadows.com/builder'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
+/**
+ * POST an 'add' request to database
+ * Adds a specific document of [type] with object [data]
+ * @param {string} type
+ * @param {object} data
+ * @param {function} callback
+ */
 function add (type, data, callback) {
   firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
     axios.post('/add', {
@@ -22,6 +29,12 @@ function add (type, data, callback) {
   })
 }
 
+/**
+ * POST a 'list' request to database
+ * Returns a list of documents of [type]
+ * @param {string} type
+ * @param {function} callback
+ */
 function list (type, callback) {
   console.log('list', type)
   firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
@@ -39,6 +52,13 @@ function list (type, callback) {
   })
 }
 
+/**
+ * POST a 'view' request to database
+ * Returns a document of [type] with id [id]
+ * @param {string} type
+ * @param {string} id document id
+ * @param {function} callback
+ */
 function view (type, id, callback) {
   firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
     axios.post('/view', {
@@ -56,6 +76,14 @@ function view (type, id, callback) {
   })
 }
 
+/**
+ * POST an 'update' request to database
+ * Sets a document of [id] and [type] with new [data]
+ * @param {string} type
+ * @param {string} id document id
+ * @param {object} data
+ * @param {function} callback
+ */
 function update (type, id, data, callback) {
   firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
     axios.post('/update', {
@@ -74,6 +102,14 @@ function update (type, id, data, callback) {
   })
 }
 
+/**
+ * POST a 'search' request to database
+ * Returns a list of matching results
+ * @param {string} type
+ * @param {string} terms
+ * @param {object} options
+ * @param {function} callback
+ */
 function search (type, terms, options, callback) {
   firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
     axios.post('/search', {
@@ -92,6 +128,13 @@ function search (type, terms, options, callback) {
   })
 }
 
+/**
+ * POST a 'bible' request to database
+ * Returns an object of [ref] text of [version]
+ * @param {string} ref
+ * @param {string} version
+ * @param {function} callback
+ */
 function bible (ref, version, callback) {
   firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
     axios.post('/bible', {
@@ -110,6 +153,15 @@ function bible (ref, version, callback) {
   })
 }
 
+/**
+ * POST a 'resources' request to database
+ * Performs function of [action] for [resource] on [id]
+ * @param {string} type
+ * @param {string} id document id
+ * @param {string} action [add, remove, list]
+ * @param {string} resource resource id
+ * @param {function} callback
+ */
 function resources (type, id, action, resource, callback) {
   firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
     axios.post('/resources', {
@@ -130,6 +182,16 @@ function resources (type, id, action, resource, callback) {
   })
 }
 
+/**
+ * POST a 'research' request to database
+ * Performs [action] on [researchid] for document [id]
+ * @param {string} action
+ * @param {string} type
+ * @param {string} id document id
+ * @param {string} researchtype
+ * @param {string} researchid research document id
+ * @param {function} callback
+ */
 function research (action, type, id, researchtype, researchid, callback) {
   firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
     axios.post('/research', {
