@@ -158,10 +158,7 @@ export default {
           }
           break
         case 13:
-          if (this.data.type === 'bible') {
-            this.preSave()
-            e.preventDefault()
-          } else if (e.metaKey) {
+          if (this.data.type === 'bible' || e.metaKey) {
             this.preSave()
             e.preventDefault()
           }
