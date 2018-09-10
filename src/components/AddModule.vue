@@ -1,20 +1,69 @@
 <template>
   <div class="col-12 relative-position" style="height: 30px; margin-bottom: 20px;">
     <q-btn round :color="color" icon="fas fa-plus" class="absolute-center" @click.native="showAdd" />
-    <!-- TODO: Add a new component here like add-media but that uses the NQ database -->
+    <!-- // TODO: Add a new component here like add-media but that uses the NQ database -->
   </div>
 </template>
 
 <script>
+/**
+ * A modal component for adding a new module to a section
+ * 
+ * ```html
+ * <add-module :sectionid="value" :close="value" :edit="value" :contentType="value" :dark="value" />
+ * ```
+ * 
+ * @author jacob beck
+ */
 export default {
-  // name: 'ComponentName',
-  props: [ 'nextModOrder', 'sectionid', 'close', 'edit', 'contentType', 'dark' ],
+  name: 'AddModule',
+  props: {
+    /**
+     * id of section to add module to
+     */
+    sectionid: { type: String },
+    /**
+     * Function to close all other open modules
+     */
+    close: { type: Function },
+    /**
+     * Function to open new module for editing
+     */
+    edit: { type: Function },
+    /**
+     * type of module being added
+     */
+    contentType: { type: String },
+    /**
+     * dark or light theme
+     */
+    dark: { type: Boolean }
+  },
   data () {
     return {
+      /**
+       * Acceptable module types
+       * @type {string[]}
+       */
       moduleTypes: ['activity', 'bible', 'question', 'text'],
+      /**
+       * Acceptable NQ module types
+       * @type {string[]}
+       */
       nqmediaTypes: ['book', 'movie', 'video', 'image', 'article', 'composition', 'document', 'discourse', 'note', 'quote', 'illustration', 'outline', 'idea'],
+      /**
+       * v-model for modal visibility
+       * @type {boolean}
+       */
       showAddMedia: false,
+      /**
+       * type of new module
+       */
       type: '',
+      /**
+       * color for q-btn element
+       * @type {string}
+       */
       color: 'primary'
     }
   },
@@ -31,6 +80,11 @@ export default {
     this.init()
   },
   methods: {
+    /**
+     * Initialize the component
+     * Sets initial color value based on dark prop
+     * @return {void} void
+     */
     init () {
       if (this.dark === '') {
         this.color = 'dark'
@@ -38,17 +92,12 @@ export default {
         this.color = 'primary'
       }
     },
+    /**
+     * Show the add module action sheet at the bottom of the screen
+     * @return {void} void
+     */
     showAdd () {
       var actions = [
-        // {
-        //   label: 'Section',
-        //   color: 'primary',
-        //   icon: 'fa-list-ol',
-        //   handler: () => {
-        //     console.log('section!')
-        //     this.addModule('section')
-        //   }
-        // },
         {
           label: 'Text',
           color: 'primary',
@@ -95,16 +144,19 @@ export default {
         actions: actions
       })
     },
-    addModule (type, id) {
+    /**
+     * Function to add module of a specific type
+     * @param {string} type type of the new module
+     * @return {void} void
+     */
+    addModule (type) {
       console.log('add module')
       this.close()
-      // var newRef = this.$firebase.ref(this.$parent.type, 'modules', this.$parent.id).push()
-      if (this.moduleTypes.includes(type) || this.nqmediaTypes.includes(type)) {
+      if (this.moduleTypes.includes(type)) {
         var obj = {
           type: type,
           editing: false,
           slide: false,
-          // order: this.nextModOrder,
           time: 0,
           wordcount: 0
         }
@@ -121,16 +173,18 @@ export default {
           obj.bibleRef = ''
           obj.translation = 'esv'
         }
-        // if (this.omediaTypes.includes(type) || this.nqmediaTypes.includes(type)) {
-        //   this.edit('')
-        // } else {
-        //   this.edit(newRef.key, this.sectionid)
-        // }
+        /**
+         * Emits an add-module event
+         * @param {object} data the new module object
+         * @param {string} sectionid the section to which the new module should be added
+         * @see {ContentEditor} ContentEditor has the $on function listening for this event
+         */
         this.$root.$emit('add-module', obj, this.sectionid)
       } else {
         console.error('Invalid new module type')
       }
     },
+    // TODO: Rebuild for NQ modules in the future
     addNewMedia (media) {
       this.showAddMedia = false
       this.addModule(this.type, media._id)

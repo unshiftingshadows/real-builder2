@@ -29,15 +29,40 @@ import { Notify, format } from 'quasar'
 import { required } from 'vuelidate/lib/validators'
 const { capitalize } = format
 
+/**
+ * A modal component for adding new content
+ * 
+ * ```html
+ * <add-content :type="value" />
+ * ```
+ * 
+ * @author jacob beck
+ */
 export default {
-  props: ['type'],
+  props: {
+    /**
+     * The type of content to be added?
+     */
+    'type': { type: String, required: true }
+  },
   name: 'AddContent',
   data () {
     return {
+      /**
+       * v-model for modal visibility
+       * @type {boolean}
+       */
       showAddContent: false,
+      /**
+       * new content title value
+       * @type {string}
+       */
       title: '',
-      types: ['series'],
-      bibleRef: ''
+      /**
+       * types available for adding
+       * @type {string[]}
+       */
+      types: ['series']
     }
   },
   validations: {
@@ -46,11 +71,18 @@ export default {
     }
   },
   watch: {
+    /**
+     * Resets title on open or close of the modal
+     */
     'showAddContent': function () {
       this.$v.title.$reset()
     }
   },
   computed: {
+    /**
+     * Returns a capitalized type string for rendering
+     * @return {string} capitalized type
+     */
     readableType: function () {
       return capitalize(this.type)
     }
@@ -59,9 +91,19 @@ export default {
     this.init()
   },
   methods: {
+    /**
+     * Initialize the component
+     * Sets the title to ''
+     * @return {void} void
+     */
     init () {
       this.title = ''
     },
+    /**
+     * Perform the add function
+     * @param {object} template a template object to use to initialize the content
+     * @return {void} void
+     */
     add (template) {
       this.$v.title.$touch()
       if (this.$v.title.$error) {
@@ -69,11 +111,6 @@ export default {
         return
       }
       if (this.types.includes(this.type)) {
-        // var obj = {
-        //   title: this.title,
-        //   template: template,
-        //   prefs: this.$root.$children[0].user.prefs[this.type + 'Structure']
-        // }
         var obj = {
           title: this.title,
           mainIdea: '',
@@ -91,24 +128,14 @@ export default {
           })
           this.$router.push({ name: 'series', params: { seriesid: newRef.id } })
         })
-        // this.$database.add(this.type, obj, (res) => {
-        //   this.showAddContent = false
-        //   Notify.create({
-        //     message: this.readableType + ' created!',
-        //     type: 'positive',
-        //     position: 'bottom-left'
-        //   })
-        //   console.log('add content', res, this.type)
-        //   if (this.type === 'series') {
-        //     this.$router.push({ name: this.type, params: { seriesid: res._id } })
-        //   } else {
-        //     this.$router.push({ name: this.type, params: { id: res._id } })
-        //   }
-        // })
       } else {
         console.error('Invalid add type')
       }
     },
+    /**
+     * Show AddContent modal
+     * @return {void} void
+     */
     show () {
       this.showAddContent = true
     }

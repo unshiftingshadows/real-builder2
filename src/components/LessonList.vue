@@ -19,21 +19,60 @@ import Draggable from 'vuedraggable'
 import AddLesson from 'components/AddLesson.vue'
 import ModLesson from 'components/modules/Lesson.vue'
 
+/**
+ * A modal component for listing Lesson modules
+ * 
+ * ```html
+ * <lesson-list :id="value" :series="value" />
+ * ```
+ * 
+ * @author jacob beck
+ */
 export default {
   components: {
     Draggable,
     AddLesson,
     ModLesson
   },
-  props: ['id', 'series'],
+  props: {
+    /**
+     * series id
+     */
+    id: { type: String },
+    /**
+     * series object
+     */
+    series: { type: Object }
+  },
   name: 'LessonList',
   fiery: true,
   data () {
     return {
+      /**
+       * value to hide render until after loading lessons
+       * @type {boolean}
+       */
       loading: true,
+      /**
+       * value to check if this is the initial run to get firestore data
+       * @type {boolean}
+       */
       initRun: true,
+      /**
+       * id of the current lesson being edited
+       * @type {string}
+       */
       editingId: '',
+      /**
+       * value to check whether the changes should be saved or discarded
+       * @type {boolean}
+       */
       save: false,
+      /**
+       * list of lesson objects with data from firestore
+       * - fiery ref object
+       * @type {object}
+       */
       lessons: {}
     }
   },
@@ -61,6 +100,11 @@ export default {
     this.init()
   },
   methods: {
+    /**
+     * Initalize the component
+     * Attaches a fiery object to lessons for listening to data changes
+     * @return {void} void
+     */
     init () {
       this.lessons = this.$fiery(this.$firebase.lessonsRef(this.id), {
         map: true,
@@ -79,12 +123,22 @@ export default {
         }
       })
     },
+    /**
+     * Opens a lesson for editing
+     * @param {string} id id of the lesson module to edit
+     * @return {void} void
+     */
     startEdit (id) {
       console.log('edit', id)
       // Turn on editing for id
       this.lessons[id].editing = this.$firebase.auth.currentUser.uid
       this.$fiery.update(this.lessons[id], ['editing'])
     },
+    /**
+     * Closes a lesson from editing
+     * @param {string} id id of the lesson to be closed
+     * @return {void} void
+     */
     closeEdit (id) { // closes editing on a module and **saves** any edits
       console.log('close', id)
       if (id) {
@@ -103,9 +157,21 @@ export default {
       } else {
       }
     },
+    /**
+     * Sets the editingId for a lesson to edit
+     * @param {string} id id of the lesson to edit
+     * @return {void} void
+     */
     lessonEdit (id) {
       this.editingId = id
     },
+    /**
+     * Saves a lesson
+     * - opens the next lesson if nextLesson is not invalid
+     * @param {string} id id of the lesson to save and close
+     * @param {int} nextLesson index of the next lesson in the series lessonOrder
+     * @return {void} void
+     */
     lessonSave (id, nextLesson) {
       console.log('save')
       this.save = true
@@ -116,45 +182,47 @@ export default {
         // TODO: Add a new lesson -- need a cloud function for this
       }
     },
+    /**
+     * Sets the editingId to blank
+     * @return {void} void
+     */
     lessonClose () {
       this.editingId = ''
     },
+    /**
+     * Add a new lesson id to the series lessonOrder
+     * @param {string} id id of newly created lesson
+     * @return {void} void
+     */
     lessonAdd (id) {
       this.series.lessonOrder.push(id)
       this.$fiery.update(this.series, ['lessonOrder'])
     },
+    /**
+     * Deletes a lesson
+     * @param {string} id id of lesson to be deleted
+     * @return {void} void
+     */
     lessonDelete (id) {
       this.series.lessonOrder.splice(this.series.lessonOrder.indexOf(id), 1)
       this.$fiery.update(this.series, ['lessonOrder'])
       this.$fiery.remove(this.lessons[id])
-      // this.$firebase.lessonsRef(this.id).doc(id).delete()
-      // this.$firebase.devosRef(this.id, id).get().then((snap) => {
-      //   // NOTE: This will delete all subsequent devos -- any progress will be lost
-      //   snap.forEach((devoSnap) => {
-      //     this.$firebase.devoContentRef(this.id, id, devoSnap.key).delete()
-      //   })
-      //   this.$firebase.devosRef(this.id, id).delete()
-      //   this.reorder()
-      // })
     },
+    /**
+     * Returns a lesson object after passing an index
+     * @param {int} order index of lesson to return
+     * @return {object} lesson object
+     */
     getLessonByOrder (order) {
       return this.lessons.find((element) => {
         return element.order === order
       })
     },
-    // reorder () {
-    //   // Needs to update the 'order' prop of all lessons
-    //   // this.lessons.forEach((lesson, index) => {
-    //   //   var updatedLesson = {...lesson}
-    //   //   updatedLesson.order = index
-    //   //   delete updatedLesson['.key']
-    //   //   this.$fiery.update(updatedLesson, ['order'])
-    //   // })
-    // },
+    /**
+     * Updates order after a drag/drop
+     * @return {void} void
+     */
     onDrag (val) {
-      // this.drag = false
-      console.log('dragged', val)
-      // this.reorder()
       this.$fiery.update(this.series, ['lessonOrder'])
     }
   }

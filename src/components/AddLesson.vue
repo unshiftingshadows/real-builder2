@@ -47,16 +47,45 @@ var defaultPrayer = {
 
 var guideTypes = ['lecture', 'discussion', 'questions', 'answers', 'expositional']
 
+/**
+ * A modal component for adding a new lesson
+ * 
+ * ```html
+ * <add-lesson :close="value" :edit="value" :add="value" />
+ * ```
+ * 
+ * @author jacob beck
+ */
 export default {
-  // name: 'ComponentName',
-  props: [ 'close', 'edit', 'add' ],
+  name: 'AddLesson',
+  props: {
+    /**
+     * Function for closing any other open lesson before opening a new one to edit
+     */
+    close: { type: Function, required: true },
+    /**
+     * Function for opening new lesson to edit
+     */
+    edit: { type: Function, required: true },
+    /**
+     * Function for adding lesson to series lesson collection
+     */
+    add: { type: Function, required: true }
+  },
   data () {
     return {
-      showAddMedia: false,
+      /**
+       * type of piece being added
+       * @type {string}
+       */
       type: 'lesson'
     }
   },
   methods: {
+    /**
+     * Adds a new lesson to a LessonList component
+     * @return {void} void
+     */
     addModule () {
       console.log('add module')
       this.close()
