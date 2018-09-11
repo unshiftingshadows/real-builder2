@@ -4,6 +4,13 @@
       <q-spinner color="primary" class="absolute-center" size="3rem" />
     </div>
     <div v-if="!loading" class="row gutter-sm">
+      <div class="col-12">
+        <q-select
+          v-model="document.status"
+          float-label="Status"
+          :options="statusOptions"
+        />
+      </div>
       <!-- Before -->
       <div class="col-12" v-if="structure.hook && structure.hook.show">
         <module-section id="hook" :data="structure.hook" :modules="modules" :onChange="onChangeMod" :content-type="type" :contentid="id" @edit="editModule" @save="saveModule" @autosave="autoSaveModule" @close="closeModule" @remove="removeModule" class="section-card" />
@@ -97,6 +104,24 @@ export default {
   fiery: true,
   data () {
     return {
+      statusOptions: [
+        {
+          value: 'build',
+          label: 'Build'
+        },
+        {
+          value: 'write',
+          label: 'Write'
+        },
+        {
+          value: 'edit',
+          label: 'Edit'
+        },
+        {
+          value: 'approve',
+          label: 'Approve'
+        }
+      ],
       loading: true,
       initRun: true,
       drag: false,
@@ -105,7 +130,12 @@ export default {
       sectionChoice: '',
       tempModule: false,
       document: this.$fiery(this.$firebase.ref(this.type, '', this.id, this.$route.params.seriesid, this.$route.params.lessonid), {
-        include: ['sectionOrder']
+        include: ['sectionOrder', 'status'],
+        onSuccess: () => {
+          if (!this.document.status) {
+            this.document.status = 'build'
+          }
+        }
       }),
       structure: this.$fiery(this.$firebase.ref(this.type, 'structure', this.id, this.$route.params.seriesid, this.$route.params.lessonid), {
         map: true
@@ -293,7 +323,7 @@ export default {
       }
       this.$fires.sections.add(obj).then((newRef) => {
         this.document.sectionOrder.push(newRef.id)
-        this.$fiery.update(this.document, ['sectionOrder'])
+        this.$fiery.update(this.document)
       })
     },
     editSection (sectionid, updates) {
@@ -308,7 +338,7 @@ export default {
       console.log('remove section', sectionid)
       // this.$fiery.remove(this.getSectionById(sectionid))
       this.document.sectionOrder.splice(this.document.sectionOrder.indexOf(sectionid), 1)
-      this.$fiery.update(this.document, ['sectionOrder'])
+      this.$fiery.update(this.document)
       this.$fiery.remove(this.sections[sectionid])
     },
     getWordCount (string) {

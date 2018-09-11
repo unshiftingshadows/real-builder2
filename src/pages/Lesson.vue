@@ -52,6 +52,11 @@
         <q-toolbar-title>
           {{ lesson.title }} <span class="q-headline-text text-weight-light">| Devos</span>
         </q-toolbar-title>
+        <q-select
+          v-model="lesson.status"
+          float-label="Status"
+          :options="statusOptions"
+        />
         <q-btn icon="fas fa-ellipsis-v" color="primary" class="float-right">
           <q-popover anchor="bottom right" self="top right">
             <q-list link>
@@ -88,6 +93,24 @@ export default {
   fiery: true,
   data () {
     return {
+      statusOptions: [
+        {
+          value: 'build',
+          label: 'Build'
+        },
+        {
+          value: 'write',
+          label: 'Write'
+        },
+        {
+          value: 'edit',
+          label: 'Edit'
+        },
+        {
+          value: 'approve',
+          label: 'Approve'
+        }
+      ],
       seriesid: this.$route.params.seriesid,
       id: this.$route.params.lessonid,
       lesson: this.$fiery(this.$firebase.lessonsRef(this.$route.params.seriesid).doc(this.$route.params.lessonid)),
@@ -118,11 +141,14 @@ export default {
     update () {
       this.editTitle = false
       this.editMainIdea = false
+      if (!this.lesson.status) {
+        this.lesson.status = 'build'
+      }
       // var obj = {
       //   title: this.lesson.title,
       //   mainIdea: this.lesson.mainIdea
       // }
-      this.$fiery.update(this.lesson, ['title', 'mainIdea']).then(() => {
+      this.$fiery.update(this.lesson, ['title', 'mainIdea', 'status']).then(() => {
         Notify.create({
           type: 'positive',
           message: 'Lesson updated!',

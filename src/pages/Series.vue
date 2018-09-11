@@ -35,6 +35,11 @@
         <q-toolbar-title>
           {{ series.title }}
         </q-toolbar-title>
+        <q-select
+          v-model="series.status"
+          float-label="Status"
+          :options="statusOptions"
+        />
         <q-btn icon="fas fa-ellipsis-v" color="primary" class="float-right">
           <q-popover anchor="bottom right" self="top right">
             <q-list link>
@@ -68,6 +73,24 @@ export default {
   fiery: true,
   data () {
     return {
+      statusOptions: [
+        {
+          value: 'build',
+          label: 'Build'
+        },
+        {
+          value: 'write',
+          label: 'Write'
+        },
+        {
+          value: 'edit',
+          label: 'Edit'
+        },
+        {
+          value: 'approve',
+          label: 'Approve'
+        }
+      ],
       id: this.$route.params.seriesid,
       series: this.$fiery(this.$firebase.ref('series', '', this.$route.params.seriesid)),
       editTitle: false,
@@ -87,16 +110,14 @@ export default {
       this.editTitle = false
       var obj = {
         title: this.series.title,
-        mainIdea: this.series.mainIdea
+        mainIdea: this.series.mainIdea,
+        status: this.series.status || 'build'
       }
       this.$firebase.ref('series', '', this.id).update(obj).then(() => {
-        this.$database.update('series', this.id, obj, () => {
-          // console.log(res)
-          Notify.create({
-            type: 'positive',
-            message: 'Series updated!',
-            position: 'bottom-left'
-          })
+        Notify.create({
+          type: 'positive',
+          message: 'Series updated!',
+          position: 'bottom-left'
         })
       })
     },
