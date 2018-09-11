@@ -117,7 +117,8 @@ export default {
           roles: {
             [this.$firebase.auth.currentUser.uid]: 'admin'
           },
-          lessonOrder: []
+          lessonOrder: [],
+          status: 'BUILD'
         }
         this.$firebase.seriesRef().add(obj).then((newRef) => {
           this.showAddContent = false
