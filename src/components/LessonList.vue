@@ -10,7 +10,7 @@
       </draggable>
     </div>
     <!-- This button should always be just below the last user-made module -->
-    <add-lesson :add="lessonAdd" :edit="lessonEdit" :close="lessonClose" />
+    <add-lesson ref="addLesson" :add="lessonAdd" :edit="lessonEdit" :close="lessonClose" />
   </div>
 </template>
 
@@ -180,6 +180,7 @@ export default {
         this.lessonEdit(this.series.lessonOrder[nextLesson])
       } else if (nextLesson && nextLesson === this.series.lessonOrder.length) {
         // TODO: Add a new lesson -- need a cloud function for this
+        this.$refs.addLesson.addModule()
       }
     },
     /**
