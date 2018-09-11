@@ -11,7 +11,8 @@ var defaultDevo = {
   mainIdea: '',
   bibleRefs: [],
   notes: '',
-  sectionOrder: []
+  sectionOrder: [],
+  status: 'build'
 }
 
 var defaultHook = {
@@ -96,7 +97,8 @@ export default {
         bibleRefs: [],
         notes: '',
         prayer: '',
-        application: ''
+        application: '',
+        status: 'build'
       }).then((newRef) => {
         console.log('newRef', newRef.id)
         this.add(newRef.id)
@@ -108,14 +110,16 @@ export default {
         }
         guideTypes.forEach((type) => {
           this.$firebase.guideRef(this.$parent.id, newRef.id, type).set({
-            sectionOrder: []
+            sectionOrder: [],
+            status: 'build'
           })
           this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('hook').set(defaultHook)
           this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('application').set(defaultApplication)
           this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('prayer').set(defaultPrayer)
         })
         this.$firebase.reviewRef(this.$parent.id, newRef.id).set({
-          sectionOrder: []
+          sectionOrder: [],
+          status: 'build'
         })
         this.$firebase.reviewRef(this.$parent.id, newRef.id).collection('structure').doc('hook').set(defaultHook)
         this.$firebase.reviewRef(this.$parent.id, newRef.id).collection('structure').doc('application').set(defaultApplication)
