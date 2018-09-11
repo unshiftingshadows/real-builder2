@@ -5,48 +5,48 @@
 </template>
 
 <script>
-var defaultDevo = {
-  editing: false,
-  title: '',
-  mainIdea: '',
-  bibleRefs: [],
-  notes: '',
-  sectionOrder: [],
-  status: 'build'
-}
+// var defaultDevo = {
+//   editing: false,
+//   title: '',
+//   mainIdea: '',
+//   bibleRefs: [],
+//   notes: '',
+//   sectionOrder: [],
+//   status: 'build'
+// }
 
-var defaultHook = {
-  pos: 'before',
-  title: '',
-  wordcount: 0,
-  time: 0,
-  editing: false,
-  show: true,
-  moduleOrder: []
-}
+// var defaultHook = {
+//   pos: 'before',
+//   title: '',
+//   wordcount: 0,
+//   time: 0,
+//   editing: false,
+//   show: true,
+//   moduleOrder: []
+// }
 
-var defaultApplication = {
-  pos: 'after',
-  title: '',
-  today: '',
-  thisweek: '',
-  thought: '',
-  wordcount: 0,
-  time: 0,
-  editing: false,
-  show: true
-}
+// var defaultApplication = {
+//   pos: 'after',
+//   title: '',
+//   today: '',
+//   thisweek: '',
+//   thought: '',
+//   wordcount: 0,
+//   time: 0,
+//   editing: false,
+//   show: true
+// }
 
-var defaultPrayer = {
-  pos: 'after',
-  text: '',
-  wordcount: 0,
-  time: 0,
-  editing: false,
-  show: true
-}
+// var defaultPrayer = {
+//   pos: 'after',
+//   text: '',
+//   wordcount: 0,
+//   time: 0,
+//   editing: false,
+//   show: true
+// }
 
-var guideTypes = ['lecture', 'discussion', 'questions', 'answers', 'expositional']
+// var guideTypes = ['lecture', 'discussion', 'questions', 'answers', 'expositional']
 
 /**
  * A modal component for adding a new lesson
@@ -102,28 +102,28 @@ export default {
       }).then((newRef) => {
         console.log('newRef', newRef.id)
         this.add(newRef.id)
-        for (var x = 1; x <= 7; x++) {
-          this.$firebase.devosRef(this.$parent.id, newRef.id).doc(x.toString()).set(defaultDevo)
-          this.$firebase.devoContentRef(this.$parent.id, newRef.id, x.toString()).collection('structure').doc('hook').set(defaultHook)
-          this.$firebase.devoContentRef(this.$parent.id, newRef.id, x.toString()).collection('structure').doc('application').set(defaultApplication)
-          this.$firebase.devoContentRef(this.$parent.id, newRef.id, x.toString()).collection('structure').doc('prayer').set(defaultPrayer)
-        }
-        guideTypes.forEach((type) => {
-          this.$firebase.guideRef(this.$parent.id, newRef.id, type).set({
-            sectionOrder: [],
-            status: 'build'
-          })
-          this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('hook').set(defaultHook)
-          this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('application').set(defaultApplication)
-          this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('prayer').set(defaultPrayer)
-        })
-        this.$firebase.reviewRef(this.$parent.id, newRef.id).set({
-          sectionOrder: [],
-          status: 'build'
-        })
-        this.$firebase.reviewRef(this.$parent.id, newRef.id).collection('structure').doc('hook').set(defaultHook)
-        this.$firebase.reviewRef(this.$parent.id, newRef.id).collection('structure').doc('application').set(defaultApplication)
-        this.$firebase.reviewRef(this.$parent.id, newRef.id).collection('structure').doc('prayer').set(defaultPrayer)
+        // for (var x = 1; x <= 7; x++) {
+        //   this.$firebase.devosRef(this.$parent.id, newRef.id).doc(x.toString()).set(defaultDevo)
+        //   this.$firebase.devoContentRef(this.$parent.id, newRef.id, x.toString()).collection('structure').doc('hook').set(defaultHook)
+        //   this.$firebase.devoContentRef(this.$parent.id, newRef.id, x.toString()).collection('structure').doc('application').set(defaultApplication)
+        //   this.$firebase.devoContentRef(this.$parent.id, newRef.id, x.toString()).collection('structure').doc('prayer').set(defaultPrayer)
+        // }
+        // guideTypes.forEach((type) => {
+        //   this.$firebase.guideRef(this.$parent.id, newRef.id, type).set({
+        //     sectionOrder: [],
+        //     status: 'build'
+        //   })
+        //   this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('hook').set(defaultHook)
+        //   this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('application').set(defaultApplication)
+        //   this.$firebase.guideRef(this.$parent.id, newRef.id, type).collection('structure').doc('prayer').set(defaultPrayer)
+        // })
+        // this.$firebase.reviewRef(this.$parent.id, newRef.id).set({
+        //   sectionOrder: [],
+        //   status: 'build'
+        // })
+        // this.$firebase.reviewRef(this.$parent.id, newRef.id).collection('structure').doc('hook').set(defaultHook)
+        // this.$firebase.reviewRef(this.$parent.id, newRef.id).collection('structure').doc('application').set(defaultApplication)
+        // this.$firebase.reviewRef(this.$parent.id, newRef.id).collection('structure').doc('prayer').set(defaultPrayer)
         this.edit(newRef.id)
       })
     }
