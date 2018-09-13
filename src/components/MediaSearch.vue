@@ -150,7 +150,7 @@ export default {
       return this.selectedTypes.includes(item.type)
     },
     search () {
-      this.$database.search('omedia', this.searchTerms, {}, (res) => {
+      this.$database.search('media', this.searchTerms, {}, (res) => {
         this.items = res
       })
     }

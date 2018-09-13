@@ -49,11 +49,11 @@ export default {
   margin-right: auto;
 }
 
-@media screen and (min-width: 576px) {
+/* @media screen and (min-width: 576px) {
   .header-logo {
-    /* max-width: 100%; */
+    max-width: 100%;
   }
-}
+} */
 
 @media screen and (min-width: 1200px) {
   .header-logo {
