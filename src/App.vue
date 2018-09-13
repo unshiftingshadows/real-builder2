@@ -41,53 +41,67 @@ FastClick.notNeeded = true
 import { required, minLength, sameAs } from 'vuelidate/lib/validators'
 
 var initUser = {
+  name: request.body.name,
+  email: request.body.email,
+  churchid: request.body.churchid || false,
+  churchRoles: {},
   newUser: true,
   nqUser: false,
-  realUser: false,
-  supportRestore: '',
-  theme: '',
-  name: {
-    first: '',
-    last: ''
-  },
-  email: '',
-  prefs: {
-    bibleTranslation: 'esv',
-    osermonStructure: {
-      hook: true,
-      application: true,
-      prayer: true
+  app: {
+    prefs: {
+      theme: 'light'
     },
-    olessonStructure: {
-      hook: true,
-      application: true,
-      prayer: true
+    lastPage: {
+      host: '',
+      path: ''
     },
-    contentType: {
-      sermon: true,
-      lesson: true,
-      scratch: true
-    },
-    mediaType: {
-      quote: true,
-      image: true,
-      illustration: true,
-      lyric: true,
-      video: true
+    message: {
+      prefs: {
+        contentType: {
+          lesson: true,
+          scratch: true,
+          sermon: true
+        },
+        mediaType: {
+          illustration: true,
+          image: true,
+          lyric: false,
+          quote: true,
+          video: true
+        },
+        osermonStructure: {
+          hook: true,
+          application: true,
+          prayer: true
+        },
+        olessonStructure: {
+          hook: true,
+          application: true,
+          prayer: true
+        },
+        structureNames: {
+          application: "Application",
+          hook: "Hook",
+          prayer: "Prayer"
+        },
+        speakingSpeed: 120
+      },
+      stats: {
+        numsermon: 0,
+        numlesson: 0,
+        numscratch: 0,
+        numarchive: 0,
+        numquote: 0,
+        numimage: 0,
+        numvideo: 0,
+        numlyric: 0,
+        numillustration: 0
+      }
     }
   },
-  stats: {
-    lastPagePath: '',
-    numSermon: 0,
-    numLesson: 0,
-    numScratch: 0,
-    numArchive: 0,
-    numQuote: 0,
-    numImage: 0,
-    numVideo: 0,
-    numLyric: 0,
-    numIllustration: 0
-  }
+  supportRestore: '',
+  realUser: false,
+  realRoles: {}
 }
 
 export default {
@@ -118,7 +132,7 @@ export default {
     'user': function (val) {
       console.log('user changed!', val, this.$firebase.auth.currentUser)
     },
-    'user.prefs.theme': function (val) {
+    'user.app.prefs.theme': function (val) {
       if (val === undefined) return
       switch (val) {
         case 'dark':
