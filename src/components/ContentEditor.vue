@@ -170,14 +170,6 @@ export default {
       }
     }
   },
-  computed: {
-    nextModOrder: function () {
-      return this.modules.length
-    },
-    nextSectionOrder: function () {
-      return this.sections.length
-    }
-  },
   mounted () {
     this.$root.$on('add-module', (data, sectionid) => {
       console.log('section', sectionid)
