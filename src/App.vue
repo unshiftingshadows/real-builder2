@@ -41,9 +41,9 @@ FastClick.notNeeded = true
 import { required, minLength, sameAs } from 'vuelidate/lib/validators'
 
 var initUser = {
-  name: request.body.name,
-  email: request.body.email,
-  churchid: request.body.churchid || false,
+  name: '',
+  email: '',
+  churchid: '',
   churchRoles: {},
   newUser: true,
   nqUser: false,
@@ -80,9 +80,9 @@ var initUser = {
           prayer: true
         },
         structureNames: {
-          application: "Application",
-          hook: "Hook",
-          prayer: "Prayer"
+          application: 'Application',
+          hook: 'Hook',
+          prayer: 'Prayer'
         },
         speakingSpeed: 120
       },
