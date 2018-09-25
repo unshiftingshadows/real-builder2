@@ -42,6 +42,14 @@ export default [
     ]
   },
 
+  {
+    path: '/login2',
+    component: () => import('layouts/default'),
+    children: [
+      { path: '', name: 'login2', component: () => import('pages/Login2') }
+    ]
+  },
+
   { // Always leave this as last one
     path: '*',
     component: () => import('pages/404')

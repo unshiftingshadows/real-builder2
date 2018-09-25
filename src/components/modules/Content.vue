@@ -98,7 +98,7 @@ export default {
         },
         question: {
           label: 'Question',
-          ref: 'text',
+          ref: 'question',
           icon: 'fas fa-question'
         },
         bible: {

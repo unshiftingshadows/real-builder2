@@ -35,7 +35,7 @@ Router.beforeEach((to, from, next) => {
     firebase.auth().onAuthStateChanged(function (user) {
       if (!user) {
         console.log('no user', user)
-        next('/login')
+        window.open('http://localhost:8080/builder', '_self')
       } else {
         // console.log(user)
         // Check if REAL page

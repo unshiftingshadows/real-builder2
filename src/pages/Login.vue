@@ -98,6 +98,11 @@ export default {
       }
     }
   },
+  mounted () {
+    if (!this.$firebase.auth.currentUser) {
+      window.open('http://localhost:8080/builder', '_self')
+    }
+  },
   methods: {
     login () {
       console.log('login')
