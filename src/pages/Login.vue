@@ -99,6 +99,7 @@ export default {
     }
   },
   mounted () {
+    // TODO: Need to implement difference for production
     if (!this.$firebase.auth.currentUser) {
       window.open('http://localhost:8080/builder', '_self')
     }

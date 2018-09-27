@@ -11,6 +11,11 @@
           :options="statusOptions"
         />
       </div>
+      <div class="col-12 col-md-2">
+        <q-chip color="primary">
+          {{ cumWordcount }} words
+        </q-chip>
+      </div>
       <!-- Before -->
       <div class="col-12" v-if="structure.hook && structure.hook.show">
         <module-section id="hook" :data="structure.hook" :modules="modules" :onChange="onChangeMod" :content-type="type" :contentid="id" @edit="editModule" @save="saveModule" @autosave="autoSaveModule" @close="closeModule" @remove="removeModule" class="section-card" />
@@ -129,6 +134,8 @@ export default {
       editingSection: undefined,
       sectionChoice: '',
       tempModule: false,
+      cumWordcount: 0,
+      cumTime: 0,
       document: this.$fiery(this.$firebase.ref(this.type, '', this.id, this.$route.params.seriesid, this.$route.params.lessonid), {
         include: ['sectionOrder', 'status'],
         onSuccess: () => {
@@ -145,7 +152,15 @@ export default {
       }),
       modules: this.$fiery(this.$firebase.ref(this.type, 'modules', this.id, this.$route.params.seriesid, this.$route.params.lessonid), {
         map: true,
-        onSuccess: () => {
+        onSuccess: (modules) => {
+          console.log('modules loaded', modules)
+          this.cumWordcount = 0
+          this.cumTime = 0
+          for (var mod in modules) {
+            console.log('mod', modules[mod])
+            this.cumWordcount += modules[mod].wordcount
+            this.cumTime += modules[mod].time
+          }
           this.loading = false
         }
       }),
