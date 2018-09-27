@@ -6,7 +6,7 @@
       </div>
       <div class="col-12">
         <q-select
-          v-model="$root.$children[0].user.prefs.theme"
+          v-model="$root.$children[0].user.app.prefs.theme"
           float-label="Theme"
           :options="themeOptions"
           @input="prefChange"
@@ -20,8 +20,8 @@
             User Info
           </q-card-title>
           <q-card-main>
-            <p><b>Name:</b> <span>{{ $root.$children[0].user.name.first }} {{ $root.$children[0].user.name.last }}</span></p>
-            <p><b>Email:</b> <span>{{ $root.$children[0].user.email }}</span></p>
+            <p><b>Name:</b>&nbsp;<span>{{ $root.$children[0].user.name.first }} {{ $root.$children[0].user.name.last }}</span></p>
+            <p><b>Email:</b>&nbsp;<span>{{ $root.$children[0].user.email }}</span></p>
           </q-card-main>
         </q-card>
       </div>

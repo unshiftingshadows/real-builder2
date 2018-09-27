@@ -94,6 +94,7 @@ export default {
         editing: this.$firebase.auth.currentUser.uid,
         title: '',
         mainIdea: '',
+        devoOrder: ['1', '2', '3', '4', '5', '6', '7'],
         bibleRefs: [],
         notes: '',
         prayer: '',
