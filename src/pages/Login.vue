@@ -100,9 +100,9 @@ export default {
   },
   mounted () {
     // TODO: Need to implement difference for production
-    if (!this.$firebase.auth.currentUser) {
-      window.open('http://localhost:8080/builder', '_self')
-    }
+    // if (!this.$firebase.auth.currentUser) {
+    //   window.open('http://localhost:8080/builder', '_self')
+    // }
   },
   methods: {
     login () {
@@ -133,7 +133,7 @@ export default {
     },
     resetPassword () {
       this.$firebase.auth.sendPasswordResetEmail(this.form.email, {
-        url: 'https://builder.real-curriculum.com/login'
+        url: 'https://builder.realchurch.app/login'
       }).then(() => {
         this.forgotPassword = false
         Notify.create({
