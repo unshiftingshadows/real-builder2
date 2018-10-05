@@ -40,9 +40,10 @@ Router.beforeEach((to, from, next) => {
         // console.log(user)
         // Check if REAL page
         if (to.matched.some(record => record.meta.requiresREAL)) {
-          firebase.firestore().collection('user').doc(firebase.auth().currentUser.uid).get().then((userDoc) => {
-            console.log('is user real?', userDoc.data())
-            if (userDoc.data().realUser) {
+          // firebase.firestore().collection('user').doc(firebase.auth().currentUser.uid).get().then((userDoc) => {
+          firebase.auth().currentUser.getIdTokenResult(true).then((tokenResult) => {
+            console.log('is user real?', tokenResult.claims)
+            if (tokenResult.claims.realAdmin) {
               next()
             } else {
               console.log('not real user')
