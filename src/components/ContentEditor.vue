@@ -153,14 +153,6 @@ export default {
       modules: this.$fiery(this.$firebase.ref(this.type, 'modules', this.id, this.$route.params.seriesid, this.$route.params.lessonid), {
         map: true,
         onSuccess: (modules) => {
-          if (this.initRun) {
-            this.initRun = false
-            for (var mod in modules) {
-              if (modules[mod].editing = this.$firebase.auth.currentUser.uid) {
-                this.closeModule(mod)
-              }
-            }
-          }
           console.log('modules loaded', modules)
           this.cumWordcount = 0
           this.cumTime = 0
@@ -168,7 +160,11 @@ export default {
             console.log('mod', modules[mod])
             this.cumWordcount += modules[mod].wordcount
             this.cumTime += modules[mod].time
+            if (this.initRun && modules[mod].editing === this.$firebase.auth.currentUser.uid) {
+              this.closeModule(mod)
+            }
           }
+          this.initRun = false
           this.loading = false
         }
       }),

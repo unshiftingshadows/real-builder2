@@ -4,6 +4,7 @@ const BCVParser = require('bible-passage-reference-parser/js/en_bcv_parser').bcv
 import axios from 'axios'
 import firebase from 'firebase/app'
 import 'firebase/auth'
+import 'firebase/functions'
 
 axios.defaults.baseURL = 'https://database.unshiftingshadows.com/builder'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
@@ -35,21 +36,30 @@ function osis (ref) {
 }
 
 function text (ref, version) {
-  firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
-    axios.post('/bible', {
-      ref: ref,
-      version: version,
-      token: idToken
+  return firebase.functions().httpsCallable('bible-bibleText')({ bibleRef: ref, version: version })
+    .then((res) => {
+      console.log(res)
+      return res.data
     })
-      .then((res) => {
-        console.log(res.data)
-        return res.data
-      })
-      .catch((err) => {
-        console.log(err)
-        return null
-      })
-  })
+    .catch((err) => {
+      console.error(err)
+      return null
+    })
+  // firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+  //   axios.post('/bible', {
+  //     ref: ref,
+  //     version: version,
+  //     token: idToken
+  //   })
+  //     .then((res) => {
+  //       console.log(res.data)
+  //       return res.data
+  //     })
+  //     .catch((err) => {
+  //       console.log(err)
+  //       return null
+  //     })
+  // })
 }
 
 // leave the export, even if you don't use it

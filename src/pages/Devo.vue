@@ -96,11 +96,12 @@ export default {
       lessonid: this.$route.params.lessonid,
       id: this.$route.params.devoid,
       devo: this.$fiery(this.$firebase.devosRef(this.$route.params.seriesid, this.$route.params.lessonid).doc(this.$route.params.devoid), {
-        onSuccess: (val) => {
+        onSuccess: async (val) => {
           console.log('ran!', val)
           this.devo.bibleRefs.forEach(ref => {
             var readable = this.$bible.readable(ref)
-            this.$database.bible(ref, 'esv', (res) => {
+            this.$bible.text(ref, 'esv').then(res => {
+              console.log('ref', ref)
               this.passageList.push({
                 ref: ref,
                 readable: readable,
