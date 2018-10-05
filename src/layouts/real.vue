@@ -13,7 +13,7 @@
           v-if="$q.platform.is.mobile"
         />
         <q-toolbar-title>
-          <img src="https://s3.amazonaws.com/realchurch-promo/logos/logo_builder_app%401x.png" style="max-height: 40px" />
+          <img src="https://real-45953.firebaseapp.com/logos/logo_builder_app%402x.png" style="max-height: 40px" />
         </q-toolbar-title>
         <q-btn
           flat

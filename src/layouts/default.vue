@@ -10,9 +10,9 @@
           @click="leftDrawer = !leftDrawer"
         /> -->
         <q-toolbar-title>
-          <img src="https://s3.amazonaws.com/realchurch-promo/logos/logo_builder_app%401x.png" class="xs header-logo" style="margin-top: 20px;" />
+          <img src="https://real-45953.firebaseapp.com/logos/logo_builder_app%402x.png" class="xs header-logo" style="margin-top: 20px;" />
           <!-- <div class="q-display-2 xs" style="text-align: center">REAL Builder</div> -->
-          <img src="https://s3.amazonaws.com/realchurch-promo/logos/logo_builder_app%401x.png" class="header-logo gt-xs" />
+          <img src="https://real-45953.firebaseapp.com/logos/logo_builder_app%402x.png" class="header-logo gt-xs" />
         </q-toolbar-title>
       </q-toolbar>
     </q-layout-header>
