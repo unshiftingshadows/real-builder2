@@ -1,6 +1,24 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.43 - 2018-10-05
+### Added
+- [meta]+enter saves and closes modules
+- [meta]+[shift]+enter saves, closes, and opens a new module
+- clicking on a module opens it for editing
+- status field for all major pieces of content
+- login2 functionality
+- cumulative word count for ContentEditor
+- moved all Bible text lookup to cloud functions
+
+### Changed
+- consolidated modules
+- add lesson moved to cloud functions
+
+### Fixed
+- lots of cleanup from Message language
+- problematic opened modules are now closed on refresh
+
 ## 0.0.42 - 2018-09-06
 ### Fixed
 - first drag and drop on LessonList, DevoList, and ContentEditor should now work properly
