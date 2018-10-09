@@ -30,7 +30,7 @@ export default {
             })
         })
     } else {
-      var url = process.env.DEV ? 'http://localhost:8080/builder' : 'https://login.realchurch.app'
+      var url = process.env.DEV ? 'http://localhost:8080/builder' : 'https://login.realchurch.app/builder'
       window.open(url, '_self')
     }
   }
