@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <div v-show="!data.editing || data.editing !== $firebase.auth.currentUser.uid">
+    <div v-show="!data.editing || data.editing !== $firebase.auth.currentUser.uid" @click="clicked">
       <!-- Drag Handle -->
       <div class="round-borders bg-primary drag-handle" v-if="!$q.platform.is.mobile || $q.platform.is.ipad">
         <q-icon name="fas fa-arrows-alt" size="1rem" />
@@ -191,6 +191,11 @@ export default {
     },
     saveClose () {
       this.preSave(this.id, this.data)
+    },
+    clicked (e) {
+      if (e.srcElement.nodeName !== 'I' && e.srcElement.nodeName !== 'BUTTON') {
+        this.modMethods.edit(this.id)
+      }
     }
   }
 }
