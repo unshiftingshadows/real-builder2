@@ -187,6 +187,11 @@ export default {
         console.log('tempModule empty', val)
         this.$refs.addNewModule.hide()
       }
+    },
+    '$q.appVisible': function (val) {
+      if (!val && this.editingid !== '') {
+        this.closeModule(this.editingid, this.editingSection)
+      }
     }
   },
   mounted () {
