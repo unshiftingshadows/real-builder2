@@ -96,7 +96,7 @@ export default {
       lessonid: this.$route.params.lessonid,
       id: this.$route.params.devoid,
       devo: this.$fiery(this.$firebase.devosRef(this.$route.params.seriesid, this.$route.params.lessonid).doc(this.$route.params.devoid), {
-        onSuccess: async (val) => {
+        onSuccess: (val) => {
           console.log('ran!', val)
           this.devo.bibleRefs.forEach(ref => {
             var readable = this.$bible.readable(ref)

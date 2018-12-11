@@ -13,7 +13,9 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bible-passage-reference-parser": "^2.0.1",
+    "fiery-data": "^0.10.0",
     "fiery-vue": "^0.2.0",
+    "fiery-vuex": "^0.7.2",
     "filepond": "^1.2.10",
     "filepond-plugin-image-preview": "^1.0.8",
     "firebase": "^5.3.1",

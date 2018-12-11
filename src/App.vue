@@ -160,11 +160,16 @@ export default {
       }
     },
     '$route': function (val) {
-      if (this.$firebase.user()) {
-        this.$firebase.user().update({
-          'stats.lastPage.host': 'builder',
-          'stats.lastPage.path': val.path
-        })
+      if (this.$firebase.currentUser) {
+        // this.$firebase.user().update({
+        //   'stats.lastPage.host': 'builder',
+        //   'stats.lastPage.path': val.path
+        // })
+        this.user.stats.lastPage = {
+          host: 'builder',
+          path: val.path
+        }
+        this.$fiery.update(this.user)
       }
     }
   },
@@ -172,6 +177,10 @@ export default {
     init () {
       this.newPassword = ''
       this.newPasswordCheck = ''
+      console.log(this.theme)
+      // console.log('store', this.$store)
+      // this.$store.dispatch('user/watchUser')
+      // console.log('user', this.$store.state.user)
       this.$firebase.auth.onAuthStateChanged((user) => {
         console.log('auth state changed')
         if (!user) {
@@ -179,9 +188,7 @@ export default {
           this.user.theme = 'light'
         } else {
           console.log('currentuser', user)
-          // this.$binding('user', this.$firebase.user()).then((userSnap) => {
-          //   console.log('logged user', userSnap)
-          // })
+          // this.$store.user.commit('setuid', user.uid)
           this.user = this.$fiery(this.$firebase.user())
         }
       })

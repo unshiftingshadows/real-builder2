@@ -76,7 +76,7 @@
       </q-scroll-area>
     </q-layout-drawer>
 
-    <!-- <q-layout-drawer
+    <q-layout-drawer
       side="right"
       v-model="rightDrawer"
       content-class="bg-grey-9 md-drawer"
@@ -85,7 +85,7 @@
       <q-scroll-area class="fit q-pa-sm">
         <component v-bind:is="pageType + '-drawer'" class="drawer" v-if="rightDrawer" :key="pageType"></component>
       </q-scroll-area>
-    </q-layout-drawer> -->
+    </q-layout-drawer>
 
     <q-page-container>
       <!-- This is where pages get injected -->
@@ -96,12 +96,12 @@
 </template>
 
 <script>
-import SeriesDrawer from 'components/drawers/RSeries.vue'
-import LessonDrawer from 'components/drawers/RLesson.vue'
-import ResearchDrawer from 'components/drawers/RResearch.vue'
-import DevoDrawer from 'components/drawers/RDevo.vue'
-import GuideDrawer from 'components/drawers/RGuide.vue'
-import ReviewDrawer from 'components/drawers/RReview.vue'
+import SeriesDrawer from 'components/drawers/Series.vue'
+import LessonDrawer from 'components/drawers/Lesson.vue'
+import ResearchDrawer from 'components/drawers/Research.vue'
+import DevoDrawer from 'components/drawers/Devo.vue'
+import GuideDrawer from 'components/drawers/Guide.vue'
+import ReviewDrawer from 'components/drawers/Review.vue'
 
 const rightPages = ['series', 'lesson', 'research', 'devo', 'guide', 'review']
 
