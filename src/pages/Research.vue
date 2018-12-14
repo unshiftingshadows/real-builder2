@@ -12,8 +12,8 @@
       <div class="col-12" v-if="searchTerms !== '' && searchItems.length > 0">
         <n-q-list v-if="searchTerms !== ''" :items="searchItems" :add-module="addResource" add-button />
       </div>
-      <div class="col-12" v-show="searchTerms === ''">
-        <resource-list :id="id" type="rlesson" />
+      <div class="col-12" v-if="!loading" v-show="searchTerms === ''">
+        <resource-list :id="id" type="rlesson" :lesson="lesson" />
       </div>
     </div>
     <q-modal v-model="editTitle" ref="editTitleModal" content-classes="edit-title-modal">
@@ -103,12 +103,38 @@ export default {
     return {
       seriesid: this.$route.params.seriesid,
       id: this.$route.params.lessonid,
-      lesson: this.$fiery(this.$firebase.ref('lesson', this.$route.params.lessonid, '', this.$route.params.seriesid)),
+      lesson: this.$fiery(this.$firebase.lessonsRef(this.$route.params.seriesid).doc(this.$route.params.lessonid), {
+        onSuccess: () => {
+          var missing = false
+          if (!this.lesson.topics) {
+            missing = true
+            this.lesson.topics = []
+          }
+          if (!this.lesson.resources) {
+            missing = true
+            this.lesson.resources = []
+          }
+          if (!this.lesson.usedResources) {
+            missing = true
+            this.lesson.usedResources = []
+          }
+          if (missing) {
+            this.$fiery.update(this.lesson).then(() => {
+              Notify.create({
+                type: 'positive',
+                message: 'Lesson updated!',
+                position: 'bottom-left'
+              })
+            })
+          }
+          this.loading = false
+        }
+      }),
       editTitle: false,
       editMainIdea: false,
       searchTerms: '',
       searchItems: [],
-      loading: false
+      loading: true
     }
   },
   watch: {

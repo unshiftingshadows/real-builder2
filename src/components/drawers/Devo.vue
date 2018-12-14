@@ -8,11 +8,18 @@
     <div v-if="!devoLoading">
       <q-input v-model="devo.notes" float-label="Devo Notes" type="textarea" :max-height="150" :min-rows="3" />
     </div>
+    <hr/>
+    <resource-search />
   </div>
 </template>
 
 <script>
+import ResourceSearch from 'components/ResourceSearch'
+
 export default {
+  components: {
+    ResourceSearch
+  },
   name: 'DrawerDevo',
   fiery: true,
   firebase () {

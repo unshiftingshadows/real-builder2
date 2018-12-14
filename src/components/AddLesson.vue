@@ -99,7 +99,10 @@ export default {
         notes: '',
         prayer: '',
         application: '',
-        status: 'build'
+        status: 'build',
+        topics: [],
+        resources: [],
+        usedResources: []
       }).then((newRef) => {
         console.log('newRef', newRef.id)
         this.add(newRef.id)

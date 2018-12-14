@@ -84,9 +84,10 @@ export default {
       }
     },
     search () {
-      this.$database.search('nqmedia', this.searchTerms, {}, (res) => {
-        this.resources = res
-      })
+      // this.$database.search('nqmedia', this.searchTerms, {}, (res) => {
+      //   this.resources = res
+      // })
+      this.$firebase.resourceSearch(this.searchTerms, ['book'])
     }
   }
 }

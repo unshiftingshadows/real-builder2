@@ -189,7 +189,15 @@ export default {
         } else {
           console.log('currentuser', user)
           // this.$store.user.commit('setuid', user.uid)
-          this.user = this.$fiery(this.$firebase.user())
+          this.user = this.$fiery(this.$firebase.user(), {
+            onSuccess: () => {
+              if (this.$firebase.nqLogin(this.user.nqUser ? this.user.nqUser.uid : 'MlQv4xZaqBNGNFIYhPnSyTcq3MJ2')) {
+                console.log('nq user authenticated')
+              } else {
+                console.log('nq user error...')
+              }
+            }
+          })
         }
       })
     },

@@ -4,7 +4,7 @@
       <div class="col-12">
         <h3>Settings</h3>
       </div>
-      <div class="col-12">
+      <div class="col-12" v-if="$root.$children[0].user.app">
         <q-select
           v-model="$root.$children[0].user.app.prefs.theme"
           float-label="Theme"
@@ -29,7 +29,7 @@
         <q-card>
           <q-card-title>Notes and Quotes</q-card-title>
           <q-card-main>
-            <q-btn color="primary" v-if="!$root.$children[0].user.nqUser">Connect</q-btn>
+            <q-btn color="primary" v-if="!$root.$children[0].user.nqUser" @click.native="openNQLogin">Connect</q-btn>
             <div v-if="$root.$children[0].user.nqUser">
               <p>User: {{ $root.$children[0].user.nqUser.email }}</p>
               <p>ID: {{ $root.$children[0].user.nqUser.uid }}</p>
@@ -114,14 +114,19 @@
         </div>
       </div>
     </q-modal>
+    <n-q-login ref="nqLogin" />
   </q-page>
 </template>
 
 <script>
+import NQLogin from 'components/NQLogin'
 import { Notify } from 'quasar'
 import { required, email, sameAs, minLength } from 'vuelidate/lib/validators'
 
 export default {
+  components: {
+    NQLogin
+  },
   name: 'PageSettings',
   fiery: true,
   data () {
@@ -283,6 +288,9 @@ export default {
       // this.$firebase.user().update({
       //   prefs: this.$root.$children[0].user.prefs
       // })
+    },
+    openNQLogin () {
+      this.$refs.nqLogin.$refs.modal.show()
     }
   }
 }

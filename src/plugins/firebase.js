@@ -2,6 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
 import 'firebase/firestore'
+import 'firebase/functions'
 // import $getFiery from 'fiery-data'
 import FieryVue from 'fiery-vue'
 
@@ -31,11 +32,21 @@ const prodSettings = {
   messagingSenderId: '231971009763'
 }
 
+const nqSettings = {
+  apiKey: 'AIzaSyBRyXtYfwhda49puaaFlC0yThP1bpELPgI',
+  authDomain: 'notes-and-quotes-977a3.firebaseapp.com',
+  databaseURL: 'https://notes-and-quotes-977a3.firebaseio.com',
+  projectId: 'notes-and-quotes-977a3',
+  storageBucket: 'notes-and-quotes-977a3.appspot.com',
+  messagingSenderId: '333897842731'
+}
+
 /**
  * Main firebase instance
  * @const {firebase.app.App}
  */
 const fbapp = firebase.initializeApp(process.env.DEV ? devSettings : prodSettings)
+const nqapp = firebase.initializeApp(nqSettings, 'nq')
 
 /**
  * Main firestore instance
@@ -47,323 +58,10 @@ const settings = {
 }
 firestore.settings(settings)
 
-// const $fiery = $getFiery
+const functions = fbapp.functions()
 
-// function update (val) {
-//   switch (val) {
-//     case 'user':
-//       return $fiery.update(userData)
-//     case 'series':
-//       return $fiery.update(seriesDoc)
-//     case 'lesson':
-//       return $fiery.update(lessonDoc)
-//     case 'review':
-//       return $fiery.update(reviewDoc)
-//     case 'guide':
-//       return $fiery.update(guideDoc)
-//     case 'devo':
-//       return $fiery.update(devoDoc)
-//     case 'doc':
-//       return Promise.all([$fiery.update(docStructure), $fiery.update(docSections), $fiery.update(docModules)])
-//   }
-// }
-
-// var userData, userLogged = false
-
-// fbapp.auth().onAuthStateChanged((user) => {
-//   if (user) {
-//     console.log('user logged', user)
-//     userLogged = true
-//     userData = $fiery(firestore.collection('user').doc(user.uid))
-//   } else {
-//     userLogged = false
-//     $fiery.free(userData)
-//   }
-// })
-
-// function getUserData () {
-//   console.log('user logged?', userLogged)
-//   if (userLogged) {
-//     return userData
-//   } else {
-//     return {
-//       name: '',
-//       email: '',
-//       churchid: '',
-//       churchRoles: {},
-//       newUser: true,
-//       nqUser: false,
-//       app: {
-//         prefs: {
-//           theme: 'light'
-//         },
-//         lastPage: {
-//           host: '',
-//           path: ''
-//         }
-//       },
-//       supportRestore: '',
-//       realUser: false,
-//       realRoles: {}
-//     }
-//   }
-// }
-
-// var seriesDoc, lessonDoc, guideDoc, reviewDoc, devoDoc, lessonList, devoList
-// var docStructure, docSections, docModules
-// var currentSeries, currentLesson, currentDevo, currentGuide
-// var seriesFlag = false,
-//   lessonFlag = false,
-//   guideFlag = false,
-//   reviewFlag = false,
-//   devoFlag = false,
-//   docFlag = false,
-//   docType = false
-
-// const checkType = {
-//   'guide': guideFlag,
-//   'review': reviewFlag,
-//   'devo': devoFlag
-// }
-
-// const typeToDoc = {
-//   'guide': guideDoc,
-//   'review': reviewDoc,
-//   'devo': devoDoc
-// }
-
-// function setSeries (id) {
-//   seriesFlag = true
-//   currentSeries = id
-//   seriesDoc = $fiery(firestore.collection('curriculumEdit').doc(id))
-//   lessonList = $fiery(firestore.collection('curriculumEdit').doc(id).collection('lessons'), { map: true })
-//   return true
-// }
-
-// function getSeries () {
-//   if (seriesFlag) {
-//     return seriesDoc
-//   } else {
-//     return false
-//   }
-// }
-
-// function getLessonList () {
-//   if (seriesFlag) {
-//     return lessonList
-//   } else {
-//     return false
-//   }
-// }
-
-// function setLesson (id) {
-//   if (seriesFlag) {
-//     lessonFlag = true
-//     currentLesson = id
-//     lessonDoc = $fiery(firestore.collection('curriculumEdit').doc(currentSeries).collection('lessons').doc(id), { map: true })
-//     devoList = $fiery(firestore.collection('curriculumEdit').doc(currentSeries).collection('lessons').doc(id).collection('devos'), { map: true })
-//     return true
-//   } else {
-//     lessonFlag = false
-//     currentLesson = null
-//     return false
-//   }
-// }
-
-// function getLesson () {
-//   if (lessonFlag) {
-//     return lessonDoc
-//   } else {
-//     return false
-//   }
-// }
-
-// function setGuide (id) {
-//   if (lessonFlag) {
-//     guideFlag = true
-//     currentGuide = id
-//     guideDoc = $fiery(firestore.collection('curriculumEdit').doc(currentSeries).collection('lessons').doc(currentLesson).collection('guides').doc(id))
-//   } else {
-//     guideFlag = false
-//     currentGuide = null
-//     return false
-//   }
-// }
-
-// function getGuide () {
-//   if (guideFlag) {
-//     return guideDoc
-//   } else {
-//     return false
-//   }
-// }
-
-// function setReview () {
-//   if (lessonFlag) {
-//     reviewFlag = true
-//     reviewDoc = $fiery(firestore.collection('curriculumEdit').doc(currentSeries).collection('lessons').doc(currentLesson).collection('review').doc('review'))
-//     return true
-//   } else {
-//     reviewFlag = false
-//     return false
-//   }
-// }
-
-// function getReview () {
-//   if (reviewFlag) {
-//     return reviewDoc
-//   } else {
-//     return false
-//   }
-// }
-
-// function getDevoList () {
-//   if (lessonFlag) {
-//     return devoList
-//   } else {
-//     return false
-//   }
-// }
-
-// function setDevo (id) {
-//   if (lessonFlag) {
-//     devoFlag = true
-//     currentDevo = id
-//     devoDoc = $fiery(firestore.collection('curriculumEdit').doc(currentSeries).collection('lessons').doc(currentLesson).collection('devos').doc(id))
-//     return true
-//   } else {
-//     devoFlag = false
-//     currentDevo = null
-//     return false
-//   }
-// }
-
-// function getDevo () {
-//   if (devoFlag) {
-//     return devoDoc
-//   } else {
-//     return false
-//   }
-// }
-
-// function setDoc (type) {
-//   if (checkType[type]) {
-//     const initRef = firestore.collection('curriculumEdit').doc(currentSeries).collection('lessons').doc(currentLesson)
-//     var finalRef
-//     switch (type) {
-//       case 'guide':
-//         finalRef = initRef.collection('guides').doc(currentGuide)
-//         break
-//       case 'review':
-//         finalRef = initRef.collection('review').doc('review')
-//         break
-//       case 'devo':
-//         finalRef = initRef.collection('devos').doc(currentDevo)
-//         break
-//       default:
-//         return false
-//     }
-//     docFlag = true
-//     docType = type
-//     docStructure = $fiery(finalRef.collection('structure'), { map: true })
-//     docSections = $fiery(finalRef.collection('sections'), { map: true })
-//     docModules = $fiery(finalRef.collection('modules'), { map: true })
-//     return true
-//   } else {
-//     return false
-//   }
-// }
-
-// function getDoc () {
-//   if (docFlag) {
-//     return {
-//       type: docType,
-//       structure: docStructure,
-//       sections: docSections,
-//       modules: docModules
-//     }
-//   } else {
-//     return false
-//   }
-// }
-
-// function addSection (data) {
-//   if (docFlag) {
-//     return $fiery.sources.docSections.add(data).then((newRef) => {
-//       typeToDoc[docType].sectionOrder.push(newRef.id)
-//       return $fiery.update(typeToDoc[docType])
-//     })
-//   } else {
-//     return false
-//   }
-// }
-
-// function addModule (data, sectionid) {
-//   if (docFlag) {
-//     return $fiery.sources.docModules.add(data).then((newRef) => {
-//       docSections[sectionid].moduleOrder.push(newRef.id)
-//       return $fiery.update(docSections[sectionid])
-//     })
-//   } else {
-//     return false
-//   }
-// }
-
-// function initSeries (seriesid) {
-//   if (setSeries(seriesid)) {
-//     return true
-//   } else {
-//     return false
-//   }
-// }
-
-// function initLesson (seriesid, lessonid) {
-//   if (seriesFlag) {
-//     return setLesson(lessonid)
-//   } else {
-//     if (initSeries(seriesid)) {
-//       return initLesson(seriesid, lessonid)
-//     } else {
-//       return false
-//     }
-//   }
-// }
-
-// function initGuide (seriesid, lessonid, guideid) {
-//   if (lessonFlag) {
-//     return setGuide(guideid) && setDoc('guide')
-//   } else {
-//     if (initLesson(seriesid, lessonid)) {
-//       return initGuide(seriesid, lessonid, guideid)
-//     } else {
-//       return false
-//     }
-//   }
-// }
-
-// function initReview (seriesid, lessonid) {
-//   if (lessonFlag) {
-//     return setReview() && setDoc('review')
-//   } else {
-//     if (initLesson(seriesid, lessonid)) {
-//       return initReview(seriesid, lessonid)
-//     } else {
-//       return false
-//     }
-//   }
-// }
-
-// function initDevo (seriesid, lessonid, devoid) {
-//   if (devoFlag) {
-//     return setDevo(devoid) && setDoc('devo')
-//   } else {
-//     if (initLesson(seriesid, lessonid)) {
-//       return initDevo(seriesid, lessonid, devoid)
-//     } else {
-//       return false
-//     }
-//   }
-// }
+const nqFirestore = nqapp.firestore()
+nqFirestore.settings(settings)
 
 /**
  * This is a function to find a specific reference in firestore
@@ -536,6 +234,36 @@ function user (uid) {
   }
 }
 
+async function customNQLogin (uid) {
+  var loginFunction = functions.httpsCallable('nq-login')
+  const loginToken = await loginFunction({ uid })
+  try {
+    await nqapp.auth().signInWithCustomToken(loginToken)
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+async function resourceSearch (term, types) {
+  console.log('search called')
+  var searchFunction = nqapp.functions().httpsCallable('search-all')
+  const result = await searchFunction({ searchTerms: term, searchTypes: types })
+  console.log('search result', result)
+  return result
+}
+
+function nqTopics (topics) {
+  const topicFunction = functions.httpsCallable('nq-topic')
+  return topicFunction({ topics: topics })
+  // return Promise.all(topics.map(e => { return nqFirestore.collection('topics').doc(e).get() }))
+}
+
+function nqResources (resources) {
+  return true
+  // return Promise.all(resources.map(e => { return nqFirestore.collection(e.type).doc(e.id).get() }))
+}
+
 // leave the export, even if you don't use it
 export default ({ app, router, Vue }) => {
   Vue.use(FieryVue)
@@ -556,7 +284,12 @@ export default ({ app, router, Vue }) => {
     guideRef: guide,
     reviewRef: review,
     sectionRef: section,
-    sectionModules: sectionModules
+    sectionModules: sectionModules,
+    resourceSearch: resourceSearch,
+    nqAuth: nqapp.auth(),
+    nqLogin: customNQLogin,
+    nqTopics: nqTopics,
+    nqResources: nqResources
     // New system
     // currentUser: fbapp.auth().currentUser,
     // userData: getUserData(),

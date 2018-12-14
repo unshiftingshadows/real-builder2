@@ -7,7 +7,7 @@ module.exports = function (ctx) {
       // 'axios',
       'bible',
       'cookie',
-      'database',
+      // 'database',
       'firebase',
       'masonry',
       'vuelidate'
