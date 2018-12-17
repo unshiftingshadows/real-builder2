@@ -36,14 +36,14 @@
                   {{ point.split('%%')[0] }}<br/><span class="q-caption">{{ point.split('%%')[1] }}</span>
                 </li>
               </ol>
-              <p class="q-body-2"><span v-for="author in item.media.mediaid.author" :key="author">{{ author }} | </span>{{ item.media.mediaid.title }}</p>
+              <p class="q-body-2"><span v-for="author in item.media.media.author" :key="author">{{ author }} | </span>{{ item.media.media.title }}</p>
             </q-card-main>
           </q-card>
         </div>
       </div>
     </div>
     <q-modal v-model="resourceOpen" content-classes="resource-modal">
-      <resource-preview :type="resourceType" :resource="resource" :addModule="addModule" :close="closeResource" />
+      <resource-preview :type="resourceType" :resource="resource" :addModule="addModule" :close="closeResource" :remove="remove" />
     </q-modal>
   </div>
 </template>
@@ -55,8 +55,8 @@ export default {
   components: {
     ResourcePreview
   },
-  // name: 'ComponentName',
-  props: ['items', 'width', 'addModule', 'addButton'],
+  name: 'NQList',
+  props: ['items', 'width', 'addModule', 'addButton', 'removeResource'],
   data () {
     return {
       showItems: [],
@@ -128,15 +128,18 @@ export default {
     }
   },
   watch: {
-    'selectedTypes': function () {
-      if (this.selectedTypes.includes('all')) {
-        if (this.selectedTypes.length > 1) {
-          this.selectedTypes = ['all']
+    'selectedTypes': function (newVal, oldVal) {
+      if (newVal.includes('all')) {
+        if (newVal.length > 1) {
+          if (oldVal.includes('all')) {
+            this.selectedTypes.splice(0, 1)
+          } else {
+            this.selectedTypes = ['all']
+            this.showItems = this.items
+          }
         }
-        this.showItems = this.items
-      } else {
-        this.showItems = this.items.filter(this.checkType)
       }
+      this.showItems = this.items.filter(this.checkType)
     },
     'items': function (value) {
       if (this.selectedTypes[0] === 'all') {
@@ -168,7 +171,11 @@ export default {
       this.resourceOpen = false
     },
     checkType (item) {
-      return this.selectedTypes.includes(item.type)
+      return this.selectedTypes.includes('all') ? true : this.selectedTypes.includes(item.type)
+    },
+    remove (id) {
+      this.resourceOpen = false
+      this.removeResource(id)
     }
   }
 }

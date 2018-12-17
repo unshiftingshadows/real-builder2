@@ -1,9 +1,9 @@
 <template>
   <q-page padding>
     <div class="row gutter-md">
-      <div class="col-xs-12" style="height: 130px;">
-      </div>
-      <div class="col-12">
+      <!-- <div class="col-xs-12" style="height: 130px;">
+      </div> -->
+      <!-- <div class="col-12">
         <q-input type="text" v-model="searchTerms" float-label="Search for resources" clearable @keyup.enter="search" />
       </div>
       <div class="col-12">
@@ -11,9 +11,9 @@
       </div>
       <div class="col-12" v-if="searchTerms !== '' && searchItems.length > 0">
         <n-q-list v-if="searchTerms !== ''" :items="searchItems" :add-module="addResource" add-button />
-      </div>
+      </div> -->
       <div class="col-12" v-if="!loading" v-show="searchTerms === ''">
-        <resource-list :id="id" type="rlesson" :lesson="lesson" />
+        <resource-list :id="id" type="rlesson" :lesson="lesson" :add-research="addResearch" :remove-research="removeResearch" />
       </div>
     </div>
     <q-modal v-model="editTitle" ref="editTitleModal" content-classes="edit-title-modal">
@@ -78,9 +78,9 @@
           </q-popover>
         </q-btn>
       </q-toolbar>
-      <div class="main-idea-tab float-right main-idea-show">
+      <!-- <div class="main-idea-tab float-right main-idea-show">
         {{ lesson.mainIdea }}
-      </div>
+      </div> -->
     </q-page-sticky>
   </q-page>
 </template>
@@ -165,22 +165,33 @@ export default {
       //   })
       // })
     },
-    search () {
-      if (this.searchTerms !== '') {
-        this.searchItems = []
-        this.loading = true
-        this.$database.search('nqmedia', this.searchTerms, {}, (res) => {
-          this.searchItems = res
-          this.loading = false
-        })
+    // search () {
+    //   if (this.searchTerms !== '') {
+    //     this.searchItems = []
+    //     this.loading = true
+    //     this.$database.search('nqmedia', this.searchTerms, {}, (res) => {
+    //       this.searchItems = res
+    //       this.loading = false
+    //     })
+    //   }
+    // },
+    addResearch (id, type) {
+      // Add to either topic or resource lesson list
+      if (type === 'topic') {
+        this.lesson.topics.push(id)
+      } else {
+        this.lesson.resources.push(id)
       }
+      // Update lesson
+      this.$fiery.update(this.lesson)
     },
-    addResource (id, type) {
-      this.$database.resources('lesson', this.id, 'add', { id: id, type: type }, (res) => {
-        console.log('research', res)
-      })
-    },
-    addResearch () {
+    removeResearch (id, type) {
+      if (type === 'topic') {
+        this.lesson.topics.splice(this.lesson.topics.findIndex(e => e.id === id), 1)
+      } else {
+        this.lesson.resources.splice(this.lesson.resources.findIndex(e => e.id === id), 1)
+      }
+      this.$fiery.update(this.lesson)
     }
   }
 }

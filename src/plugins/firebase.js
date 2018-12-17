@@ -5,6 +5,7 @@ import 'firebase/firestore'
 import 'firebase/functions'
 // import $getFiery from 'fiery-data'
 import FieryVue from 'fiery-vue'
+const Fuse = require('fuse.js')
 
 /**
  * Settings for dev firebase instance
@@ -260,8 +261,64 @@ function nqTopics (topics) {
 }
 
 function nqResources (resources) {
-  return true
-  // return Promise.all(resources.map(e => { return nqFirestore.collection(e.type).doc(e.id).get() }))
+  const resourceFunction = functions.httpsCallable('nq-resource')
+  return resourceFunction({ resources: resources })
+}
+
+function nqList (type) {
+  return nqFirestore.collection(type + 's').get()
+}
+
+let index = []
+let indexTime = null
+
+function setIndex () {
+  console.log('setIndex')
+  indexTime = new Date()
+  return nqapp.database().ref('searchIndex').once('value').then((snapshot) => {
+    const data = snapshot.val()
+    index = [].concat.apply([], Object.keys(data).map(type => {
+      return Object.keys(data[type]).map(e => { return { ...data[type][e], type: type, '.key': e } })
+    }))
+    return true
+  })
+}
+
+async function nqSearch (searchInput, done) {
+  if (indexTime === null || new Date().getTime() - indexTime.getTime() > 300000) {
+    await setIndex()
+  }
+  console.log('search')
+  if (searchInput.split(':')[0] === 'tag') {
+    done([
+      {
+        label: searchInput.split(':')[1].split(',').join('&'),
+        sublabel: 'tag',
+        type: 'tag'
+      }
+    ])
+  } else {
+    var options = {
+      threshold: 0.2,
+      keys: [{
+        name: 'title',
+        weight: 0.3
+      }, {
+        name: 'author',
+        weight: 0.2
+      }, {
+        name: 'tags',
+        weight: 0.5
+      }]
+    }
+    var fuse = new Fuse(index, options)
+    var results = fuse.search(searchInput)
+    results.forEach(function (result) {
+      result.label = result.title
+      result.sublabel = result.type
+    })
+    done(results)
+  }
 }
 
 // leave the export, even if you don't use it
@@ -289,7 +346,9 @@ export default ({ app, router, Vue }) => {
     nqAuth: nqapp.auth(),
     nqLogin: customNQLogin,
     nqTopics: nqTopics,
-    nqResources: nqResources
+    nqResources: nqResources,
+    nqList: nqList,
+    nqSearch
     // New system
     // currentUser: fbapp.auth().currentUser,
     // userData: getUserData(),

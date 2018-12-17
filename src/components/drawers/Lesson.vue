@@ -6,6 +6,8 @@
     </div>
     <hr/>
     <div v-if="!lessonLoading">
+      <h5>Main Idea</h5>
+      <p>{{ lesson.mainIdea }}</p>
       <h5>Bible Refs</h5>
       <ul>
         <li v-for="ref in lesson.bibleRefs" :key="ref">{{ $bible.text(ref) }}<br/>{{ $bible.readable(ref) }}</li>

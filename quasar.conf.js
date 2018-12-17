@@ -88,6 +88,7 @@ module.exports = function (ctx) {
         'QCardActions',
         'QField',
         'QInput',
+        'QSearch',
         'QSelect',
         'QRating',
         'QChipsInput',

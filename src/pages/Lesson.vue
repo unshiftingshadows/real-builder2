@@ -74,9 +74,9 @@
           </q-popover>
         </q-btn>
       </q-toolbar>
-      <div class="main-idea-tab float-right main-idea-show">
+      <!-- <div class="main-idea-tab float-right main-idea-show">
         {{ lesson.mainIdea }}
-      </div>
+      </div> -->
     </q-page-sticky>
   </q-page>
 </template>
