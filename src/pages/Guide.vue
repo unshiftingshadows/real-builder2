@@ -97,7 +97,7 @@ export default {
     return {
       seriesid: this.$route.params.seriesid,
       id: this.$route.params.lessonid,
-      lesson: this.$fiery(this.$firebase.ref('lesson', this.$route.params.lessonid, '', this.$route.params.seriesid)),
+      lesson: this.$fiery(this.$firebase.lessonsRef(this.$route.params.seriesid).doc(this.$route.params.lessonid)),
       editTitle: false,
       editMainIdea: false,
       guideType: '',

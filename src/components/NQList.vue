@@ -36,14 +36,14 @@
                   {{ point.split('%%')[0] }}<br/><span class="q-caption">{{ point.split('%%')[1] }}</span>
                 </li>
               </ol>
-              <p class="q-body-2"><span v-for="author in item.media.media.author" :key="author">{{ author }} | </span>{{ item.media.media.title }}</p>
+              <p class="q-body-2">{{ item.media.media.author.join(', ') }} | {{ item.media.media.title }}</p>
             </q-card-main>
           </q-card>
         </div>
       </div>
     </div>
     <q-modal v-model="resourceOpen" content-classes="resource-modal">
-      <resource-preview :type="resourceType" :resource="resource" :addModule="addModule" :close="closeResource" :remove="remove" />
+      <resource-preview v-if="resourceOpen" :type="resourceType" :resource="resource" :addModule="addModule" :close="closeResource" :remove="remove" />
     </q-modal>
   </div>
 </template>
@@ -195,6 +195,11 @@ export default {
 .image-cardl:hover {
   opacity: 1;
 }
+.resource-modal {
+  padding: 10px;
+  width: 100%;
+  height: 100%;
+}
 @media screen and (min-width: 800px) {
   .media-cardl {
     width: 31%;
@@ -205,13 +210,9 @@ export default {
     width: 45%;
   }
   .resource-modal {
+    padding: 30px;
     min-width: 650px;
     width: 650px;
   }
-}
-.resource-modal {
-  /* padding: 30px; */
-  width: 100%;
-  height: 100%;
 }
 </style>

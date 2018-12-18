@@ -4,15 +4,20 @@
       <h5>{{ series.title }}</h5>
       <p>{{ series.mainIdea }}</p>
     </div>
-    <hr/>
+    <hr style="border-color: var(--q-color-primary);"/>
     <div v-if="!lessonLoading">
-      <h5>Main Idea</h5>
+      <h6>Main Idea</h6>
       <p>{{ lesson.mainIdea }}</p>
-      <h5>Bible Refs</h5>
-      <ul>
-        <li v-for="ref in lesson.bibleRefs" :key="ref">{{ $bible.text(ref) }}<br/>{{ $bible.readable(ref) }}</li>
-      </ul>
-      <hr/>
+      <h6>Bible Refs</h6>
+      <q-list no-border separator>
+        <q-item v-for="(ref, index) in bibleRefs" :key="ref">
+          <q-item-main>
+            <q-item-tile label>{{ ref }}</q-item-tile>
+            <q-item-tile sublabel>{{ $bible.readable(lesson.bibleRefs[index]) }}</q-item-tile>
+          </q-item-main>
+        </q-item>
+      </q-list>
+      <hr style="border-color: var(--q-color-primary);"/>
       <q-input v-model="lesson.notes" float-label="Lesson Notes" type="textarea" :max-height="150" :min-rows="3" />
     </div>
   </div>
@@ -34,10 +39,12 @@ export default {
       }),
       lesson: this.$fiery(this.$firebase.lessonsRef(this.$route.params.seriesid).doc(this.$route.params.lessonid), {
         map: true,
-        onSuccess: () => {
+        onSuccess: async () => {
+          this.bibleRefs = await this.$bible.texts(this.lesson.bibleRefs)
           this.lessonLoading = false
         }
-      })
+      }),
+      bibleRefs: []
     }
   }
 }

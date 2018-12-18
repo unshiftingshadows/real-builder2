@@ -35,16 +35,16 @@ function osis (ref) {
   return new BCVParser().parse(ref).osis()
 }
 
-function text (ref, version) {
-  return firebase.functions().httpsCallable('bible-bibleText')({ bibleRef: ref, version: version })
-    .then((res) => {
-      console.log(res)
-      return res.data
-    })
-    .catch((err) => {
-      console.error(err)
-      return null
-    })
+async function text (ref, version) {
+  return (await firebase.functions().httpsCallable('bible-bibleText')({ bibleRef: ref, version: version })).data.text
+  // .then((res) => {
+  //   console.log(res)
+  //   return res.data.text
+  // })
+  // .catch((err) => {
+  //   console.error(err)
+  //   return 'Error'
+  // })
   // firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
   //   axios.post('/bible', {
   //     ref: ref,
@@ -62,12 +62,19 @@ function text (ref, version) {
   // })
 }
 
+async function texts (refs, version) {
+  const bibleTextFunction = firebase.functions().httpsCallable('bible-bibleText')
+  const values = (await Promise.all(refs.map(async e => { return bibleTextFunction({ bibleRef: e, version: version }) }))).map(e => { return e.data.text })
+  return values
+}
+
 // leave the export, even if you don't use it
 export default ({ app, router, Vue }) => {
   Vue.prototype.$bible = {
     bcv: new BCVParser(),
     readable: readable,
     parse: osis,
-    text: text
+    text: text,
+    texts: texts
   }
 }

@@ -180,7 +180,7 @@ export default {
       if (type === 'topic') {
         this.lesson.topics.push(id)
       } else {
-        this.lesson.resources.push(id)
+        this.lesson.resources.push({addedBy: this.$firebase.auth.currentUser.uid, dateAdded: new Date(), id, type})
       }
       // Update lesson
       this.$fiery.update(this.lesson)

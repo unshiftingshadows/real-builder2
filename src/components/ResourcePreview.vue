@@ -3,15 +3,25 @@
     <!-- <q-btn color="negative" class="float-right" icon="fas fa-trash" @click.native="remove(resource.id)" v-if="remove !== undefined" /> -->
     <q-btn color="primary" class="float-right" @click.native="addClicked" v-if="addModule !== undefined">Add</q-btn>
     <div class="row gutter-sm items-center">
-      <div class="col-xs-2">
+      <div class="col-xs-3">
         <img v-if="type !== 'note' && type !== 'document'" :src="media.thumbURL" style="width: 100%;" />
       </div>
-      <div class="col-xs-10">
+      <div class="col-xs-9">
+        <q-btn
+          color="primary"
+          @click.native="close()"
+          icon="fas fa-times"
+          class="float-right"
+          size="sm"
+        />
         <h4>{{ media.title }}</h4>
-        <p><span v-for="author in media.author" :key="author">{{ author }}</span></p>
+        <p v-if="media.author">{{ media.author.join(', ') }}</p>
+        <p></p>
         <div v-if="!snippetTypes.includes(type)">
           <q-chip v-for="tag in media.allTags" :key="tag" color="primary">{{ tag }}</q-chip>
         </div>
+      </div>
+      <div class="col-xs-12">
         <div v-if="snippetTypes.includes(type)" class="col-12">
           <div v-if="snippet.text">
             <!-- <h5>{{ type.charAt(0).toUpperCase() + type.slice(1) }} Text</h5> -->
@@ -37,7 +47,7 @@
     </div>
     <div class="row gutter-sm justify-center" v-if="type === 'article'">
       <div class="col-xs-10">
-        <span v-html="media.html"></span>
+        <span v-html="media.html" class="article-text"></span>
       </div>
     </div>
   </div>
@@ -81,7 +91,12 @@ export default {
   },
   methods: {
     init () {
-      this.media = this.resource
+      if (this.snippetTypes.includes(this.type)) {
+        this.media = this.resource.media
+        this.snippet = this.resource
+      } else {
+        this.media = this.resource
+      }
     },
     addClicked () {
       this.addModule(this.resource._id, this.type)
@@ -92,7 +107,7 @@ export default {
 </script>
 
 <style>
-.resource-preview {
-  padding: 20px;
+.article-text img:first-of-type {
+  display: none !important;
 }
 </style>

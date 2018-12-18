@@ -269,55 +269,106 @@ function nqList (type) {
   return nqFirestore.collection(type + 's').get()
 }
 
-let index = []
-let indexTime = null
+let mediaIndex = []
+let mediaIndexTime = null
+let snippetIndex = []
+let snippetIndexTime = null
 
-function setIndex () {
-  console.log('setIndex')
-  indexTime = new Date()
+function setMediaIndex () {
+  console.log('setMediaIndex')
+  mediaIndexTime = new Date()
   return nqapp.database().ref('searchIndex').once('value').then((snapshot) => {
     const data = snapshot.val()
-    index = [].concat.apply([], Object.keys(data).map(type => {
+    mediaIndex = [].concat.apply([], Object.keys(data).map(type => {
       return Object.keys(data[type]).map(e => { return { ...data[type][e], type: type, '.key': e } })
     }))
     return true
   })
 }
 
-async function nqSearch (searchInput, done) {
-  if (indexTime === null || new Date().getTime() - indexTime.getTime() > 300000) {
-    await setIndex()
-  }
-  console.log('search')
-  if (searchInput.split(':')[0] === 'tag') {
-    done([
-      {
-        label: searchInput.split(':')[1].split(',').join('&'),
-        sublabel: 'tag',
-        type: 'tag'
-      }
-    ])
-  } else {
-    var options = {
-      threshold: 0.2,
-      keys: [{
-        name: 'title',
-        weight: 0.3
-      }, {
-        name: 'author',
-        weight: 0.2
-      }, {
-        name: 'tags',
-        weight: 0.5
-      }]
+function setSnippetIndex () {
+  console.log('setSnippetIndex')
+  snippetIndexTime = new Date()
+  return nqapp.database().ref('searchIndexSnippet').once('value').then((snapshot) => {
+    const data = snapshot.val()
+    snippetIndex = [].concat.apply([], Object.keys(data).map(type => {
+      return Object.keys(data[type]).map(e => { return { ...data[type][e], type: type, '.key': e } })
+    }))
+    return true
+  })
+}
+
+async function nqSearch (searchInput, type, done) {
+  if (type === 'media') {
+    if (mediaIndexTime === null || new Date().getTime() - mediaIndexTime.getTime() > 900000) {
+      await setMediaIndex()
     }
-    var fuse = new Fuse(index, options)
-    var results = fuse.search(searchInput)
-    results.forEach(function (result) {
-      result.label = result.title
-      result.sublabel = result.type
-    })
-    done(results)
+    console.log('search')
+    if (searchInput.split(':')[0] === 'tag') {
+      done([
+        {
+          label: searchInput.split(':')[1].split(',').join('&'),
+          sublabel: 'tag',
+          type: 'tag'
+        }
+      ])
+    } else {
+      var mediaOptions = {
+        threshold: 0.2,
+        keys: [{
+          name: 'title',
+          weight: 0.3
+        }, {
+          name: 'author',
+          weight: 0.2
+        }, {
+          name: 'tags',
+          weight: 0.5
+        }]
+      }
+      var fuse = new Fuse(mediaIndex, mediaOptions)
+      var results = fuse.search(searchInput)
+      results.forEach(function (result) {
+        result.label = result.title
+        result.sublabel = result.type
+      })
+      done(results)
+    }
+  } else if (type === 'snippet') {
+    if (snippetIndexTime === null || new Date().getTime() - snippetIndexTime.getTime() > 900000) {
+      await setSnippetIndex()
+    }
+    console.log('search')
+    if (searchInput.split(':')[0] === 'tag') {
+      done([
+        {
+          label: searchInput.split(':')[1].split(',').join('&'),
+          sublabel: 'tag',
+          type: 'tag'
+        }
+      ])
+    } else {
+      var snippetOptions = {
+        threshold: 0.2,
+        keys: [{
+          name: 'text',
+          weight: 0.5
+        }, {
+          name: 'author',
+          weight: 0.2
+        }, {
+          name: 'tags',
+          weight: 0.3
+        }]
+      }
+      var snippetFuse = new Fuse(snippetIndex, snippetOptions)
+      var snippetResults = snippetFuse.search(searchInput)
+      snippetResults.forEach(function (result) {
+        result.label = result.text
+        result.sublabel = `${result.title} | ${result.author}`
+      })
+      done(snippetResults)
+    }
   }
 }
 

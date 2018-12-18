@@ -1,16 +1,22 @@
 <template>
   <div>
-    <h5>Topics<q-btn icon="fas fa-plus" color="primary" class="on-right" size="sm" @click.native="showTopics()" /></h5>
-    <div v-if="!topics || topics === undefined || topics.length === 0" class="q-subheading">No current topics</div>
-    <div v-masonry transition-duration="0.3s" item-selection=".topic-card">
+    <h5>Topics
+      <q-btn icon="fas fa-plus" color="primary" class="on-right" size="sm" @click.native="showTopics()" />
+      <q-spinner size="2rem" color="secondary" class="on-right" v-if="loadingTopics" />
+    </h5>
+    <div v-if="!loadingTopics && topics.length === 0" class="q-subheading">No current topics</div>
+    <div v-masonry transition-duration="0.3s" item-selection=".topic-card" v-if="!loadingTopics && topics.length > 0">
       <q-card v-masonry-tile v-for="topic in topics" :key="topic.id" class="topic-card cursor-pointer" inline @click.native="openTopic(topic)">
         <q-card-title>{{ topic.title }}</q-card-title>
         <q-card-main>{{ topic.premise }}</q-card-main>
       </q-card>
     </div>
-    <h5>Resources<q-btn icon="fas fa-plus" color="primary" class="on-right" size="sm" @click.native="addResourceModal = true" /></h5>
-    <div v-if="!resources || resources === undefined || resources.length === 0" class="q-subheading">No current resources</div>
-    <n-q-list v-if="resources && resources !== undefined && resources.length > 0" :items="resources" :remove-resource="removeResource" />
+    <h5>Resources
+      <q-btn icon="fas fa-plus" color="primary" class="on-right" size="sm" @click.native="addResourceModal = true" />
+      <q-spinner size="2rem" color="secondary" class="on-right" v-if="loadingResources" />
+    </h5>
+    <div v-if="!loadingResources && resources.length === 0" class="q-subheading">No current resources</div>
+    <n-q-list v-if="!loadingResources && resources.length > 0" :items="resources" :remove-resource="removeResource" />
     <q-modal v-model="addTopicModal" ref="addTopicModal" content-classes="topic-modal">
       <div class="row gutter-md">
         <div class="col-12">
@@ -50,14 +56,47 @@
         </div>
         <div class="col-12">
           <!-- <q-input type="text" v-model="researchSearch" float-label="Search for resources" clearable @keyup.enter="search" /> -->
-          <q-search v-model="researchSearch" placeholder="Search..." class="on-left gt-sm" color="dark" inverted icon="fas fa-search">
-            <q-autocomplete
-              @search="search"
-              @selected="selected"
-              ref="searchModal"
-            />
-          </q-search>
-          <q-spinner size="3rem" color="secondary" v-if="searching" />
+          <!-- <q-btn-toggle
+            v-model="searchType"
+            class="float-right"
+            color="light"
+            text-color="dark"
+            toggle-text-color="white"
+            toggle-color="tertiary"
+            :options="[
+              {label: 'Media', value: 'media'},
+              {label: 'Snippet', value: 'snippet'},
+              {label: 'Add New', value: 'add'}
+            ]"
+          /> -->
+          <q-tabs align="justify">
+            <q-tab default slot="title" name="media-tab" label="Media" />
+            <q-tab slot="title" name="snippet-tab" label="Snippet" />
+            <q-tab slot="title" name="add-tab" label="Add Media" />
+            <q-tab-pane name="media-tab">
+              <q-search v-model="researchSearch" placeholder="Search..." class="on-left gt-sm" style="margin-top: 60px;" color="dark" inverted icon="fas fa-search">
+                <q-autocomplete
+                  @search="searchMedia"
+                  @selected="selectedMedia"
+                  ref="searchModal"
+                  :max-results="6"
+                />
+                <q-spinner size="2rem" color="secondary" v-if="searching" />
+              </q-search>
+            </q-tab-pane>
+            <q-tab-pane name="snippet-tab">
+              <q-search v-model="snippetSearch" placeholder="Search..." class="on-left gt-sm" style="margin-top: 60px;" color="dark" inverted icon="fas fa-search">
+                <q-autocomplete
+                  @search="searchSnippet"
+                  @selected="selectedSnippet"
+                  ref="searchSnippetModal"
+                  :max-results="4"
+                />
+                <q-spinner size="2rem" color="secondary" v-if="searching" />
+              </q-search>
+            </q-tab-pane>
+            <q-tab-pane name="add-tab">Add Media Tab</q-tab-pane>
+          </q-tabs>
           <!-- <n-q-list v-if="researchResults.length > 0" :items="researchResults" /> -->
         </div>
       </div>
@@ -79,14 +118,19 @@ export default {
   props: ['id', 'type', 'lesson', 'addResearch', 'removeResearch'],
   data () {
     return {
+      loadingTopics: true,
+      loadingResources: true,
       topics: [],
       resources: [],
       allTopics: [],
       selectedTopic: {},
       addTopicModal: false,
       addResourceModal: false,
+      searchType: '',
       researchSearch: '',
       researchResults: [],
+      snippetSearch: '',
+      snippetResults: [],
       searching: false,
       topicOpen: false
     }
@@ -96,10 +140,14 @@ export default {
   },
   methods: {
     async init () {
+      this.loadingTopics = true
+      this.loadingResources = true
       this.topics = (await this.$firebase.nqTopics(this.lesson.topics)).data.joined
+      this.loadingTopics = false
       this.resources = (await this.$firebase.nqResources(this.lesson.resources)).data.resources.concat([].concat.apply([], this.topics.map(e => {
         return e.resources
       })))
+      this.loadingResources = false
     },
     async showTopics () {
       this.addTopicModal = true
@@ -121,16 +169,31 @@ export default {
       this.removeResearch(id, 'other')
       this.init()
     },
-    search (searchInput, done) {
+    searchMedia (searchInput, done) {
       this.searching = true
-      this.$firebase.nqSearch(searchInput, (results) => {
+      this.$firebase.nqSearch(searchInput, 'media', (results) => {
         this.searching = false
         this.researchResults = results
         done(results)
       })
     },
-    selected (item) {
-      console.log('selected', item)
+    selectedMedia (item) {
+      this.addResearch(item['.key'], item.type)
+      this.$refs.addResourceModal.hide()
+      this.init()
+    },
+    searchSnippet (searchInput, done) {
+      this.searching = true
+      this.$firebase.nqSearch(searchInput, 'snippet', (results) => {
+        this.searching = false
+        this.researchResults = results
+        done(results)
+      })
+    },
+    selectedSnippet (item) {
+      this.addResearch(item['.key'], item.type)
+      this.$refs.addResourceModal.hide()
+      this.init()
     },
     openTopic (topic) {
       this.selectedTopic = topic
