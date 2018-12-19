@@ -5,7 +5,7 @@
       </div>
       <div class="col-12" v-if="passageList.length > 0">
         <h4 style="margin-top: 0;">Passages</h4>
-        <p v-for="passage in passageList" :key="passage.ref"><b>{{ passage.readable }}</b><br/>{{ passage.text }}</p>
+        <p v-for="(passage, index) in passageList" :key="passage"><b>{{ passage }}</b><br/>{{ $bible.readable(devo.bibleRefs[index]) }}</p>
       </div>
       <div class="col-12">
         <!-- <module-list type="rdevo" :id="id" /> -->
@@ -96,19 +96,20 @@ export default {
       lessonid: this.$route.params.lessonid,
       id: this.$route.params.devoid,
       devo: this.$fiery(this.$firebase.devosRef(this.$route.params.seriesid, this.$route.params.lessonid).doc(this.$route.params.devoid), {
-        onSuccess: (val) => {
+        onSuccess: async (val) => {
           console.log('ran!', val)
-          this.devo.bibleRefs.forEach(ref => {
-            var readable = this.$bible.readable(ref)
-            this.$bible.text(ref, 'esv').then(res => {
-              console.log('ref', ref)
-              this.passageList.push({
-                ref: ref,
-                readable: readable,
-                text: res.text
-              })
-            })
-          })
+          this.passageList = await this.$bible.texts(this.devo.bibleRefs, 'esv')
+          // this.devo.bibleRefs.forEach(ref => {
+          //   var readable = this.$bible.readable(ref)
+          //   this.$bible.texts(ref, 'esv').then(res => {
+          //     console.log('ref', ref)
+          //     this.passageList.push({
+          //       ref: ref,
+          //       readable: readable,
+          //       text: res.text
+          //     })
+          //   })
+          // })
         }
       }),
       editTitle: false,

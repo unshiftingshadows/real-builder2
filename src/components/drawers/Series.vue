@@ -1,10 +1,11 @@
 <template>
   <div v-if="!loading">
-    <h5>Lesson Outline</h5>
+    <h6>Lesson Outline</h6>
     <ol>
       <li v-for="lesson in series.lessonOrder" :key="lesson">{{ lessons[lesson].title }}</li>
     </ol>
-    <h5>User Roles</h5>
+    <hr style="border-color: var(--q-color-primary);"/>
+    <h6>User Roles</h6>
     <ul>
       <li v-for="user in users" :key="user.id">{{ user.name }} -- {{ user.role }}</li>
     </ul>

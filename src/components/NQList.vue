@@ -4,7 +4,7 @@
       <!-- <div class="col-12">
         <q-btn label="Pack" color="primary" @click.native="pack" />
       </div> -->
-      <div class="col-12">
+      <div class="col-12" v-if="nofilter !== ''">
         <q-select
           multiple
           v-model="selectedTypes"
@@ -14,12 +14,12 @@
       </div>
       <div class="col-12">
         <div v-masonry transition-duration="0.3s" item-selection=".media-cardl">
-          <q-card v-masonry-tile v-for="item in showItems" :key="item._id" color="primary" v-bind:class="[item.type] + 'l'" class="media-cardl" @click.native="openItem(item.media, item.type)">
+          <q-card v-masonry-tile v-for="item in showItems" :key="item._id" color="primary" v-bind:class="singlecolumn === '' ? ' one-column' : ''" class="media-cardl" @click.native="openItem(item.media, item.type)">
             <q-btn v-if="addButton === ''" icon="fas fa-plus" color="positive" class="float-right cursor-pointer" style="margin-bottom: 5px; margin-left: 5px;" dense size="sm" />
             <q-card-media v-if="item.type == 'book' || item.type == 'movie' || item.type == 'video' || item.type == 'article' || item.type == 'image'">
               <img :src="item.media.thumbURL" />
             </q-card-media>
-            <q-card-title v-if="item.type == 'book' || item.type == 'movie' || item.type == 'video' || item.type == 'article' || item.type == 'discourse' || item.type == 'note'">
+            <q-card-title class="q-card-title-fix" v-if="item.type == 'book' || item.type == 'movie' || item.type == 'video' || item.type == 'article' || item.type == 'discourse' || item.type == 'note'">
               {{ item.media.title }}
               <span v-if="item.type == 'book' || item.type == 'movie' || item.type == 'video' || item.type == 'article' || item.type == 'discourse'" v-for="author in item.media.author" :key="author" slot="subtitle">{{ author }}</span>
               <span v-if="item.type == 'note'" slot="subtitle">{{ item.media.text }}</span>
@@ -56,7 +56,7 @@ export default {
     ResourcePreview
   },
   name: 'NQList',
-  props: ['items', 'width', 'addModule', 'addButton', 'removeResource'],
+  props: ['items', 'width', 'addModule', 'addButton', 'removeResource', 'singlecolumn', 'nofilter'],
   data () {
     return {
       showItems: [],
@@ -182,6 +182,10 @@ export default {
 </script>
 
 <style>
+.one-column.media-cardl {
+  width: 95% !important;
+}
+
 .media-cardl {
   margin: 5px;
   width: 95%;
@@ -214,5 +218,8 @@ export default {
     min-width: 650px;
     width: 650px;
   }
+}
+.q-card-title-fix .q-card-title {
+  height: auto !important;
 }
 </style>

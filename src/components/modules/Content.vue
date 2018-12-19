@@ -64,7 +64,7 @@
           <!-- Save/Delete Buttons -->
           <div class="col-12">
             <q-btn color="primary" @click.native="preSave" :disabled="loading">Save</q-btn>
-            <q-btn outline color="negative" @click.native="modMethods.remove(id)" :disabled="loading">Delete</q-btn>
+            <q-btn outline color="negative" class="on-right" @click.native="modMethods.remove(id)" :disabled="loading">Delete</q-btn>
           </div>
         </div>
       </q-card-main>

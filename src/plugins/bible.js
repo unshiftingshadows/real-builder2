@@ -36,35 +36,25 @@ function osis (ref) {
 }
 
 async function text (ref, version) {
-  return (await firebase.functions().httpsCallable('bible-bibleText')({ bibleRef: ref, version: version })).data.text
-  // .then((res) => {
-  //   console.log(res)
-  //   return res.data.text
-  // })
-  // .catch((err) => {
-  //   console.error(err)
-  //   return 'Error'
-  // })
-  // firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
-  //   axios.post('/bible', {
-  //     ref: ref,
-  //     version: version,
-  //     token: idToken
-  //   })
-  //     .then((res) => {
-  //       console.log(res.data)
-  //       return res.data
-  //     })
-  //     .catch((err) => {
-  //       console.log(err)
-  //       return null
-  //     })
-  // })
+  return fixQuotations((await firebase.functions().httpsCallable('bible-bibleText')({ bibleRef: ref, version: version })).data.text)
+}
+
+function fixQuotations (text) {
+  console.log('text', text)
+  let goodText = text.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').trim()
+  console.log('goodText', goodText)
+  if (goodText.charAt(0) === '"' || goodText.charAt(0) === "'") {
+    return goodText.endsWith('"') || goodText.endsWith("'") ? goodText : goodText.concat(goodText.charAt(0) === '"' ? '"' : "'")
+  } else if (goodText.endsWith('"') || goodText.endsWith("'")) {
+    return goodText.endsWith('"') ? '"'.concat(goodText) : "'".concat(goodText)
+  } else {
+    return goodText
+  }
 }
 
 async function texts (refs, version) {
   const bibleTextFunction = firebase.functions().httpsCallable('bible-bibleText')
-  const values = (await Promise.all(refs.map(async e => { return bibleTextFunction({ bibleRef: e, version: version }) }))).map(e => { return e.data.text })
+  const values = (await Promise.all(refs.map(async e => { return bibleTextFunction({ bibleRef: e, version: version }) }))).map(e => { return fixQuotations(e.data.text) })
   return values
 }
 

@@ -1,48 +1,67 @@
 <template>
   <div>
+    <q-spinner size="2rem" color="secondary" v-if="lessonLoading" />
     <div v-if="!lessonLoading">
       <h5>{{ lesson.title }}</h5>
       <p>{{ lesson.mainIdea }}</p>
     </div>
-    <hr/>
+    <hr style="border-color: var(--q-color-primary);"/>
     <div v-if="!devoLoading">
       <q-input v-model="devo.notes" float-label="Devo Notes" type="textarea" :max-height="150" :min-rows="3" />
     </div>
-    <hr/>
-    <resource-search />
+    <hr style="border-color: var(--q-color-primary);"/>
+    <!-- <resource-search /> -->
+    <q-tabs align="justify">
+      <q-tab default slot="title" name="research-tab" icon="fas fa-file" />
+      <q-tab slot="title" name="search-tab" icon="fas fa-search" />
+      <q-tab-pane name="research-tab">
+        <q-select
+          v-model="topicSelect"
+          float-label="Topic"
+          :options="topicOptions"
+        />
+        <q-spinner size="2rem" color="secondary" v-if="topicLoading && topicSelect !== 'none'" />
+        <div v-if="!topicLoading && topicSelect !== 'none'">
+          <br/>
+          <p><strong style="text-decoration: underline;">Premise</strong><br/>{{ topic.premise }}</p>
+          <p><strong style="text-decoration: underline;">Notes</strong><br/><span v-html="topic.notes"/></p>
+          <p><strong style="text-decoration: underline;">Conclusion</strong><br/>{{ topic.premise }}</p>
+          <hr/>
+          <n-q-list v-if="topic.resources.length > 0" :items="topic.resources" singlecolumn nofilter />
+        </div>
+        <div v-if="!lessonLoading && topicSelect === 'none' && resources.length > 0">
+          <n-q-list :key="topicSelect" :items="resources" singlecolumn nofilter />
+        </div>
+      </q-tab-pane>
+      <q-tab-pane name="search-tab">Search</q-tab-pane>
+    </q-tabs>
   </div>
 </template>
 
 <script>
 import ResourceSearch from 'components/ResourceSearch'
+import NQList from 'components/NQList'
 
 export default {
   components: {
-    ResourceSearch
+    ResourceSearch,
+    NQList
   },
   name: 'DrawerDevo',
   fiery: true,
-  firebase () {
-    return {
-      lesson: {
-        source: this.$firebase.lessonsRef(this.$route.params.seriesid).doc(this.$route.params.lessonid),
-        asObject: true,
-        readyCallback: function (val) {
-          console.log('ran!', val)
-        }
-      },
-      devo: {
-        source: this.$firebase.devoContentRef(this.$route.params.seriesid, this.$route.params.lessonid, this.$route.params.devoid),
-        asObject: true
-      }
-    }
-  },
   data () {
     return {
       lessonLoading: true,
       devoLoading: false,
       lesson: this.$fiery(this.$firebase.lessonsRef(this.$route.params.seriesid).doc(this.$route.params.lessonid), {
-        onSuccess: () => {
+        onSuccess: async () => {
+          const topics = (await Promise.all(this.lesson.topics.map(e => {
+            return this.$firebase.nqFirestore.collection('topics').doc(e).get()
+          })))
+          console.log('topics', topics.map(e => { return e.data() }))
+          this.topicOptions = this.topicOptions.concat(topics.map(e => { return { label: e.data().title, value: e.id } }))
+          this.resources = (await this.$firebase.nqResources(this.lesson.resources)).data.resources
+          // console.log('resources', resources)
           this.lessonLoading = false
         }
       }),
@@ -50,8 +69,48 @@ export default {
         onSuccess: () => {
           this.devoLoading = false
         }
-      })
+      }),
+      topicSelect: 'none',
+      topicOptions: [
+        {
+          label: 'Choose a topic...',
+          value: 'none'
+        }
+      ],
+      topic: {},
+      topicLoading: true,
+      resources: []
     }
+  },
+  watch: {
+    'topicSelect': async function (newVal, oldVal) {
+      if (newVal !== 'none' && newVal !== oldVal && newVal !== this.topic.id) {
+        this.topicLoading = true
+        this.topic = (await this.$firebase.nqTopics([newVal])).data.joined[0]
+        this.topicLoading = false
+      }
+    }
+  },
+  mounted () {
+  },
+  methods: {
+    // async pullTopics () {
+    //   console.log('pull')
+    //   this.topicOptions = [
+    //     {
+    //       label: 'Choose a topic...',
+    //       value: 'none'
+    //     }
+    //   ]
+    //   this.topicOptions.concat((await this.$firebase.nqFirestore.collection('topics').get()).docs.map(e => {
+    //     console.log('done', e.data())
+    //     const data = e.data()
+    //     return {
+    //       label: data.title,
+    //       value: e.id
+    //     }
+    //   }))
+    // }
   }
 }
 </script>

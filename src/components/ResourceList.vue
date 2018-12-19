@@ -70,13 +70,13 @@
             ]"
           /> -->
           <q-tabs align="justify">
-            <q-tab default slot="title" name="media-tab" label="Media" />
-            <q-tab slot="title" name="snippet-tab" label="Snippet" />
-            <q-tab slot="title" name="add-tab" label="Add Media" />
-            <q-tab-pane name="media-tab">
+            <q-tab default slot="title" name="search-tab" label="Search" />
+            <!-- <q-tab slot="title" name="snippet-tab" label="Snippet" /> -->
+            <q-tab slot="title" name="add-tab" label="Add" />
+            <q-tab-pane name="search-tab">
               <q-search v-model="researchSearch" placeholder="Search..." class="on-left gt-sm" style="margin-top: 60px;" color="dark" inverted icon="fas fa-search">
                 <q-autocomplete
-                  @search="searchMedia"
+                  @search="$firebase.nqSearch"
                   @selected="selectedMedia"
                   ref="searchModal"
                   :max-results="6"
@@ -84,7 +84,7 @@
                 <q-spinner size="2rem" color="secondary" v-if="searching" />
               </q-search>
             </q-tab-pane>
-            <q-tab-pane name="snippet-tab">
+            <!-- <q-tab-pane name="snippet-tab">
               <q-search v-model="snippetSearch" placeholder="Search..." class="on-left gt-sm" style="margin-top: 60px;" color="dark" inverted icon="fas fa-search">
                 <q-autocomplete
                   @search="searchSnippet"
@@ -94,7 +94,7 @@
                 />
                 <q-spinner size="2rem" color="secondary" v-if="searching" />
               </q-search>
-            </q-tab-pane>
+            </q-tab-pane> -->
             <q-tab-pane name="add-tab">Add Media Tab</q-tab-pane>
           </q-tabs>
           <!-- <n-q-list v-if="researchResults.length > 0" :items="researchResults" /> -->

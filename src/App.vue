@@ -331,4 +331,20 @@ export default {
   }
 }
 
+.q-popover {
+  max-width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+  .q-popover {
+    max-width: 400px;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .q-popover {
+    max-width: 800px;
+  }
+}
+
 </style>

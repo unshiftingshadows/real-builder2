@@ -4,11 +4,10 @@
       <h5>{{ series.title }}</h5>
       <p>{{ series.mainIdea }}</p>
     </div>
-    <hr/>
+    <hr style="border-color: var(--q-color-primary);"/>
     <div v-if="!lessonLoading">
-      <h5>Main Idea</h5>
+      <h6>{{ lesson.title }}</h6>
       <p>{{ lesson.mainIdea }}</p>
-      <h5>Bible Refs</h5>
       <q-list no-border separator>
         <q-item v-for="(ref, index) in bibleRefs" :key="ref">
           <q-item-main>
@@ -17,7 +16,7 @@
           </q-item-main>
         </q-item>
       </q-list>
-      <hr/>
+      <hr style="border-color: var(--q-color-primary);"/>
       <q-input v-model="lesson.notes" float-label="Lesson Notes" type="textarea" :max-height="150" :min-rows="3" />
     </div>
     <div class="fixed-bottom bg-primary drawer-overlay" style="padding: 10px;" v-bind:class="{ 'full-height': showResources }">

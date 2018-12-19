@@ -298,78 +298,86 @@ function setSnippetIndex () {
   })
 }
 
-async function nqSearch (searchInput, type, done) {
-  if (type === 'media') {
-    if (mediaIndexTime === null || new Date().getTime() - mediaIndexTime.getTime() > 900000) {
-      await setMediaIndex()
-    }
-    console.log('search')
-    if (searchInput.split(':')[0] === 'tag') {
-      done([
-        {
-          label: searchInput.split(':')[1].split(',').join('&'),
-          sublabel: 'tag',
-          type: 'tag'
-        }
-      ])
-    } else {
-      var mediaOptions = {
-        threshold: 0.2,
-        keys: [{
-          name: 'title',
-          weight: 0.3
-        }, {
-          name: 'author',
-          weight: 0.2
-        }, {
-          name: 'tags',
-          weight: 0.5
-        }]
-      }
-      var fuse = new Fuse(mediaIndex, mediaOptions)
-      var results = fuse.search(searchInput)
-      results.forEach(function (result) {
-        result.label = result.title
-        result.sublabel = result.type
-      })
-      done(results)
-    }
-  } else if (type === 'snippet') {
-    if (snippetIndexTime === null || new Date().getTime() - snippetIndexTime.getTime() > 900000) {
-      await setSnippetIndex()
-    }
-    console.log('search')
-    if (searchInput.split(':')[0] === 'tag') {
-      done([
-        {
-          label: searchInput.split(':')[1].split(',').join('&'),
-          sublabel: 'tag',
-          type: 'tag'
-        }
-      ])
-    } else {
-      var snippetOptions = {
-        threshold: 0.2,
-        keys: [{
-          name: 'text',
-          weight: 0.5
-        }, {
-          name: 'author',
-          weight: 0.2
-        }, {
-          name: 'tags',
-          weight: 0.3
-        }]
-      }
-      var snippetFuse = new Fuse(snippetIndex, snippetOptions)
-      var snippetResults = snippetFuse.search(searchInput)
-      snippetResults.forEach(function (result) {
-        result.label = result.text
-        result.sublabel = `${result.title} | ${result.author}`
-      })
-      done(snippetResults)
-    }
+async function nqSearch (searchInput, done) {
+  if (mediaIndexTime === null || new Date().getTime() - mediaIndexTime.getTime() > 900000) {
+    await setMediaIndex()
+    console.log('mediaIndex', mediaIndex)
   }
+  // console.log('search')
+  // if (searchInput.split(':')[0] === 'tag') {
+  //   done([
+  //     {
+  //       label: searchInput.split(':')[1].split(',').join('&'),
+  //       sublabel: 'tag',
+  //       type: 'tag'
+  //     }
+  //   ])
+  // } else {
+  var mediaOptions = {
+    threshold: 0.2,
+    tokenize: true,
+    includeScore: true,
+    keys: [{
+      name: 'title',
+      weight: 0.3
+    }, {
+      name: 'author',
+      weight: 0.3
+    }, {
+      name: 'tags',
+      weight: 0.4
+    }]
+  }
+  var fuse = new Fuse(mediaIndex, mediaOptions)
+  var results = fuse.search(searchInput)
+  results.forEach(function (res) {
+    res.id = res.item.id
+    res.label = res.item.title
+    res.sublabel = res.item.type
+  })
+  // done(results)
+  // }
+  if (snippetIndexTime === null || new Date().getTime() - snippetIndexTime.getTime() > 900000) {
+    await setSnippetIndex()
+    console.log('snippetIndex', snippetIndex)
+  }
+  // console.log('search')
+  // if (searchInput.split(':')[0] === 'tag') {
+  //   done([
+  //     {
+  //       label: searchInput.split(':')[1].split(',').join('&'),
+  //       sublabel: 'tag',
+  //       type: 'tag'
+  //     }
+  //   ])
+  // } else {
+  var snippetOptions = {
+    threshold: 0.2,
+    tokenize: true,
+    includeScore: true,
+    keys: [{
+      name: 'text',
+      weight: 0.5
+    }, {
+      name: 'author',
+      weight: 0.2
+    }, {
+      name: 'tags',
+      weight: 0.3
+    }]
+  }
+  var snippetFuse = new Fuse(snippetIndex, snippetOptions)
+  var snippetResults = snippetFuse.search(searchInput)
+  snippetResults.forEach(function (result) {
+    result.id = result.item.id
+    result.label = result.item.text
+    result.sublabel = `${result.item.title} | ${result.item.author}`
+  })
+  //   done(snippetResults)
+  // }
+  var finalResults = results.concat(snippetResults).sort((a, b) => { return a.score - b.score })
+  // console.log(finalResults)
+  done(finalResults)
 }
 
 // leave the export, even if you don't use it
@@ -396,6 +404,7 @@ export default ({ app, router, Vue }) => {
     resourceSearch: resourceSearch,
     nqAuth: nqapp.auth(),
     nqLogin: customNQLogin,
+    nqFirestore: nqFirestore,
     nqTopics: nqTopics,
     nqResources: nqResources,
     nqList: nqList,

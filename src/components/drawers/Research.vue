@@ -6,9 +6,8 @@
     </div>
     <hr style="border-color: var(--q-color-primary);"/>
     <div v-if="!lessonLoading">
-      <h6>Main Idea</h6>
+      <h6>{{ lesson.title }}</h6>
       <p>{{ lesson.mainIdea }}</p>
-      <h6>Bible Refs</h6>
       <q-list no-border separator>
         <q-item v-for="(ref, index) in bibleRefs" :key="ref">
           <q-item-main>
