@@ -114,7 +114,8 @@ module.exports = function (ctx) {
       plugins: [
         'Notify',
         'ActionSheet',
-        'AppVisibility'
+        'AppVisibility',
+        'Screen'
       ]
       // iconSet: ctx.theme.mat ? 'material-icons' : 'ionicons'
       // i18n: 'de' // Quasar language

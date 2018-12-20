@@ -76,6 +76,9 @@ export default {
       }),
       devo: this.$fiery(this.$firebase.devoContentRef(this.$route.params.seriesid, this.$route.params.lessonid, this.$route.params.devoid), {
         onSuccess: () => {
+          if (!this.devo.usedResources) {
+            this.devo.usedResources = []
+          }
           this.devoLoading = false
         }
       }),
@@ -102,6 +105,12 @@ export default {
     }
   },
   mounted () {
+    this.$root.$on('remove-module', (id) => {
+      this.lesson.usedResources.splice(this.lesson.usedResources.findIndex(e => { return e.id === id }))
+      this.devo.usedResources.splice(this.devo.usedResources.findIndex(e => { return e.id === id }))
+      this.$fiery.update(this.lesson)
+      this.$fiery.update(this.devo)
+    })
   },
   methods: {
     // async pullTopics () {
@@ -131,6 +140,10 @@ export default {
         wordcount: 0
       }
       this.$root.$emit('add-module', obj)
+      this.lesson.usedResources.push({ id, type })
+      this.devo.usedResources.push({ id, type })
+      this.$fiery.update(this.lesson)
+      this.$fiery.update(this.devo)
     },
     search (input, done) {
       const acceptableTypes = [ 'quote', 'outline', 'idea', 'illustration', 'video', 'image', 'composition', 'article', 'document' ]

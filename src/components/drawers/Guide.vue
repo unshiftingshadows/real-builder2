@@ -19,14 +19,15 @@
       <hr style="border-color: var(--q-color-primary);"/>
       <q-input v-model="lesson.notes" float-label="Lesson Notes" type="textarea" :max-height="150" :min-rows="3" />
     </div>
-    <div class="fixed-bottom bg-primary drawer-overlay" style="padding: 10px;" v-bind:class="{ 'full-height': showResources }">
+    <div class="fixed-bottom bg-tertiary drawer-overlay" style="padding: 10px;" v-bind:class="{ 'full-height': showResources }">
       <q-btn class="float-right" color="dark" @click.native="openResources()">{{ showResources ? 'Hide' : 'Show' }}</q-btn>
       <h5 style="margin: 0;">Resources</h5>
       <hr style="border-width: .5px;" />
       <!-- List resources used in the devos -->
+      <br/>
       <q-spinner size="2rem" color="secondary" class="on-right" v-if="loadingResources" />
       <div v-if="!loadingResources && resources.length === 0" class="q-subheading">No current resources</div>
-      <n-q-list v-if="!loadingResources && resources.length > 0" :items="resources" />
+      <n-q-list v-if="!loadingResources && resources.length > 0" :items="resources" singlecolumn />
     </div>
   </div>
 </template>
@@ -68,7 +69,9 @@ export default {
       if (!this.showResources) {
         this.loadingResources = true
         this.showResources = true
-        this.resources = (await this.$firebase.nqResources(this.lesson.usedResources)).data.resources
+        if (this.resources.length === 0) {
+          this.resources = (await this.$firebase.nqResources(this.lesson.usedResources)).data.resources
+        }
         this.loadingResources = false
       } else {
         this.showResources = false

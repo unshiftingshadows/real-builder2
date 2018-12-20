@@ -137,11 +137,11 @@ export default {
       modules: this.$fiery(this.$firebase.ref(this.type, 'modules', this.id, this.$route.params.seriesid, this.$route.params.lessonid), {
         map: true,
         onSuccess: (modules) => {
-          console.log('modules loaded', modules)
+          // console.log('modules loaded', modules)
           this.cumWordcount = 0
           this.cumTime = 0
           for (var mod in modules) {
-            console.log('mod', modules[mod])
+            // console.log('mod', modules[mod])
             this.cumWordcount += modules[mod].wordcount
             this.cumTime += modules[mod].time
             if (this.initRun && modules[mod].editing === this.$firebase.auth.currentUser.uid) {
@@ -282,6 +282,9 @@ export default {
           this.sections[sectionid].moduleOrder.splice(this.sections[sectionid].moduleOrder.indexOf(moduleid), 1)
           this.$fiery.update(this.sections[sectionid], ['moduleOrder'])
         }
+      }
+      if (this.modules[moduleid].media) {
+        this.$root.$emit('remove-module', this.modules[moduleid].media)
       }
       this.$fiery.remove(this.modules[moduleid])
       this.editingid = ''

@@ -19,11 +19,26 @@
       <hr style="border-color: var(--q-color-primary);"/>
       <q-input v-model="lesson.notes" float-label="Lesson Notes" type="textarea" :max-height="150" :min-rows="3" />
     </div>
+    <div class="fixed-bottom bg-tertiary drawer-overlay" style="padding: 10px;" v-bind:class="{ 'full-height': showResources }">
+      <q-btn class="float-right" color="dark" @click.native="openResources()">{{ showResources ? 'Hide' : 'Show' }}</q-btn>
+      <h5 style="margin: 0;">Resources</h5>
+      <hr style="border-width: .5px;" />
+      <!-- List resources used in the devos -->
+      <br/>
+      <q-spinner size="2rem" color="secondary" class="on-right" v-if="loadingResources" />
+      <div v-if="!loadingResources && resources.length === 0" class="q-subheading">No current resources</div>
+      <n-q-list v-if="!loadingResources && resources.length > 0" :items="resources" singlecolumn />
+    </div>
   </div>
 </template>
 
 <script>
+import NQList from 'components/NQList.vue'
+
 export default {
+  components: {
+    NQList
+  },
   name: 'DrawerReview',
   fiery: true,
   data () {
@@ -43,11 +58,39 @@ export default {
           this.lessonLoading = false
         }
       }),
+      showResources: false,
+      loadingResources: false,
+      resources: [],
       bibleRefs: []
+    }
+  },
+  methods: {
+    async openResources () {
+      if (!this.showResources) {
+        this.loadingResources = true
+        this.showResources = true
+        if (this.resources.length === 0) {
+          this.resources = (await this.$firebase.nqResources(this.lesson.usedResources)).data.resources
+        }
+        this.loadingResources = false
+      } else {
+        this.showResources = false
+      }
     }
   }
 }
 </script>
 
 <style>
+
+.drawer-overlay {
+  height: 60px;
+  -webkit-transition: height 1s, -webkit-transform 1s;
+  transition: height 1s, transform 1s;
+}
+
+.full-height {
+  height: 100%;
+}
+
 </style>

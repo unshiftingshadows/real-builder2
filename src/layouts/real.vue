@@ -118,7 +118,7 @@ export default {
   data () {
     return {
       leftDrawer: !this.$q.platform.is.mobile,
-      rightDrawer: rightPages.includes(this.$route.name) && this.$q.platform.is.desktop,
+      rightDrawer: rightPages.includes(this.$route.name) && this.$q.platform.is.desktop && this.$q.screen.gt.md,
       showRightDrawer: rightPages.includes(this.$route.name),
       pageType: this.$route.name
     }
@@ -128,7 +128,7 @@ export default {
       console.log('page change')
       this.pageType = val
       this.leftDrawer = !this.$q.platform.is.mobile
-      this.rightDrawer = rightPages.includes(this.$route.name) && this.$q.platform.is.desktop
+      this.rightDrawer = rightPages.includes(this.$route.name) && this.$q.platform.is.desktop && this.$q.screen.gt.md
       this.showRightDrawer = rightPages.includes(this.$route.name)
     }
   },

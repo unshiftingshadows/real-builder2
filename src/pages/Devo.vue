@@ -99,17 +99,6 @@ export default {
         onSuccess: async (val) => {
           console.log('ran!', val)
           this.passageList = await this.$bible.texts(this.devo.bibleRefs, 'esv')
-          // this.devo.bibleRefs.forEach(ref => {
-          //   var readable = this.$bible.readable(ref)
-          //   this.$bible.texts(ref, 'esv').then(res => {
-          //     console.log('ref', ref)
-          //     this.passageList.push({
-          //       ref: ref,
-          //       readable: readable,
-          //       text: res.text
-          //     })
-          //   })
-          // })
         }
       }),
       editTitle: false,
@@ -118,16 +107,6 @@ export default {
     }
   },
   methods: {
-    init () {
-      // this.$database.view('series', this.id, (res) => {
-      //   this.series = res
-      // })
-    },
-    modulesInit (structure) {
-      this.updating = true
-      this.structure = structure
-      this.updating = false
-    },
     update () {
       this.editTitle = false
       this.editMainIdea = false
