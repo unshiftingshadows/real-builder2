@@ -1,6 +1,6 @@
 {
   "name": "real-builder",
-  "version": "0.0.43",
+  "version": "0.0.44",
   "description": "A writer and editor for REAL Curriculum",
   "productName": "REAL Builder",
   "cordovaId": "org.cordova.quasar.app",
