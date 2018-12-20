@@ -37,9 +37,6 @@
             </q-item>
           </q-list>
         </div>
-        <div class="col-12">
-          <q-btn color="primary" @click.native="update">Save</q-btn>
-        </div>
       </div>
     </q-modal>
     <q-modal v-model="addResourceModal" ref="addResourceModal" content-classes="topic-modal">
@@ -169,29 +166,9 @@ export default {
       this.removeResearch(id, 'other')
       this.init()
     },
-    searchMedia (searchInput, done) {
-      this.searching = true
-      this.$firebase.nqSearch(searchInput, 'media', (results) => {
-        this.searching = false
-        this.researchResults = results
-        done(results)
-      })
-    },
     selectedMedia (item) {
-      this.addResearch(item['.key'], item.type)
-      this.$refs.addResourceModal.hide()
-      this.init()
-    },
-    searchSnippet (searchInput, done) {
-      this.searching = true
-      this.$firebase.nqSearch(searchInput, 'snippet', (results) => {
-        this.searching = false
-        this.researchResults = results
-        done(results)
-      })
-    },
-    selectedSnippet (item) {
-      this.addResearch(item['.key'], item.type)
+      console.log('selected', item)
+      this.addResearch(item.id, item.item.type)
       this.$refs.addResourceModal.hide()
       this.init()
     },

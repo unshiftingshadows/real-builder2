@@ -14,7 +14,7 @@
       </div>
       <div class="col-12">
         <div v-masonry transition-duration="0.3s" item-selection=".media-cardl">
-          <q-card v-masonry-tile v-for="item in showItems" :key="item._id" color="primary" v-bind:class="singlecolumn === '' ? ' one-column' : ''" class="media-cardl" @click.native="openItem(item.media, item.type)">
+          <q-card v-masonry-tile v-for="item in showItems" :key="item._id" color="primary" v-bind:class="singlecolumn === '' ? ' one-column' : ''" class="media-cardl" @click.native="openItem(item.media, item.id, item.type)">
             <q-btn v-if="addButton === ''" icon="fas fa-plus" color="positive" class="float-right cursor-pointer" style="margin-bottom: 5px; margin-left: 5px;" dense size="sm" />
             <q-card-media v-if="item.type == 'book' || item.type == 'movie' || item.type == 'video' || item.type == 'article' || item.type == 'image'">
               <img :src="item.media.thumbURL" />
@@ -42,9 +42,7 @@
         </div>
       </div>
     </div>
-    <q-modal v-model="resourceOpen" content-classes="resource-modal">
-      <resource-preview v-if="resourceOpen" :type="resourceType" :resource="resource" :addModule="addModule" :close="closeResource" :remove="remove" />
-    </q-modal>
+    <resource-preview ref="resourcePreview" :type="resourceType" :resource="resource" :addModule="addModule" />
   </div>
 </template>
 
@@ -61,7 +59,6 @@ export default {
     return {
       showItems: [],
       isImage: this.type === 'images',
-      resourceOpen: false,
       resourceType: '',
       resource: '',
       selectedTypes: [
@@ -156,19 +153,17 @@ export default {
     init () {
       this.showItems = this.items
     },
-    openItem (item, type) {
+    openItem (item, id, type) {
       console.log(item)
+      console.log(id)
       console.log(type)
       if (this.types.map(function (e) { return e.value }).includes(type)) {
-        this.resource = item
+        this.resource = {...item, id}
         this.resourceType = type
-        this.resourceOpen = true
+        this.$refs.resourcePreview.show()
       } else {
         console.error('Incorrect item type for routing...')
       }
-    },
-    closeResource () {
-      this.resourceOpen = false
     },
     checkType (item) {
       return this.selectedTypes.includes('all') ? true : this.selectedTypes.includes(item.type)
@@ -199,11 +194,6 @@ export default {
 .image-cardl:hover {
   opacity: 1;
 }
-.resource-modal {
-  padding: 10px;
-  width: 100%;
-  height: 100%;
-}
 @media screen and (min-width: 800px) {
   .media-cardl {
     width: 31%;
@@ -212,11 +202,6 @@ export default {
 @media screen and (min-width: 1200px) {
   .media-cardl {
     width: 45%;
-  }
-  .resource-modal {
-    padding: 30px;
-    min-width: 650px;
-    width: 650px;
   }
 }
 .q-card-title-fix .q-card-title {

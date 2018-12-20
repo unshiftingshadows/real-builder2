@@ -69,6 +69,7 @@
 import Draggable from 'vuedraggable'
 import AddModule from 'components/AddModule.vue'
 import ModContent from 'components/modules/Content.vue'
+import ModMedia from 'components/modules/Media.vue'
 import ModQuote from 'components/modules/Quote.vue'
 import ModVideo from 'components/modules/Video.vue'
 import ModImage from 'components/modules/Image.vue'
@@ -80,6 +81,7 @@ export default {
     Draggable,
     AddModule,
     ModContent,
+    ModMedia,
     ModQuote,
     ModVideo,
     ModImage,

@@ -331,7 +331,7 @@ async function nqSearch (searchInput, done) {
   var fuse = new Fuse(mediaIndex, mediaOptions)
   var results = fuse.search(searchInput)
   results.forEach(function (res) {
-    res.id = res.item.id
+    res.id = res.item['.key']
     res.label = res.item.title
     res.sublabel = res.item.type
   })
@@ -369,14 +369,14 @@ async function nqSearch (searchInput, done) {
   var snippetFuse = new Fuse(snippetIndex, snippetOptions)
   var snippetResults = snippetFuse.search(searchInput)
   snippetResults.forEach(function (result) {
-    result.id = result.item.id
+    result.id = result.item['.key']
     result.label = result.item.text
     result.sublabel = `${result.item.title} | ${result.item.author}`
   })
   //   done(snippetResults)
   // }
   var finalResults = results.concat(snippetResults).sort((a, b) => { return a.score - b.score })
-  // console.log(finalResults)
+  console.log('results', finalResults)
   done(finalResults)
 }
 

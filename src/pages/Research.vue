@@ -66,6 +66,7 @@
             <q-list link>
               <q-item v-close-overlay @click.native="editTitle = true">Rename...</q-item>
               <q-item v-close-overlay @click.native="editMainIdea = true">Main Idea</q-item>
+              <q-item-separator />
               <q-item link v-close-overlay @click.native="$router.push({ name: 'lesson', params: { seriesid: $route.params.seriesid, lessonid: id } })">Devos</q-item>
               <q-item link v-close-overlay @click.native="$router.push({ name: 'guide', params: { seriesid: $route.params.seriesid, lessonid: id } })">Guides</q-item>
               <q-item link v-close-overlay @click.native="$router.push({ name: 'review', params: { seriesid: $route.params.seriesid, lessonid: id } })">Review</q-item>
@@ -187,11 +188,11 @@ export default {
     },
     removeResearch (id, type) {
       if (type === 'topic') {
-        this.lesson.topics.splice(this.lesson.topics.findIndex(e => e.id === id), 1)
+        this.lesson.topics.splice(this.lesson.topics.indexOf(id), 1)
       } else {
-        this.lesson.resources.splice(this.lesson.resources.findIndex(e => e.id === id), 1)
+        this.lesson.resources.splice(this.lesson.resources.indexOf(id), 1)
       }
-      this.$fiery.update(this.lesson)
+      // this.$fiery.update(this.lesson)
     }
   }
 }

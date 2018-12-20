@@ -62,6 +62,7 @@
             <q-list link>
               <q-item v-close-overlay @click.native="editTitle = true">Rename...</q-item>
               <q-item v-close-overlay @click.native="editMainIdea = true">Main Idea</q-item>
+              <q-item-separator />
               <q-item link v-close-overlay @click.native="$router.push({ name: 'research', params: { seriesid: $route.params.seriesid, lessonid: id } })">Research</q-item>
               <q-item link v-close-overlay @click.native="$router.push({ name: 'guide', params: { seriesid: $route.params.seriesid, lessonid: id } })">Guides</q-item>
               <q-item link v-close-overlay @click.native="$router.push({ name: 'review', params: { seriesid: $route.params.seriesid, lessonid: id } })">Review</q-item>

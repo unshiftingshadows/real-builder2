@@ -27,13 +27,22 @@
           <p><strong style="text-decoration: underline;">Notes</strong><br/><span v-html="topic.notes"/></p>
           <p><strong style="text-decoration: underline;">Conclusion</strong><br/>{{ topic.premise }}</p>
           <hr/>
-          <n-q-list v-if="topic.resources.length > 0" :items="topic.resources" singlecolumn nofilter />
+          <n-q-list v-if="topic.resources.length > 0" :items="topic.resources" :add-module="addModule" singlecolumn nofilter />
         </div>
         <div v-if="!lessonLoading && topicSelect === 'none' && resources.length > 0">
-          <n-q-list :key="topicSelect" :items="resources" singlecolumn nofilter />
+          <n-q-list :key="topicSelect" :items="resources" :add-module="addModule" singlecolumn nofilter />
         </div>
       </q-tab-pane>
-      <q-tab-pane name="search-tab">Search</q-tab-pane>
+      <q-tab-pane name="search-tab">
+        <q-search v-model="searchTerm" placeholder="Search..." color="dark" inverted icon="fas fa-search">
+          <q-autocomplete
+            @search="search"
+            @selected="selectedMedia"
+            ref="searchModal"
+            :max-results="5"
+          />
+        </q-search>
+      </q-tab-pane>
     </q-tabs>
   </div>
 </template>
@@ -79,7 +88,8 @@ export default {
       ],
       topic: {},
       topicLoading: true,
-      resources: []
+      resources: [],
+      searchTerm: ''
     }
   },
   watch: {
@@ -111,6 +121,27 @@ export default {
     //     }
     //   }))
     // }
+    addModule (id, type) {
+      var obj = {
+        media: id,
+        type: type,
+        editing: false,
+        slide: false,
+        time: 0,
+        wordcount: 0
+      }
+      this.$root.$emit('add-module', obj)
+    },
+    search (input, done) {
+      const acceptableTypes = [ 'quote', 'outline', 'idea', 'illustration', 'video', 'image', 'composition', 'article', 'document' ]
+      this.$firebase.nqSearch(input, (results) => {
+        done(results.filter(e => { return acceptableTypes.includes(e.item.type) }))
+      })
+    },
+    selectedMedia (item) {
+      console.log('selected', item)
+      this.addModule(item.id, item.item.type)
+    }
   }
 }
 </script>
