@@ -1,6 +1,27 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.44 - 2018-12-20
+### Added
+- DRAWERS! All drawers are currently working
+- NQ system - all NQ media is now accessible and referencable from within Builder
+  - NQ users can authenticate themselves for change logs in the future
+- lesson research is now functional, topics and resources can now be added to lessons
+- devo drawer shows resources attached lessons that can be added within the editor
+- devo drawer allows searching all usable NQ media to add with the editor
+- adding resources to a devo marks it as a used resource for the devo and lesson
+- removing a used resource module from a devo removes it from the devo and lesson as well
+
+### Changed
+- when modules are clicked, they are opened automatically rather than having to click 'Edit' in the dropdown
+- when app is 'hidden' or tab is switched in browser, any open modules automatically are saved and closed
+
+### Fixed
+- fixed login url for Login2 system
+- $bible.text returns text without extra whitespace and with proper quotation marks
+- lots of Content Editor fixes
+- drawers don't open automatically on smaller screens
+
 ## 0.0.43 - 2018-10-05
 ### Added
 - [meta]+enter saves and closes modules
