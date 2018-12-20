@@ -97,7 +97,10 @@ export default {
       id: this.$route.params.devoid,
       devo: this.$fiery(this.$firebase.devosRef(this.$route.params.seriesid, this.$route.params.lessonid).doc(this.$route.params.devoid), {
         onSuccess: async (val) => {
-          console.log('ran!', val)
+          if (!this.devo.usedResources) {
+            this.devo.usedResources = []
+            this.$fiery.update(this.devo)
+          }
           this.passageList = await this.$bible.texts(this.devo.bibleRefs, 'esv')
         }
       }),

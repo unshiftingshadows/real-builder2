@@ -114,7 +114,14 @@ export default {
       ],
       seriesid: this.$route.params.seriesid,
       id: this.$route.params.lessonid,
-      lesson: this.$fiery(this.$firebase.lessonsRef(this.$route.params.seriesid).doc(this.$route.params.lessonid)),
+      lesson: this.$fiery(this.$firebase.lessonsRef(this.$route.params.seriesid).doc(this.$route.params.lessonid), {
+        onSuccess: () => {
+          if (!this.lesson.usedResources) {
+            this.lesson.usedResources = []
+            this.$fiery.update(this.lesson)
+          }
+        }
+      }),
       editTitle: false,
       editMainIdea: false
     }
