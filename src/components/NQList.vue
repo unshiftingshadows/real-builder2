@@ -21,7 +21,7 @@
             </q-card-media>
             <q-card-title class="q-card-title-fix" v-if="item.type == 'book' || item.type == 'movie' || item.type == 'video' || item.type == 'article' || item.type == 'discourse' || item.type == 'note'">
               {{ item.media.title }}
-              <span v-if="item.type == 'book' || item.type == 'movie' || item.type == 'video' || item.type == 'article' || item.type == 'discourse'" v-for="author in item.media.author" :key="author" slot="subtitle">{{ author }}</span>
+              <span v-if="item.type == 'book' || item.type == 'movie' || item.type == 'video' || item.type == 'article' || item.type == 'discourse'" slot="subtitle">{{ item.media.author.join(', ') }}</span>
               <span v-if="item.type == 'note'" slot="subtitle">{{ item.media.text }}</span>
             </q-card-title>
             <q-card-main v-if="item.type == 'quote' || item.type === 'outline' || item.type === 'idea' || item.type === 'illustration'">

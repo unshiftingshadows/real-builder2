@@ -192,7 +192,7 @@ export default {
           this.user = this.$fiery(this.$firebase.user(), {
             onSuccess: () => {
               if (this.$firebase.nqLogin(this.user.nqUser ? this.user.nqUser.uid : 'MlQv4xZaqBNGNFIYhPnSyTcq3MJ2')) {
-                console.log('nq user authenticated')
+                console.log('nq user authenticated', this.$firebase.nqAuth.currentUser)
               } else {
                 console.log('nq user error...')
               }

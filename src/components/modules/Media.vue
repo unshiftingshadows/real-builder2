@@ -101,7 +101,7 @@ export default {
               this.data.wordcount = this.media.wordCount
               this.data.time = this.getEstTime(this.data.wordcount)
             } else if (this.data.type === 'video') {
-              this.data.time = this.media.duration
+              this.data.time = Math.ceil(this.media.duration / 60)
             } else {
               this.data.time = 1
             }
