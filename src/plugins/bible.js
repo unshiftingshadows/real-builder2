@@ -36,7 +36,7 @@ function osis (ref) {
 }
 
 async function text (ref, version) {
-  return fixQuotations((await firebase.functions().httpsCallable('bible-bibleText')({ bibleRef: ref, version: version })).data.text)
+  return fixQuotations((await firebase.functions().httpsCallable('bible-bibleText')({ bibleRef: ref, version: 'esv' })).data.text)
 }
 
 function fixQuotations (text) {
@@ -54,7 +54,7 @@ function fixQuotations (text) {
 
 async function texts (refs, version) {
   const bibleTextFunction = firebase.functions().httpsCallable('bible-bibleText')
-  const values = (await Promise.all(refs.map(async e => { return bibleTextFunction({ bibleRef: e, version: version }) }))).map(e => { return fixQuotations(e.data.text) })
+  const values = (await Promise.all(refs.map(async e => { return bibleTextFunction({ bibleRef: e, version: 'esv' }) }))).map(e => { return fixQuotations(e.data.text) })
   return values
 }
 
