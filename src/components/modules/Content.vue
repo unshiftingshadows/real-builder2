@@ -194,7 +194,9 @@ export default {
     },
     clicked (e) {
       if (e.srcElement.nodeName !== 'I' && e.srcElement.nodeName !== 'BUTTON') {
-        this.modMethods.edit(this.id)
+        if (!this.data.editing) {
+          this.modMethods.edit(this.id)
+        }
       }
     }
   }

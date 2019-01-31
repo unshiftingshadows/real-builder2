@@ -190,6 +190,9 @@ export default {
   methods: {
     editModule (moduleid, sectionid) {
       console.log('edit module', moduleid, sectionid)
+      if (moduleid === undefined) {
+        return
+      }
       if (this.editingid !== moduleid && this.editingid !== '') {
         console.log('close module before edit')
         this.closeModule(this.editingid, this.editingSection)

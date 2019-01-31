@@ -1,8 +1,8 @@
 <template>
   <q-card>
-    <div v-if="!data.editing">
+    <div v-if="!data.editing || data.editing !== $firebase.auth.currentUser.uid">
       <q-card-title>
-        <q-btn class="float-right cursor-sectioner" icon="fas fa-edit" color="primary" size="sm" @click.native="edit(id)" />
+        <q-btn :disabled="data.editing" class="float-right cursor-sectioner" icon="fas fa-edit" color="primary" size="sm" @click.native="edit(id)" />
         <span class="float-right" style="font-size: .8rem; vertical-align: top; line-height: 1rem;">{{ data.time }} minutes&nbsp;&nbsp;&nbsp;</span>
         Application
         <span slot="subtitle" v-if="data.title !== ''">{{ data.title }}</span>
@@ -22,7 +22,7 @@
         </div>
       </q-card-main>
     </div>
-    <div v-if="data.editing">
+    <div v-if="data.editing === $firebase.auth.currentUser.uid">
       <q-card-title>
         <q-btn link class="float-right cursor-sectioner" icon="fas fa-times" color="primary" size="sm" @click.native="close" />
         Application
