@@ -41,7 +41,7 @@ async function text (ref, version) {
 
 function fixQuotations (text) {
   console.log('text', text)
-  let goodText = text.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').trim()
+  let goodText = text.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').replace(/xx|[\u0060][\u0060]/g, '"').trim()
   console.log('goodText', goodText)
   if (goodText.charAt(0) === '"' || goodText.charAt(0) === "'") {
     return goodText.endsWith('"') || goodText.endsWith("'") ? goodText : goodText.concat(goodText.charAt(0) === '"' ? '"' : "'")
