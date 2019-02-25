@@ -1,6 +1,17 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.45 - 2019-02-25
+### Changed
+- forces ESV to be used for Bible modules
+
+### Fixed
+- Lessons and Devos start with a blank array for usedResources
+- Author list for media lists
+- Estimated time for video modules
+- collaboration fixes - modules now open and close properly
+- Bible text cleaning function uses proper quotes now
+
 ## 0.0.44 - 2018-12-20
 ### Added
 - DRAWERS! All drawers are currently working
