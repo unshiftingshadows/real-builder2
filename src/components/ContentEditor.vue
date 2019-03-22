@@ -4,16 +4,19 @@
       <q-spinner color="primary" class="absolute-center" size="3rem" />
     </div>
     <div v-if="!loading" class="row gutter-sm">
-      <div class="col-12">
+      <div class="col-12 col-md-9">
         <q-select
           v-model="document.status"
           float-label="Status"
           :options="statusOptions"
         />
       </div>
-      <div class="col-12 col-md-2">
-        <q-chip color="primary">
+      <div class="col-12 col-md-3">
+        <q-chip color="primary" class="float-right">
           {{ cumWordcount }} words
+        </q-chip>
+        <q-chip color="secondary" class="float-right">
+          {{ cumTime }} minutes
         </q-chip>
       </div>
       <!-- Before -->

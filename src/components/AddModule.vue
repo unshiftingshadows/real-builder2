@@ -1,7 +1,7 @@
 <template>
   <div class="col-12 relative-position" style="height: 30px; margin-bottom: 20px;">
     <q-btn round :color="color" icon="fas fa-plus" class="absolute-center" @click.native="showAdd" />
-    <!-- // TODO: Add a new component here like add-media but that uses the NQ database -->
+    <!-- //TODO: Add a new component here like add-media but that uses the NQ database -->
   </div>
 </template>
 
@@ -114,6 +114,15 @@ export default {
           handler: () => {
             console.log('bible!')
             this.addModule('bible')
+          }
+        },
+        {
+          label: 'Main Idea',
+          color: 'primary',
+          icon: 'fas fa-lightbulb',
+          handler: () => {
+            console.log('mainidea!')
+            this.addModule('mainidea')
           }
         }
       ]
